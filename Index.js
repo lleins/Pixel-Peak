@@ -155,15 +155,17 @@ function Login_Blur() {
   const Blur_Page = document.getElementById("Blur_Webpage");
   const Login_Container = document.getElementById("Login_Container");
   const Sign_React = document.getElementById("SignIn_React");
-  const Account_React = document.getElementById("Account_React");
+  const Account_React = document.getElementById("Account_Dashboard");
   const Menu = document.getElementById("Side_Buttons");
+  const body = document.body;
   Menu.style.display = "none";
   Blur_Page.style.zIndex = 10;
   Blur_Page.style.backdropFilter = "blur(20px) brightness(80%)";
   Login_Container.style.zIndex = 11;
   Login_Container.style.display = "block";
+  body.style.overflowY = "hidden";
 
-  const Logged = 1;
+  const Logged = 0;
 
   if (Logged == 1) {
     Sign_React.style.display = "none";
@@ -191,10 +193,14 @@ function Login_Blur() {
 function Exit_Login() {
   const Blur_Page = document.getElementById("Blur_Webpage");
   const Login_Container = document.getElementById("Login_Container");
+  const Help_Container = document.getElementById("Help_Container");
+  const body = document.body;
   Blur_Page.style.zIndex = 0;
   Blur_Page.style.backdropFilter = "blur(0px) brightness(100%)";
   Login_Container.style.zIndex = 0;
   Login_Container.style.display = "none";
+  Help_Container.style.display = "none";
+  body.style.overflowY = "auto";
 }
 
 
@@ -202,25 +208,52 @@ function Exit_Login() {
 //Function Login-----------------------------------------------------------
 
 
+
+
+
+//Function Account-----------------------------------------------------------
+
+function ViewAccount() {
+  const Account_React = document.getElementById("Account_React");
+  const Account_Container = document.getElementById("Login_Container");
+  Account_React.style.left = "50%";
+  Account_Container.style.visibility = "hidden";
+
+}
+
+
+
+//Function Account-----------------------------------------------------------
+
+
+
+
+
 //Function Help-----------------------------------------------------------
 function Help_Blur() {
   const Blur_Page = document.getElementById("Blur_Webpage");
   const Help_Container = document.getElementById("Help_Container");
   const Menu = document.getElementById("Side_Buttons");
+  const body = document.body;
   Menu.style.display = "none";
   Blur_Page.style.zIndex = 10;
   Blur_Page.style.backdropFilter = "blur(20px) brightness(80%)";
   Help_Container.style.zIndex = 11;
   Help_Container.style.display = "block";
+  body.style.overflowY = "hidden"
 }
 
 function Exit_Help() {
   const Blur_Page = document.getElementById("Blur_Webpage");
   const Help_Container = document.getElementById("Help_Container");
+  const Login_Container = document.getElementById("Login_Container");
+  const body = document.body;
   Blur_Page.style.zIndex = 0;
   Blur_Page.style.backdropFilter = "blur(0px) brightness(100%)";
   Help_Container.style.zIndex = 0;
   Help_Container.style.display = "none";
+  Login_Container.style.display = "none";
+  body.style.overflowY = "auto"
 
 }
 
@@ -242,7 +275,6 @@ function SearchPhotos() {
 
   Search_Button.style.transition = ".3s";
   Search_Button.style.width = "25%";
-  Search_Button.style.left = "50px";
   Nav_Mobile.style.zIndex = 9;
   Nav.style.zIndex = 9;
   setTimeout(() => {
@@ -258,6 +290,7 @@ function SearchPhotos() {
 
 
 function SearchPhotos_Exit() {
+  const screenWidth = window.innerWidth;
   const Blur_Page = document.getElementById("Blur_Webpage");
   const Photo_Search_Container = document.getElementById("Photo_Search_Result");
   const Nav = document.getElementById("Main_Nav");
@@ -276,8 +309,12 @@ function SearchPhotos_Exit() {
   Body_Style.style.overflowY = "auto";
   setTimeout(() => {
     Search_Button.style.transition = ".3s";
-    Search_Button.style.width = "60%";
-    Search_Button.style.left = "50px";
+    if (screenWidth <= 550) {
+      Search_Button.style.width = "89%";
+    } else {
+      Search_Button.style.width = "60%";
+    }
+
   }, 100);
 
 
@@ -292,6 +329,7 @@ function SearchPhotos_Exit() {
 //Function Video Search-----------------------------------------------------------
 
 function SearchVideos() {
+
   const Blur_Page = document.getElementById("Blur_Webpage");
   const Video_Search_Container = document.getElementById("Video_Search_Result");
   const Nav = document.getElementById("Main_Nav");
@@ -302,7 +340,6 @@ function SearchVideos() {
 
   Search_Button.style.transition = ".3s";
   Search_Button.style.width = "25%";
-  Search_Button.style.left = "50px";
   Nav_Mobile.style.zIndex = 9;
   Nav.style.zIndex = 9;
   setTimeout(() => {
@@ -317,6 +354,7 @@ function SearchVideos() {
 }
 
 function SearchVideos_Exit() {
+  const screenWidth = window.innerWidth;
   const Blur_Page = document.getElementById("Blur_Webpage");
   const Video_Search_Container = document.getElementById("Video_Search_Result");
   const Nav = document.getElementById("Main_Nav");
@@ -334,8 +372,12 @@ function SearchVideos_Exit() {
   Body_Style.style.overflowY = "auto";
   setTimeout(() => {
     Search_Button.style.transition = ".3s";
-    Search_Button.style.width = "60%";
-    Search_Button.style.left = "50px";
+    if (screenWidth <= 550) {
+      Search_Button.style.width = "89%";
+    } else {
+      Search_Button.style.width = "60%";
+    }
+
   }, 100);
 
 

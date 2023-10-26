@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <link rel="stylesheet" href="index.css">
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Home React</title>
 </head>
 
@@ -29,6 +29,9 @@
         src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Account created</p>
     <p id="Account_0" class="notif_Style"><img class="Alert_Image"
         src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Account creation failed</p>
+    <p id="Account_01" class="notif_Style"><img class="Alert_Image"
+        src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Account creation failed - Account with that email already exists
+    </p>
 
     <p id="Saved_1" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Saved
     </p>
@@ -47,9 +50,16 @@
     <div id="SignIn_React">
 
     </div>
-    <div id="Account_React">
-
+    <div id="Account_Dashboard">
+      <p id="Account_Title">Account</p>
+      <button id="View_Acc_Btn" class="Account_btn_style" onclick="ViewAccount()">View Account</button>
+      <button id="Saved_Acc_Btn" class="Account_btn_style">Saved</button>
+      <button id="Logout_Acc_Btn" class="Account_btn_style">Logout</button>
     </div>
+  </div>
+
+  <div id="Account_React">
+
   </div>
   <!--Login Container-->
 
