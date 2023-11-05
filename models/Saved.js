@@ -1,0 +1,14 @@
+import mongoose from 'mongoose';
+
+const savedSchema = new mongoose.Schema({
+    email: String,
+    link: String,
+    url: String,
+    type: String
+}, {
+    collection: 'Saved-Pics-Vids' // Specify the collection name
+});
+
+const Saved = mongoose.model('Saved', savedSchema);
+
+export default Saved;

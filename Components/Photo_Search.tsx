@@ -5,7 +5,7 @@ import Pic_Img from "C:\\Users\\Big_T\\OneDrive\\Desktop\\VsCode\\MERN\\react-ap
 import Heart_Img_pic from "C:\\Users\\Big_T\\OneDrive\\Desktop\\VsCode\\MERN\\react-app\\src\\Components\\Images\\Heart.png";
 import Resize_Img_p_Search from "C:\\Users\\Big_T\\OneDrive\\Desktop\\VsCode\\MERN\\react-app\\src\\Components\\Images\\ResizeImg.png";
 import Exit_Img_v_Search from "C:\\Users\\Big_T\\OneDrive\\Desktop\\VsCode\\MERN\\react-app\\src\\Components\\Images\\ExitImg.png";
-
+import Cookies from 'js-cookie';
 import { Page } from "puppeteer";
 import { get } from "mongoose";
 
@@ -28,8 +28,8 @@ function Photo_Search_Style(){
       }
     
       interface URL_s {
-        alt: {
-          alt: string;
+        url: {
+          url: string;
         };
       }
     
@@ -55,7 +55,7 @@ function Photo_Search_Style(){
             );
             setPhotoArray_s(urls_s);
     
-            const urls_Link_s = data_s.photos.map((photo: URL_s) => photo.alt.toString());
+            const urls_Link_s = data_s.photos.map((photo: URL_s) => photo.url.toString());
             seturlArray_s(urls_Link_s);
           } catch (error) {
             console.error("Error:", error);
@@ -201,27 +201,39 @@ function Photo_Search_Style(){
 
       function Save_Photo_Search({ id_Heart_Photo_Search }: Save_Photo_Ids_Search) : void {
         const HeartImg = document.getElementById(id_Heart_Photo_Search);
-        if (HeartImg) {
-          const HeartStyle = getComputedStyle(HeartImg);
-          if (HeartStyle.filter === "brightness(5)") {
-            HeartImg.style.filter = "brightness(100%)";
-            const Fail_Notif = document.getElementById("Saved_1");
-            if(Fail_Notif) Fail_Notif.style.display = "block";
-            setTimeout(() => {
-              if(Fail_Notif) Fail_Notif.style.display = "none";
-              
-            }, 2000);
-          } else if (HeartStyle.filter === "brightness(1)") {
-            HeartImg.style.filter = "brightness(500%)";
-            const Save_Notif = document.getElementById("Saved_10");
-            if(Save_Notif) Save_Notif.style.display = "block";
-            setTimeout(() => {
-              if(Save_Notif) Save_Notif.style.display = "none";
-              
-            }, 2000);
-    
+        const Check_Login_S = Cookies.get("Login_Token");
+
+        if(Check_Login_S !== undefined){
+          if (HeartImg) {
+            const HeartStyle = getComputedStyle(HeartImg);
+            if (HeartStyle.filter === "brightness(5)") {
+              HeartImg.style.filter = "brightness(100%)";
+              const Fail_Notif = document.getElementById("Saved_1");
+              if(Fail_Notif) Fail_Notif.style.display = "block";
+              setTimeout(() => {
+                if(Fail_Notif) Fail_Notif.style.display = "none";
+                
+              }, 2000);
+            } else if (HeartStyle.filter === "brightness(1)") {
+              HeartImg.style.filter = "brightness(500%)";
+              const Save_Notif = document.getElementById("Saved_10");
+              if(Save_Notif) Save_Notif.style.display = "block";
+              setTimeout(() => {
+                if(Save_Notif) Save_Notif.style.display = "none";
+                
+              }, 2000);
+      
+            }
           }
+        } else if(Check_Login_S === undefined){
+          const Login_Notif = document.getElementById("Login_Request_0");
+          if(Login_Notif) Login_Notif.style.display = "block";
+          setTimeout(function () {
+            if (Login_Notif) Login_Notif.style.display = 'none';
+          }, 4000);
         }
+
+       
       }
 
       

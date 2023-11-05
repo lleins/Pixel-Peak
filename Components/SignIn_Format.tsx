@@ -1,11 +1,26 @@
 import { CSSProperties } from "react";
 import React, { useRef, RefObject, useEffect, useState } from "react";
 import mongoose, { ConnectOptions } from 'mongoose';
+import Cookies from 'js-cookie';
 
 function SignIn_Style() {
 
-  function Login_Communication(){
-    
+  function formatDateAsZeroes() {
+    const today = new Date();
+    const day = today.getDate().toString().padStart(2, '0'); // Get day with leading zero
+    const month = (today.getMonth() + 1).toString().padStart(2, '0'); // Get month with leading zero
+    const year = today.getFullYear().toString(); // Get full year
+  
+    const formattedDate = `${month}/${day}/${year}`;
+    return formattedDate;
+  }
+
+  function Login_Communication(){ //Logging in
+    const body = document.body;
+    const Login_Tab = document.getElementById("Login_Container");
+    const Blur_Page = document.getElementById("Blur_Webpage");
+    const Help_Container = document.getElementById("Help_Container");
+    const LoadingSpinner_L = document.getElementById("Loading_Spinner_L");
     const success = document.getElementById("Login_1");
     const fail = document.getElementById("Login_0");
     const email_input = document.getElementById("Email_Input") as HTMLInputElement;
@@ -13,7 +28,7 @@ function SignIn_Style() {
     const pass_input = document.getElementById("Password_Input") as HTMLInputElement;
     const passData = pass_input.value;
 
-    if ((emailData == "") && (passData == "")){
+    if ((emailData == "") && (passData == "")){ //empty input feild
       email_input.style.backgroundColor = "rgb(230, 0, 0, .5)";
       pass_input.style.backgroundColor = "rgb(230, 0, 0, .5)";
       setTimeout(function () {
@@ -21,18 +36,19 @@ function SignIn_Style() {
         email_input.style.backgroundColor = "rgb(230, 230, 230)";
         pass_input.style.backgroundColor = "rgb(230, 230, 230)";
       }, 4000);
-    } else if(emailData == ""){
+    } else if(emailData == ""){//empty input feild
       email_input.style.backgroundColor = "rgb(230, 0, 0, .5)"
       setTimeout(function () {
         email_input.style.backgroundColor = "rgb(230, 230, 230)";
       }, 4000);
-    }else if(passData == ""){
+    }else if(passData == ""){//empty input feild
       pass_input.style.backgroundColor = "rgb(230, 0, 0, .5)"
       setTimeout(function () {
         pass_input.style.backgroundColor = "rgb(230, 230, 230)";
       }, 4000);
     } else{
-      fetch('http://localhost:5000/api/login', {
+      if(LoadingSpinner_L) LoadingSpinner_L.style.display = "block"; //Express server communication
+      fetch('http://localhost:5000/api/login', { 
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -41,21 +57,40 @@ function SignIn_Style() {
     })
         .then(response => {
             if (response.ok) {
-                console.log("From Sign React: Request sent");
-                return response.json(); // This returns a promise
+                console.log("From Sign React: Request sent"); //Sent to server
+                return response.json(); 
             } else {
-                console.log("From Sign React: Request failed");
-                return response.json(); // This also returns a promise
+                console.log("From Sign React: Request failed"); //Failed to send server
+                return response.json(); 
             }
         })
         .then(data => {
-            if (data.success === 1) {
+            if (data.success === 1) { //Login successful
+              const login_token = data.token;
+              console.log("Token from Sign.tsx: ",login_token);
+              Cookies.set('Login_Token', login_token, { path: '/' });
+  
+              if(pass_input)pass_input.value = "";
+              if(email_input)email_input.value = "";
+              if(body) body.style.overflowY = "auto";
+              if(Login_Tab){ 
+                Login_Tab.style.display = "none"; //closes login tab
+                Login_Tab.style.zIndex = "0"; 
+              }
+              if(Blur_Page){ 
+                Blur_Page.style.zIndex = "0";
+                Blur_Page.style.backdropFilter = "blur(0px) brightness(100%)";
+              }
+              if(Help_Container) Help_Container.style.display = "none";
+              if(LoadingSpinner_L) LoadingSpinner_L.style.display = "none";
                 if (success) success.style.display = "block";
                 console.log("Success in Server");
                 setTimeout(function () {
                     if (success) success.style.display = 'none';
+                    window.location.reload();
                 }, 4000);
-            } else if (data.success === 0) {
+            } else if (data.success === 0) { //Login failed
+              if(LoadingSpinner_L) LoadingSpinner_L.style.display = "none";
                 if (fail) fail.style.display = "block";
                 console.log("Failed in Server");
                 setTimeout(function () {
@@ -63,7 +98,8 @@ function SignIn_Style() {
                 }, 4000);
             }
         })
-        .catch(error => {
+        .catch(error => { //catch error with response
+          if(LoadingSpinner_L) LoadingSpinner_L.style.display = "none";
             if (fail) fail.style.display = "block";
             console.error("Server issue: " + error);
             setTimeout(function () {
@@ -75,7 +111,8 @@ function SignIn_Style() {
   }
 
 
-  function Create_Account_Communication(){
+  function Create_Account_Communication(){ //Creating account
+    const LoadingSpinner_C = document.getElementById("Loading_Spinner_C");
     const body = document.body;
     const Login_Tab = document.getElementById("Login_Container");
     const Blur_Page = document.getElementById("Blur_Webpage");
@@ -145,28 +182,38 @@ function SignIn_Style() {
           pass_input_c.style.backgroundColor = "rgb(230, 230, 230)";
       }, 4000);
       }else if(RepassData_c == passData_c){ //If Passwords match
+        if(LoadingSpinner_C)LoadingSpinner_C.style.display = "block"; //Loading icon
+        const formattedDate = formatDateAsZeroes();
         fetch('http://localhost:5000/api/create_account', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email_create: emailData_c, password_create : passData_c }),
+        body: JSON.stringify({ email_create: emailData_c, password_create : passData_c, date_create: formattedDate  }),
         })
         .then(response => {
             if (response.ok) {
-                console.log("From Sign React: Request sent");
-                return response.json(); // This returns a promise
+                console.log("From Sign React: Request sent"); //Sent to express server
+                return response.json(); 
             } else {
-                console.log("From Sign React: Request failed");
-                return response.json(); // This also returns a promise
+                console.log("From Sign React: Request failed"); //Failed to send
+                return response.json(); 
             }
         })
         .then(data => {
-            if (data.message === 1) { //Created account
+            if (data.message === 1) { //Created account successful
+
+              const login_token = data.token;
+              Cookies.set('Login_Token', login_token, { path: '/' });
+
+              if(Repass_input_c) Repass_input_c.value = "";
+              if(pass_input_c) pass_input_c.value = "";
+              if(email_input_c) email_input_c.value = "";
+              if(LoadingSpinner_C)LoadingSpinner_C.style.display = "none";
               if(body) body.style.overflowY = "auto";
               if(Login_Tab){ 
                 Login_Tab.style.display = "none";
-                Login_Tab.style.zIndex = "0";
+                Login_Tab.style.zIndex = "0"; 
               }
               if(Blur_Page){ 
                 Blur_Page.style.zIndex = "0";
@@ -177,14 +224,18 @@ function SignIn_Style() {
                 console.log("Success in Server");
                 setTimeout(function () {
                     if (success_c) success_c.style.display = 'none';
+                    window.location.reload();
                 }, 4000);
+                
             } else if (data.message === 0) { //Create account failed
+              if(LoadingSpinner_C)LoadingSpinner_C.style.display = "none";
                 if (fail_c) fail_c.style.display = "block";
                 console.log("Failed in Server");
                 setTimeout(function () {
                     if (fail_c) fail_c.style.display = 'none';
                 }, 4000);
             }else if (data.message === 3) { //Create account failed - Email already associated with another account
+              if(LoadingSpinner_C)LoadingSpinner_C.style.display = "none";
               if (  fail_success_c)   fail_success_c.style.display = "block";
               console.log("Failed in Server");
               setTimeout(function () {
@@ -192,7 +243,8 @@ function SignIn_Style() {
               }, 4000);
           }
         })
-        .catch(error => {
+        .catch(error => { //catch error with response
+          if(LoadingSpinner_C)LoadingSpinner_C.style.display = "none";
             if (fail_c) fail_c.style.display = "block";
             console.error("Server issue: " + error); //Create account failed - server issue
             setTimeout(function () {
@@ -202,6 +254,8 @@ function SignIn_Style() {
     }
       }
   }
+
+
 
 
   const MainContainer: CSSProperties={
@@ -383,6 +437,21 @@ function SignIn_Style() {
     borderRadius: "5px",
   };
 
+  const Loading_Spinner_L: CSSProperties = {
+    top: "100px",
+    left: "180px",
+    zIndex: "9",
+    display: "none",
+   
+  };
+ 
+   const Loading_Spinner_C: CSSProperties = {
+    top: "230px",
+    left: "180px",
+    zIndex: "9",
+    display: "none",
+   
+  };
 
   const [isDiv1Visible, setIsDiv1Visible] = useState(true);
 
@@ -403,6 +472,7 @@ function SignIn_Style() {
         <button placeholder="" style={Login_Button_Style} id="Password_Input" onClick={Login_Communication} >Sign In</button>
         <p style={Text_Title_Style_Or} ></p>
         <button placeholder="" style={CreateAcc_Button_Style} id="Password_Input" onClick={toggleDivs} >Create Account</button>
+        <div id="Loading_Spinner_L" style={Loading_Spinner_L} className="loading-spinner"></div>
       </div>
       <div id="CreateAcc_Container" style={{ display: isDiv1Visible ? 'none' : 'block' }}>
       <p style={CreateAcc_Title}>Create Account</p>
@@ -414,7 +484,7 @@ function SignIn_Style() {
         <input type="password" placeholder="" style={Input_Box_Style_RePass} id="RePassword_Input_CreateAcc" ></input>
         <button placeholder="" style={Login_Button_Style_CreateAcc} id="Create_Account" onClick={Create_Account_Communication} >Create Account</button>
         <p style={Login_CreateAcc} onClick={toggleDivs}  >Login</p>
-        
+        <div id="Loading_Spinner_C" style={Loading_Spinner_C} className="loading-spinner"></div>
       </div>
     </div>
     );

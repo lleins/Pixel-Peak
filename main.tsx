@@ -8,6 +8,7 @@ import SignIn_Style from "./Components/SignIn_Format";
 import Account_Style from "./Components/Account_Format";
 import Photo_Search_Style from "./Components/Photo_Search";
 import Videos_Search_Style from "./Components/Videos_Search";
+import Saved_Style from "./Components/Saved_Format";
 
 ReactDOM.createRoot(
   document.getElementById("Video_React") as HTMLElement
@@ -33,8 +34,6 @@ ReactDOM.createRoot(
   </React.StrictMode>
 );
 
-
-
 ReactDOM.createRoot(
   document.getElementById("Account_React") as HTMLElement
 ).render(
@@ -43,7 +42,13 @@ ReactDOM.createRoot(
   </React.StrictMode>
 );
 
-
+ReactDOM.createRoot(
+  document.getElementById("Saved_React") as HTMLElement
+).render(
+  <React.StrictMode>
+    <Saved_Style />
+  </React.StrictMode>
+);
 
 
 ReactDOM.createRoot(
@@ -61,3 +66,5 @@ ReactDOM.createRoot(
     <Videos_Search_Style />
   </React.StrictMode>
 );
+
+

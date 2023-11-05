@@ -24,38 +24,6 @@ window.addEventListener('scroll', function () {
 
 
 
-/*Page Scroll Function -----------------------------------------------------------*/
-
-/*
-function scrollToTargetDiv(index) {
-  const Scroll_Div = document.querySelectorAll('.Scroll_Div');
-  if (index < Scroll_Div.length) {
-    Scroll_Div[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-}
- 
-let Scroll_currentIndex = 0;
- 
-window.addEventListener('wheel', (event) => {
-  if (event.deltaY > 0) {
-    scrollToTargetDiv(Scroll_currentIndex);
-    Scroll_currentIndex++;
-    event.preventDefault();
-  } else if (event.deltaY < 0 && Scroll_currentIndex > 0) {
-    scrollToTargetDiv(Scroll_currentIndex);
-    Scroll_currentIndex--;
-    event.preventDefault();
-  }
-});
- 
-*/
-
-/*Page Scroll Function -----------------------------------------------------------*/
-
-
-
-
-
 /*page Loading Animation -----------------------------------------------------------*/
 const items = document.querySelectorAll('.Load_Item');
 
@@ -149,9 +117,10 @@ function Go_Videos() {
 
 
 
-
 //Function Login-----------------------------------------------------------
+/*
 function Login_Blur() {
+  const test = document.getElementById("test");
   const Blur_Page = document.getElementById("Blur_Webpage");
   const Login_Container = document.getElementById("Login_Container");
   const Sign_React = document.getElementById("SignIn_React");
@@ -164,10 +133,13 @@ function Login_Blur() {
   Login_Container.style.zIndex = 11;
   Login_Container.style.display = "block";
   body.style.overflowY = "hidden";
+  Sign_React.style.display = "none";
+  Account_React.style.display = "none";
 
-  const Logged = 0;
+  const Logged = undefined;
 
-  if (Logged == 1) {
+  console.log("From Login_Blur", Logged);
+  if (Logged !== undefined) {
     Sign_React.style.display = "none";
     Account_React.style.display = "block";
     Menu.style.display = "none";
@@ -176,7 +148,7 @@ function Login_Blur() {
     Login_Container.style.zIndex = 11;
     Login_Container.style.display = "block";
 
-  } else if (Logged == 0) {
+  } else if (Logged === undefined) {
     Sign_React.style.display = "block";
     Account_React.style.display = "none";
     Menu.style.display = "none";
@@ -185,10 +157,13 @@ function Login_Blur() {
     Login_Container.style.zIndex = 11;
     Login_Container.style.display = "block";
 
-
+  } else {
+    test.textContent = "help";
   }
 
 }
+
+*/
 
 function Exit_Login() {
   const Blur_Page = document.getElementById("Blur_Webpage");
@@ -211,6 +186,21 @@ function Exit_Login() {
 
 
 
+//Cookies-----------------------------------------------------------
+function Accept_Cookies() {
+  const Cokies_Container = document.getElementById("Cookies_Confirmation_Container");
+  if (Cokies_Container) {
+    Cokies_Container.style.opacity = "0";
+    Cokies_Container.style.bottom = "-600px";
+  }
+}
+//Cookies-----------------------------------------------------------
+
+
+
+
+
+
 //Function Account-----------------------------------------------------------
 
 function ViewAccount() {
@@ -218,10 +208,15 @@ function ViewAccount() {
   const Account_Container = document.getElementById("Login_Container");
   Account_React.style.left = "50%";
   Account_Container.style.visibility = "hidden";
-
 }
 
+function ViewSaved() {
+  const Account_React = document.getElementById("Saved_React");
+  const Account_Container = document.getElementById("Login_Container");
+  Account_React.style.left = "50%";
+  Account_Container.style.visibility = "hidden";
 
+}
 
 //Function Account-----------------------------------------------------------
 
@@ -507,8 +502,6 @@ function Hover_Photo_Video(container, dropdown) {
 Hover_Photo_Video("Hover_Video", "Video_Dropdown_Change");
 Hover_Photo_Video("Hover_Photo", "Photo_Dropdown_Change");
 //Hover Chnage Photo/Video-----------------------------------------------------------------
-
-
 
 
 

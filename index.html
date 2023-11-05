@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="index.css">
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
   <title>Home React</title>
 </head>
 
@@ -13,17 +14,29 @@
   <div id="homeMarker"></div>
   <!--Main Page-->
 
+  <!--Cookies Consent-->
+  <div id="Cookies_Confirmation_Container">
+    <p id="Cookies_Title">Cookies Consent</p>
+    <p id="Cookies_Write_Up">By clicking "Accept all cookies", you agree Pixel Peak can store cookies on your decive and
+      disclose information in accordance with our <span style="text-decoration: underline; cursor: pointer;">Cookie
+        Policy</span></p>
+    <div id="Buttons_Container">
+      <button id="Accept_Cookies_Btn" onclick="Accept_Cookies()">Accept all cookies</button>
+      <button id="View_Cookies_Btn">View cookie policy</button>
+    </div>
+  </div>
+  <!--Cookies Consent-->
 
   <div id="Page_Notifs">
     <p id="Login_1" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Login
       successful</p>
     <p id="Login_0" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Login
-      Failed</p>
+      failed</p>
 
     <p id="Logout_1" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Logout
       successful</p>
     <p id="Logout_0" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Logout
-      Failed</p>
+      failed</p>
 
     <p id="Account_1" class="notif_Style"><img class="Alert_Image"
         src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Account created</p>
@@ -39,6 +52,18 @@
     </p>
     <p id="Saved_10" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Removed
     </p>
+
+    <p id="Deleted_Account_1" class="notif_Style"><img class="Alert_Image"
+        src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Account deleted
+    </p>
+    <p id="Deleted_Account_0" class="notif_Style"><img class="Alert_Image"
+        src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Account cannot be deleted at this time
+    </p>
+
+    <p id="Login_Request_0" class="notif_Style"><img class="Alert_Image"
+        src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Please log in
+    </p>
+
   </div>
 
   <!--Navigation Bar-->
@@ -53,12 +78,16 @@
     <div id="Account_Dashboard">
       <p id="Account_Title">Account</p>
       <button id="View_Acc_Btn" class="Account_btn_style" onclick="ViewAccount()">View Account</button>
-      <button id="Saved_Acc_Btn" class="Account_btn_style">Saved</button>
+      <button id="Saved_Acc_Btn" class="Account_btn_style" onclick="ViewSaved()">Saved</button>
       <button id="Logout_Acc_Btn" class="Account_btn_style">Logout</button>
     </div>
   </div>
 
   <div id="Account_React">
+
+  </div>
+
+  <div id="Saved_React">
 
   </div>
   <!--Login Container-->
@@ -82,7 +111,7 @@
         onclick="Switch_to_Photo_Video('Photos_Tab', 'Videos_Tab')">Photos</button>
     </div>
     <div id="Nav_Main_Imgs">
-      <img id="Account" class="Nav_Imgs" onclick="Login_Blur()" src="Images/Account.png">
+      <img id="Account" class="Nav_Imgs" src="Images/Account.png">
       <img id="Info" class="Nav_Imgs" onclick="Help_Blur()" src="Images/Info.png">
     </div>
   </div>
@@ -247,6 +276,7 @@
 
 
   <script>
+
     const videos = document.querySelectorAll('.video');
     let currentIndex = 0;
 
@@ -273,8 +303,10 @@
 
   </script>
 
-  <script src="Index.js"></script>
+  <script type="text/javascript" src="Index.js"></script>
   <script type="module" src="/src/main.tsx"></script>
+  <script type="module" src="CheckLogin.tsx"></script>
+  <script type="module" src="AcceptCookies.tsx"></script>
 </body>
 
 </html>

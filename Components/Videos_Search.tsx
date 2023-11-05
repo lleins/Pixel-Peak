@@ -5,7 +5,7 @@ import PlayImg from "C:\\Users\\Big_T\\OneDrive\\Desktop\\VsCode\\MERN\\react-ap
 import Heart_Img_vid from "C:\\Users\\Big_T\\OneDrive\\Desktop\\VsCode\\MERN\\react-app\\src\\Components\\Images\\Heart.png";
 import Resize_Img_v_Search from "C:\\Users\\Big_T\\OneDrive\\Desktop\\VsCode\\MERN\\react-app\\src\\Components\\Images\\ResizeImg.png";
 import Exit_Img_p_Search from "C:\\Users\\Big_T\\OneDrive\\Desktop\\VsCode\\MERN\\react-app\\src\\Components\\Images\\ExitImg.png";
-
+import Cookies from 'js-cookie';
 function Video_Search_Style(){
 
 
@@ -375,27 +375,40 @@ function Video_Search_Style(){
 
       function Save_Vid_Search({ id_Heart_vid_Search }: Save_Vid_Ids_Search) : void {
         const HeartImg = document.getElementById(id_Heart_vid_Search);
-        if (HeartImg) {
-          const HeartStyle = getComputedStyle(HeartImg);
-          if (HeartStyle.filter === "brightness(5)") {
-            HeartImg.style.filter = "brightness(100%)";
-            const Fail_Notif = document.getElementById("Saved_1");
-            if(Fail_Notif) Fail_Notif.style.display = "block";
-            setTimeout(() => {
-              if(Fail_Notif) Fail_Notif.style.display = "none";
-              
-            }, 2000);
-          } else if (HeartStyle.filter === "brightness(1)") {
-            HeartImg.style.filter = "brightness(500%)";
-            const Save_Notif = document.getElementById("Saved_10");
-            if(Save_Notif) Save_Notif.style.display = "block";
-            setTimeout(() => {
-              if(Save_Notif) Save_Notif.style.display = "none";
-              
-            }, 2000);
-    
+
+        const Check_Login_V = Cookies.get("Login_Token");
+
+        if(Check_Login_V !== undefined){
+          if (HeartImg) {
+            const HeartStyle = getComputedStyle(HeartImg);
+            if (HeartStyle.filter === "brightness(5)") {
+              HeartImg.style.filter = "brightness(100%)";
+              const Fail_Notif = document.getElementById("Saved_1");
+              if(Fail_Notif) Fail_Notif.style.display = "block";
+              setTimeout(() => {
+                if(Fail_Notif) Fail_Notif.style.display = "none";
+                
+              }, 2000);
+            } else if (HeartStyle.filter === "brightness(1)") {
+              HeartImg.style.filter = "brightness(500%)";
+              const Save_Notif = document.getElementById("Saved_10");
+              if(Save_Notif) Save_Notif.style.display = "block";
+              setTimeout(() => {
+                if(Save_Notif) Save_Notif.style.display = "none";
+                
+              }, 2000);
+      
+            }
           }
+        }else if (Check_Login_V === undefined){
+          const Login_Notif = document.getElementById("Login_Request_0");
+          if(Login_Notif) Login_Notif.style.display = "block";
+          setTimeout(function () {
+            if (Login_Notif) Login_Notif.style.display = 'none';
+          }, 4000);
         }
+
+       
       }
     
 
