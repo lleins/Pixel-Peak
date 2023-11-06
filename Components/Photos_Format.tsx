@@ -224,32 +224,128 @@ function Photos_Style() {
 
   interface Save_Pic_Ids{
     id_Heart_p: string;
+    src: string;
+    url: string;
   }
 
-  function Save_Photo({ id_Heart_p }: Save_Pic_Ids) : void {
+  function Save_Photo({ id_Heart_p, src, url }: Save_Pic_Ids) : void {
     const HeartImg = document.getElementById(id_Heart_p);
 
-    const Check_Login = Cookies.get("Login_Token");
+    const Check_Login = Cookies.get("Login_Token"); //Checks Login Token
     if(Check_Login !== undefined){
+
       if (HeartImg) {
         const HeartStyle = getComputedStyle(HeartImg);
-        if (HeartStyle.filter === "brightness(5)") {
-          HeartImg.style.filter = "brightness(100%)";
-          const Fail_Notif = document.getElementById("Saved_1");
-          if(Fail_Notif) Fail_Notif.style.display = "block";
-          setTimeout(() => {
-            if(Fail_Notif) Fail_Notif.style.display = "none";
-            
-          }, 2000);
-        } else if (HeartStyle.filter === "brightness(1)") {
-          HeartImg.style.filter = "brightness(500%)";
-          const Save_Notif = document.getElementById("Saved_10");
-          if(Save_Notif) Save_Notif.style.display = "block";
-          setTimeout(() => {
-            if(Save_Notif) Save_Notif.style.display = "none";
-            
-          }, 2000);
-  
+        if (HeartStyle.filter === "brightness(5)") { //checks Heart color
+          
+          fetch('http://localhost:5000/api/save', { //fetch to /save endpoint in Server.js
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email_data: Check_Login, src_data : src.toString(), url_data: url.toString(), type_data: "P"  }),
+            })
+            .then(response => {
+                if (response.ok) { //request sent
+                  
+                    console.log("From Sign React: Request sent"); //Sent to express server
+                    return response.json(); 
+                } else {
+                  const Success_Notif = document.getElementById("Saved_0"); //request did not send
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+                    console.log("From Sign React: Request failed"); //Failed to send
+                    return response.json(); 
+                }
+            })
+            .then(data => {
+                if (data.message === 1) { //successfully saved
+                  HeartImg.style.filter = "brightness(100%)";
+                  console.log("Saved in Photos_Format");
+                  const Success_Notif = document.getElementById("Saved_1"); //changes heart color and display notif
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+                    
+                } else if (data.message === 0) { //failed to save
+                  console.log("Didnt Save in Photos_Format 0");
+                  const Success_Notif = document.getElementById("Saved_0"); //displays notif
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+                }else if (data.message === 3) { //fail in server
+                  console.log("Didnt Save in Photos_Format 3");
+                  const Success_Notif = document.getElementById("Saved_0");
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+                }
+            })
+            .catch(error => { //catch error with response
+              
+            });
+
+        } else if (HeartStyle.filter === "brightness(1)") { //checks heart color
+          const Check_Cookie = Cookies.get("Login_Token");
+          fetch('http://localhost:5000/api/delete_saved', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email_data: Check_Cookie, url_data: url }), //sends login token and url to server.js delete save endpoint
+          })
+            .then((response) => {
+              if (response.ok) {
+                return response.json(); //request is sent
+              } else {
+                
+                return { success: 0 }; //request is not sent
+              }
+            })
+            .then((data) => {
+              if (data.success === 1) { // saved is deleted
+                HeartImg.style.filter = "brightness(500%)";
+                console.log("Removed in Photos_Format 1");
+                  const Success_Notif = document.getElementById("Saved_10"); //changes heart color and displays notif
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+
+              } else if (data.success === 0) { //did not delete save
+                console.log("Didnt Remove in Photos_Format 0");
+                const Success_Notif = document.getElementById("Saved_0"); //displays notif
+                if(Success_Notif) Success_Notif.style.display = "block";
+                setTimeout(() => {
+                  if(Success_Notif) Success_Notif.style.display = "none";
+                  
+                }, 2000);
+              } else {
+                console.log("Didnt Remove in Photos_Format 4");
+                  const Success_Notif = document.getElementById("Saved_0");
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+              }
+            })
+            .catch((error) => {
+              // Handle any error that occurred during the fetch.
+              console.error('Fetch error:', error);
+            });
+
+          
         }
       }
     } else if(Check_Login === undefined){
@@ -549,7 +645,7 @@ function Photos_Style() {
         <div style={style_Item} id="Item_1_Photo">
           <img style={Image_Style} src={photoArray[0]} onClick={() => TriggerLink(0)} />
           <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_1_p" />
-          <img onClick={() => Save_Photo({id_Heart_p: "Heart_p_1"})}  src={Heart_Img} style={Heart_Style} id="Heart_p_1"/>
+          <img onClick={() => Save_Photo({id_Heart_p: "Heart_p_1", src:photoArray[0], url: urlArray[0] })}  src={Heart_Img} style={Heart_Style} id="Heart_p_1"/>
           <p style={Source_Text_Style} id="Source_1_Photo">
             Source:
             <span id="Img_Source1" style={Actual_Source_Text}>
@@ -565,7 +661,7 @@ function Photos_Style() {
         >
           <img style={Image_Style} src={photoArray[1]} onClick={() => TriggerLink(1)} />
           <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_2_p" />
-          <img onClick={() => Save_Photo({id_Heart_p: "Heart_p_2"})} src={Heart_Img} style={Heart_Style} id="Heart_p_2"/>
+          <img onClick={() => Save_Photo({id_Heart_p: "Heart_p_2", src:photoArray[1], url: urlArray[1] })} src={Heart_Img} style={Heart_Style} id="Heart_p_2"/>
           <p style={Source_Text_Style} id="Source_2_Photo">
             Source:{" "}
             <span id="Img_Source2" style={Actual_Source_Text}>
@@ -581,7 +677,7 @@ function Photos_Style() {
         >
           <img style={Image_Style} src={photoArray[2]} onClick={() => TriggerLink(2)} />
           <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_3_p" />
-          <img onClick={() => Save_Photo({id_Heart_p: "Heart_p_3"})} src={Heart_Img} style={Heart_Style} id="Heart_p_3"/>
+          <img onClick={() => Save_Photo({id_Heart_p: "Heart_p_3", src:photoArray[2], url: urlArray[2] })} src={Heart_Img} style={Heart_Style} id="Heart_p_3"/>
           <p style={Source_Text_Style} id="Source_3_Photo">
             Source:{" "}
             <span id="Img_Source3" style={Actual_Source_Text}>
@@ -597,7 +693,7 @@ function Photos_Style() {
         >
           <img style={Image_Style} src={photoArray[3]} onClick={() => TriggerLink(3)} />
           <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_4_p" />
-          <img onClick={() => Save_Photo({id_Heart_p: "Heart_p_4"})} src={Heart_Img} style={Heart_Style} id="Heart_p_4"/>
+          <img onClick={() => Save_Photo({id_Heart_p: "Heart_p_4", src:photoArray[3], url: urlArray[3] })} src={Heart_Img} style={Heart_Style} id="Heart_p_4"/>
           <p style={Source_Text_Style} id="Source_4_Photo">
             Source:{" "}
             <span id="Img_Source4" style={Actual_Source_Text}>
@@ -613,7 +709,7 @@ function Photos_Style() {
         >
           <img style={Image_Style} src={photoArray[4]} onClick={() => TriggerLink(4)} />
           <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_5_p" />
-          <img onClick={() => Save_Photo({id_Heart_p: "Heart_p_5"})} src={Heart_Img} style={Heart_Style} id="Heart_p_5"/>
+          <img onClick={() => Save_Photo({id_Heart_p: "Heart_p_5", src:photoArray[4], url: urlArray[4] })} src={Heart_Img} style={Heart_Style} id="Heart_p_5"/>
           <p style={Source_Text_Style} id="Source_5_Photo">
             Source:{" "}
             <span id="Img_Source5" style={Actual_Source_Text}>
@@ -629,7 +725,7 @@ function Photos_Style() {
         >
           <img style={Image_Style} src={photoArray[5]} onClick={() => TriggerLink(5)} />
           <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_6_p" />
-          <img onClick={() => Save_Photo({id_Heart_p: "Heart_p_6"})} src={Heart_Img} style={Heart_Style} id="Heart_p_6"/>
+          <img onClick={() => Save_Photo({id_Heart_p: "Heart_p_6", src:photoArray[5], url: urlArray[5] })} src={Heart_Img} style={Heart_Style} id="Heart_p_6"/>
           <p style={Source_Text_Style} id="Source_6_Photo">
             Source:{" "}
             <span id="Img_Source6" style={Actual_Source_Text}>
@@ -645,7 +741,7 @@ function Photos_Style() {
         >
           <img style={Image_Style} src={photoArray[6]} onClick={() => TriggerLink(6)} />
           <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_7_p" />
-          <img onClick={() => Save_Photo({id_Heart_p: "Heart_p_7"})} src={Heart_Img} style={Heart_Style} id="Heart_p_7"/>
+          <img onClick={() => Save_Photo({id_Heart_p: "Heart_p_7", src:photoArray[6], url: urlArray[6] })} src={Heart_Img} style={Heart_Style} id="Heart_p_7"/>
           <p style={Source_Text_Style} id="Source_7_Photo">
             Source:{" "}
             <span id="Img_Source7" style={Actual_Source_Text}>
@@ -661,7 +757,7 @@ function Photos_Style() {
         >
           <img style={Image_Style} src={photoArray[7]} onClick={() => TriggerLink(7)} />
           <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_8_p" />
-          <img onClick={() => Save_Photo({id_Heart_p: "Heart_p_8"})} src={Heart_Img} style={Heart_Style} id="Heart_p_8"/>
+          <img onClick={() => Save_Photo({id_Heart_p: "Heart_p_8", src:photoArray[7], url: urlArray[7] })} src={Heart_Img} style={Heart_Style} id="Heart_p_8"/>
           <p style={Source_Text_Style} id="Source_8_Photo">
             Source:{" "}
             <span id="Img_Source8" style={Actual_Source_Text}>
@@ -677,7 +773,7 @@ function Photos_Style() {
         >
           <img style={Image_Style} src={photoArray[8]} onClick={() => TriggerLink(8)} />
           <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_9_p" />
-          <img onClick={() => Save_Photo({id_Heart_p: "Heart_p_9"})} src={Heart_Img} style={Heart_Style} id="Heart_p_9"/>
+          <img onClick={() => Save_Photo({id_Heart_p: "Heart_p_9", src:photoArray[8], url: urlArray[8] })} src={Heart_Img} style={Heart_Style} id="Heart_p_9"/>
           <p style={Source_Text_Style} id="Source_9_Photo">
             Source:{" "}
             <span id="Img_Source9" style={Actual_Source_Text}>
@@ -693,7 +789,7 @@ function Photos_Style() {
         >
           <img style={Image_Style} src={photoArray[9]} onClick={() => TriggerLink(9)} />
           <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_10_p" />
-          <img onClick={() => Save_Photo({id_Heart_p: "Heart_p_10"})} src={Heart_Img} style={Heart_Style} id="Heart_p_10"/>
+          <img onClick={() => Save_Photo({id_Heart_p: "Heart_p_10", src:photoArray[9], url: urlArray[9] })} src={Heart_Img} style={Heart_Style} id="Heart_p_10"/>
           <p style={Source_Text_Style} id="Source_10_Photo">
             Source:{" "}
             <span id="Img_Source10" style={Actual_Source_Text}>

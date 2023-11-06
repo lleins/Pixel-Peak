@@ -129,10 +129,11 @@ function Video_Search_Style(){
       Resize_Id_v: string;
       Source_Id_v: string;
       Picture_Id_v: string;
+      Loading_Id_v: string;
     }
 
 
-    function Resize_Photo_Item_v({Container_Id_v, Exit_Id_v, Heart_Id_v, Resize_Id_v, Source_Id_v, Picture_Id_v }: Resize_ids_v){
+    function Resize_Photo_Item_v({Container_Id_v, Exit_Id_v, Heart_Id_v, Resize_Id_v, Source_Id_v, Picture_Id_v, Loading_Id_v }: Resize_ids_v){
       const element = document.getElementById("Video_Item_1");
       if (element) {
           element.scrollIntoView({ behavior: 'instant' });
@@ -145,7 +146,7 @@ function Video_Search_Style(){
       const actual_resize = document.getElementById(Resize_Id_v);
       const actual_source = document.getElementById(Source_Id_v);
       const actual_picture = document.getElementById(Picture_Id_v);
-
+      const actual_loader = document.getElementById(Loading_Id_v);
 
       if(actual_container){
         actual_container.style.width = "100%";
@@ -160,6 +161,11 @@ function Video_Search_Style(){
       
       if(actual_exit){
         actual_exit.style.display = "block";
+      }
+
+      if(actual_loader){
+        actual_loader.style.left = "480px";
+        actual_loader.style.top = "240px";
       }
 
       if(actual_heart){
@@ -193,9 +199,10 @@ function Video_Search_Style(){
       Resize_Id_Exit_v: string;
       Source_Id_Exit_v: string;
       Picture_Id_Exit_v: string;
+      Load_Id_Exit_v: string;
     }
 
-    function Exit_Photo_Item_v({Container_Id_Exit_v, Exit_Id_Exit_v, Heart_Id_Exit_v, Resize_Id_Exit_v, Source_Id_Exit_v, Picture_Id_Exit_v }: Exit_Resize_ids_v){
+    function Exit_Photo_Item_v({Container_Id_Exit_v, Exit_Id_Exit_v, Heart_Id_Exit_v, Resize_Id_Exit_v, Source_Id_Exit_v, Picture_Id_Exit_v, Load_Id_Exit_v }: Exit_Resize_ids_v){
       toggleOverflow_v();
       toggleControls();
       
@@ -205,7 +212,8 @@ function Video_Search_Style(){
       const actual_resize = document.getElementById(Resize_Id_Exit_v);
       const actual_source = document.getElementById(Source_Id_Exit_v);
       const actual_picture = document.getElementById(Picture_Id_Exit_v);
-      
+      const actual_Loader = document.getElementById(Load_Id_Exit_v);
+
       if(actual_container){
         actual_container.style.width = "300px";
         actual_container.style.height = "200px";
@@ -221,6 +229,11 @@ function Video_Search_Style(){
         actual_exit.style.display = "none";
       }
   
+      if(actual_Loader){
+        actual_Loader.style.left = "140px";
+        actual_Loader.style.top = "85px";
+      }
+
       if(actual_heart){
         actual_heart.style.position = "relative";
         actual_heart.style.top = "-200px";
@@ -371,43 +384,146 @@ function Video_Search_Style(){
 
       interface Save_Vid_Ids_Search{
         id_Heart_vid_Search: string;
+        src: string;
+        url: string;
+        load: string;
       }
 
-      function Save_Vid_Search({ id_Heart_vid_Search }: Save_Vid_Ids_Search) : void {
+      function Save_Vid_Search({ id_Heart_vid_Search, src, url, load }: Save_Vid_Ids_Search) : void {
         const HeartImg = document.getElementById(id_Heart_vid_Search);
-
-        const Check_Login_V = Cookies.get("Login_Token");
-
-        if(Check_Login_V !== undefined){
+        const Loader = document.getElementById(load);
+        if(Loader) Loader.style.display = "block";
+        const Check_Login = Cookies.get("Login_Token"); //Checks Login Token
+        if(Check_Login !== undefined){
+    
           if (HeartImg) {
             const HeartStyle = getComputedStyle(HeartImg);
-            if (HeartStyle.filter === "brightness(5)") {
-              HeartImg.style.filter = "brightness(100%)";
-              const Fail_Notif = document.getElementById("Saved_1");
-              if(Fail_Notif) Fail_Notif.style.display = "block";
-              setTimeout(() => {
-                if(Fail_Notif) Fail_Notif.style.display = "none";
-                
-              }, 2000);
-            } else if (HeartStyle.filter === "brightness(1)") {
-              HeartImg.style.filter = "brightness(500%)";
-              const Save_Notif = document.getElementById("Saved_10");
-              if(Save_Notif) Save_Notif.style.display = "block";
-              setTimeout(() => {
-                if(Save_Notif) Save_Notif.style.display = "none";
-                
-              }, 2000);
-      
+            if (HeartStyle.filter === "brightness(5)") { //checks Heart color
+              
+              fetch('http://localhost:5000/api/save', { //fetch to /save endpoint in Server.js
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email_data: Check_Login, src_data : src.toString(), url_data: url.toString(), type_data: "V"  }),
+                })
+                .then(response => {
+                    if (response.ok) { //request sent
+                      
+                        console.log("From Sign React: Request sent"); //Sent to express server
+                        return response.json(); 
+                    } else {
+                      if(Loader) Loader.style.display = "none";
+                      const Success_Notif = document.getElementById("Saved_0"); //request did not send
+                      if(Success_Notif) Success_Notif.style.display = "block";
+                      setTimeout(() => {
+                        if(Success_Notif) Success_Notif.style.display = "none";
+                        
+                      }, 2000);
+                        console.log("From Sign React: Request failed"); //Failed to send
+                        return response.json(); 
+                    }
+                })
+                .then(data => {
+                    if (data.message === 1) { //successfully saved
+                      if(Loader) Loader.style.display = "none";
+                      HeartImg.style.filter = "brightness(100%)";
+                      console.log("Saved in Photos_Format");
+                      const Success_Notif = document.getElementById("Saved_1"); //changes heart color and display notif
+                      if(Success_Notif) Success_Notif.style.display = "block";
+                      setTimeout(() => {
+                        if(Success_Notif) Success_Notif.style.display = "none";
+                        
+                      }, 2000);
+                        
+                    } else if (data.message === 0) { //failed to save
+                      if(Loader) Loader.style.display = "none";
+                      console.log("Didnt Save in Photos_Format 0");
+                      const Success_Notif = document.getElementById("Saved_0"); //displays notif
+                      if(Success_Notif) Success_Notif.style.display = "block";
+                      setTimeout(() => {
+                        if(Success_Notif) Success_Notif.style.display = "none";
+                        
+                      }, 2000);
+                    }else if (data.message === 3) { //fail in server
+                      if(Loader) Loader.style.display = "none";
+                      console.log("Didnt Save in Photos_Format 3");
+                      const Success_Notif = document.getElementById("Saved_0");
+                      if(Success_Notif) Success_Notif.style.display = "block";
+                      setTimeout(() => {
+                        if(Success_Notif) Success_Notif.style.display = "none";
+                        
+                      }, 2000);
+                    }
+                })
+                .catch(error => { //catch error with response
+                  
+                });
+    
+            } else if (HeartStyle.filter === "brightness(1)") { //checks heart color
+              const Check_Cookie = Cookies.get("Login_Token");
+              fetch('http://localhost:5000/api/delete_saved', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email_data: Check_Cookie, url_data: url }), //sends login token and url to server.js delete save endpoint
+              })
+                .then((response) => {
+                  if (response.ok) {
+                    return response.json(); //request is sent
+                  } else {
+                    
+                    return { success: 0 }; //request is not sent
+                  }
+                })
+                .then((data) => {
+                  if (data.success === 1) { // saved is deleted
+                    if(Loader) Loader.style.display = "none";
+                    HeartImg.style.filter = "brightness(500%)";
+                    console.log("Removed in Photos_Format 1");
+                      const Success_Notif = document.getElementById("Saved_10"); //changes heart color and displays notif
+                      if(Success_Notif) Success_Notif.style.display = "block";
+                      setTimeout(() => {
+                        if(Success_Notif) Success_Notif.style.display = "none";
+                        
+                      }, 2000);
+    
+                  } else if (data.success === 0) { //did not delete save
+                    if(Loader) Loader.style.display = "none";
+                    console.log("Didnt Remove in Photos_Format 0");
+                    const Success_Notif = document.getElementById("Saved_0"); //displays notif
+                    if(Success_Notif) Success_Notif.style.display = "block";
+                    setTimeout(() => {
+                      if(Success_Notif) Success_Notif.style.display = "none";
+                      
+                    }, 2000);
+                  } else {
+                    console.log("Didnt Remove in Photos_Format 4");
+                      if(Loader) Loader.style.display = "none";
+                      const Success_Notif = document.getElementById("Saved_0");
+                      if(Success_Notif) Success_Notif.style.display = "block";
+                      setTimeout(() => {
+                        if(Success_Notif) Success_Notif.style.display = "none";
+                        
+                      }, 2000);
+                  }
+                })
+                .catch((error) => {
+                  // Handle any error that occurred during the fetch.
+                  console.error('Fetch error:', error);
+                });
+    
             }
           }
-        }else if (Check_Login_V === undefined){
+        } else if(Check_Login === undefined){
+          if(Loader) Loader.style.display = "none";
           const Login_Notif = document.getElementById("Login_Request_0");
           if(Login_Notif) Login_Notif.style.display = "block";
           setTimeout(function () {
             if (Login_Notif) Login_Notif.style.display = 'none';
           }, 4000);
         }
-
        
       }
     
@@ -642,7 +758,7 @@ function Video_Search_Style(){
       filter: "brightness(500%)",
       opacity: "1",
       transition: ".3s",
-    }
+    };
     
     
     const Resize_Img_style: CSSProperties = {
@@ -653,7 +769,7 @@ function Video_Search_Style(){
       filter: "brightness(500%)",
       opacity: "1",
       transition: ".3s",
-    }
+    };
 
     const Exit_Img_Resize: CSSProperties = {
       position: "absolute",
@@ -663,9 +779,16 @@ function Video_Search_Style(){
       opacity: "1",
       transition: ".3s",
       display: "none",
-     
-    }
+    };
     
+    const Loading_Spinner_V: CSSProperties = {
+      top: "90px",
+      left: "140px",
+      zIndex: "9",
+      display: "none",
+    };
+
+
     const [controlsEnabled, setControlsEnabled] = useState(false);
 
     const toggleControls = () => {
@@ -704,163 +827,163 @@ function Video_Search_Style(){
             <div id="Video_Item_1" style={Video_Item_Style}>
                 <video id="Video_1_v" src={videoArray_v[0]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(0)} controls={controlsEnabled} muted></video>
                 <img style={Play_Img_Style} src={PlayImg} id="Play_Img_1_v" />
-                
-                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_1"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_1"/>
-                <img id="Resize_Img_v_1" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_1", Exit_Id_v: "Exit_Img_v_1", Heart_Id_v: "Heart_vid_1", Resize_Id_v: "Resize_Img_v_1", Source_Id_v: "Source_1_Vid_v", Picture_Id_v: "Play_Img_1_v"})}/>
-                <img id="Exit_Img_v_1" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_1", Exit_Id_Exit_v: "Exit_Img_v_1", Heart_Id_Exit_v: "Heart_vid_1", Resize_Id_Exit_v: "Resize_Img_v_1", Source_Id_Exit_v: "Source_1_Vid_v", Picture_Id_Exit_v: "Play_Img_1_v"})}/>
+                <div id="Loading_Spinner_V_1" style={Loading_Spinner_V} className="loading-spinner"></div>
+                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_1", src: videoArray_v[0], url: videoArrayurl_v[0], load: "Loading_Spinner_V_1" })} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_1"/>
+                <img id="Resize_Img_v_1" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_1", Exit_Id_v: "Exit_Img_v_1", Heart_Id_v: "Heart_vid_1", Resize_Id_v: "Resize_Img_v_1", Source_Id_v: "Source_1_Vid_v", Picture_Id_v: "Play_Img_1_v", Loading_Id_v: "Loading_Spinner_V_1"})}/>
+                <img id="Exit_Img_v_1" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_1", Exit_Id_Exit_v: "Exit_Img_v_1", Heart_Id_Exit_v: "Heart_vid_1", Resize_Id_Exit_v: "Resize_Img_v_1", Source_Id_Exit_v: "Source_1_Vid_v", Picture_Id_Exit_v: "Play_Img_1_v", Load_Id_Exit_v: "Loading_Spinner_V_1"})}/>
             </div>  
         
             <div id="Video_Item_2"  style={Video_Item_Style} >
                 <video id="Video_2_v" src={videoArray_v[1]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(1)} controls={controlsEnabled} muted></video>
                 <img style={Play_Img_Style} src={PlayImg} id="Play_Img_2_v" />
-               
-                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_2"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_2"/>
-                <img id="Resize_Img_v_2" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_2", Exit_Id_v: "Exit_Img_v_2", Heart_Id_v: "Heart_vid_2", Resize_Id_v: "Resize_Img_v_2", Source_Id_v: "Source_2_Vid_v", Picture_Id_v: "Play_Img_2_v"})}/>
-                <img id="Exit_Img_v_2" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_2", Exit_Id_Exit_v: "Exit_Img_v_2", Heart_Id_Exit_v: "Heart_vid_2", Resize_Id_Exit_v: "Resize_Img_v_2", Source_Id_Exit_v: "Source_2_Vid_v", Picture_Id_Exit_v: "Play_Img_2_v"})}/>
+                <div id="Loading_Spinner_V_2" style={Loading_Spinner_V} className="loading-spinner"></div>
+                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_2", src: videoArray_v[1], url: videoArrayurl_v[1], load: "Loading_Spinner_V_2"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_2"/>
+                <img id="Resize_Img_v_2" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_2", Exit_Id_v: "Exit_Img_v_2", Heart_Id_v: "Heart_vid_2", Resize_Id_v: "Resize_Img_v_2", Source_Id_v: "Source_2_Vid_v", Picture_Id_v: "Play_Img_2_v", Loading_Id_v: "Loading_Spinner_V_2"})}/>
+                <img id="Exit_Img_v_2" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_2", Exit_Id_Exit_v: "Exit_Img_v_2", Heart_Id_Exit_v: "Heart_vid_2", Resize_Id_Exit_v: "Resize_Img_v_2", Source_Id_Exit_v: "Source_2_Vid_v", Picture_Id_Exit_v: "Play_Img_2_v", Load_Id_Exit_v: "Loading_Spinner_V_2"})}/>
             </div>  
 
             <div id="Video_Item_3" style={Video_Item_Style}>
                 <video id="Video_3_v" src={videoArray_v[2]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(2)} controls={controlsEnabled} muted></video>
                 <img style={Play_Img_Style} src={PlayImg} id="Play_Img_3_v" />
-               
-                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_3"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_3"/>
-                <img id="Resize_Img_v_3" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_3", Exit_Id_v: "Exit_Img_v_3", Heart_Id_v: "Heart_vid_3", Resize_Id_v: "Resize_Img_v_3", Source_Id_v: "Source_3_Vid_v", Picture_Id_v: "Play_Img_3_v"})}/>
-                <img id="Exit_Img_v_3" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_3", Exit_Id_Exit_v: "Exit_Img_v_3", Heart_Id_Exit_v: "Heart_vid_3", Resize_Id_Exit_v: "Resize_Img_v_3", Source_Id_Exit_v: "Source_3_Vid_v", Picture_Id_Exit_v: "Play_Img_3_v"})}/>
+                <div id="Loading_Spinner_V_3" style={Loading_Spinner_V} className="loading-spinner"></div>
+                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_3", src: videoArray_v[2], url: videoArrayurl_v[2], load: "Loading_Spinner_V_3"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_3"/>
+                <img id="Resize_Img_v_3" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_3", Exit_Id_v: "Exit_Img_v_3", Heart_Id_v: "Heart_vid_3", Resize_Id_v: "Resize_Img_v_3", Source_Id_v: "Source_3_Vid_v", Picture_Id_v: "Play_Img_3_v", Loading_Id_v: "Loading_Spinner_V_3"})}/>
+                <img id="Exit_Img_v_3" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_3", Exit_Id_Exit_v: "Exit_Img_v_3", Heart_Id_Exit_v: "Heart_vid_3", Resize_Id_Exit_v: "Resize_Img_v_3", Source_Id_Exit_v: "Source_3_Vid_v", Picture_Id_Exit_v: "Play_Img_3_v", Load_Id_Exit_v: "Loading_Spinner_V_3"})}/>
             </div>  
 
             <div id="Video_Item_4" style={Video_Item_Style}>
                 <video id="Video_4_v" src={videoArray_v[3]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(3)} controls={controlsEnabled} muted></video>
                 <img style={Play_Img_Style} src={PlayImg} id="Play_Img_4_v" />
-               
-                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_4"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_4"/>
-                <img id="Resize_Img_v_4" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_4", Exit_Id_v: "Exit_Img_v_4", Heart_Id_v: "Heart_vid_4", Resize_Id_v: "Resize_Img_v_4", Source_Id_v: "Source_4_Vid_v", Picture_Id_v: "Play_Img_4_v"})}/>
-                <img id="Exit_Img_v_4" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_4", Exit_Id_Exit_v: "Exit_Img_v_4", Heart_Id_Exit_v: "Heart_vid_4", Resize_Id_Exit_v: "Resize_Img_v_4", Source_Id_Exit_v: "Source_4_Vid_v", Picture_Id_Exit_v: "Play_Img_4_v"})}/>
+                <div id="Loading_Spinner_V_4" style={Loading_Spinner_V} className="loading-spinner"></div>
+                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_4", src: videoArray_v[3], url: videoArrayurl_v[3], load: "Loading_Spinner_V_4"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_4"/>
+                <img id="Resize_Img_v_4" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_4", Exit_Id_v: "Exit_Img_v_4", Heart_Id_v: "Heart_vid_4", Resize_Id_v: "Resize_Img_v_4", Source_Id_v: "Source_4_Vid_v", Picture_Id_v: "Play_Img_4_v", Loading_Id_v: "Loading_Spinner_V_4"})}/>
+                <img id="Exit_Img_v_4" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_4", Exit_Id_Exit_v: "Exit_Img_v_4", Heart_Id_Exit_v: "Heart_vid_4", Resize_Id_Exit_v: "Resize_Img_v_4", Source_Id_Exit_v: "Source_4_Vid_v", Picture_Id_Exit_v: "Play_Img_4_v", Load_Id_Exit_v: "Loading_Spinner_V_4"})}/>
             </div>  
 
             <div id="Video_Item_5" style={Video_Item_Style} >
                 <video id="Video_5_v" src={videoArray_v[4]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(4)} controls={controlsEnabled} muted></video>
                 <img style={Play_Img_Style} src={PlayImg} id="Play_Img_5_v"/>
-               
-                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_5"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_5"/>
-                <img id="Resize_Img_v_5" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_5", Exit_Id_v: "Exit_Img_v_5", Heart_Id_v: "Heart_vid_5", Resize_Id_v: "Resize_Img_v_5", Source_Id_v: "Source_5_Vid_v", Picture_Id_v: "Play_Img_5_v"})}/>
-                <img id="Exit_Img_v_5" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_5", Exit_Id_Exit_v: "Exit_Img_v_5", Heart_Id_Exit_v: "Heart_vid_5", Resize_Id_Exit_v: "Resize_Img_v_5", Source_Id_Exit_v: "Source_5_Vid_v", Picture_Id_Exit_v: "Play_Img_5_v"})}/>
+                <div id="Loading_Spinner_V_5" style={Loading_Spinner_V} className="loading-spinner"></div>
+                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_5", src: videoArray_v[4], url: videoArrayurl_v[4], load: "Loading_Spinner_V_5"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_5"/>
+                <img id="Resize_Img_v_5" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_5", Exit_Id_v: "Exit_Img_v_5", Heart_Id_v: "Heart_vid_5", Resize_Id_v: "Resize_Img_v_5", Source_Id_v: "Source_5_Vid_v", Picture_Id_v: "Play_Img_5_v", Loading_Id_v: "Loading_Spinner_V_5"})}/>
+                <img id="Exit_Img_v_5" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_5", Exit_Id_Exit_v: "Exit_Img_v_5", Heart_Id_Exit_v: "Heart_vid_5", Resize_Id_Exit_v: "Resize_Img_v_5", Source_Id_Exit_v: "Source_5_Vid_v", Picture_Id_Exit_v: "Play_Img_5_v", Load_Id_Exit_v: "Loading_Spinner_V_5"})}/>
             </div>  
 
             <div id="Video_Item_6" style={Video_Item_Style} >
                 <video id="Video_6_v" src={videoArray_v[5]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(5)} controls={controlsEnabled} muted></video>
                 <img style={Play_Img_Style} src={PlayImg} id="Play_Img_6_v" />
-               
-                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_6"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_6"/>
-                <img id="Resize_Img_v_6" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_6", Exit_Id_v: "Exit_Img_v_6", Heart_Id_v: "Heart_vid_6", Resize_Id_v: "Resize_Img_v_6", Source_Id_v: "Source_6_Vid_v", Picture_Id_v: "Play_Img_6_v"})}/>
-                <img id="Exit_Img_v_6" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_6", Exit_Id_Exit_v: "Exit_Img_v_6", Heart_Id_Exit_v: "Heart_vid_6", Resize_Id_Exit_v: "Resize_Img_v_6", Source_Id_Exit_v: "Source_6_Vid_v", Picture_Id_Exit_v: "Play_Img_6_v"})}/>
+                <div id="Loading_Spinner_V_6" style={Loading_Spinner_V} className="loading-spinner"></div>
+                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_6", src: videoArray_v[5], url: videoArrayurl_v[5], load: "Loading_Spinner_V_6"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_6"/>
+                <img id="Resize_Img_v_6" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_6", Exit_Id_v: "Exit_Img_v_6", Heart_Id_v: "Heart_vid_6", Resize_Id_v: "Resize_Img_v_6", Source_Id_v: "Source_6_Vid_v", Picture_Id_v: "Play_Img_6_v", Loading_Id_v: "Loading_Spinner_V_6"})}/>
+                <img id="Exit_Img_v_6" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_6", Exit_Id_Exit_v: "Exit_Img_v_6", Heart_Id_Exit_v: "Heart_vid_6", Resize_Id_Exit_v: "Resize_Img_v_6", Source_Id_Exit_v: "Source_6_Vid_v", Picture_Id_Exit_v: "Play_Img_6_v", Load_Id_Exit_v: "Loading_Spinner_V_6"})}/>
             </div>  
 
             <div id="Video_Item_7" style={Video_Item_Style} >
                 <video id="Video_7_v" src={videoArray_v[6]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(6)} controls={controlsEnabled} muted></video>   
                 <img style={Play_Img_Style} src={PlayImg} id="Play_Img_7_v" />
-              
-                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_7"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_7"/>
-                <img id="Resize_Img_v_7" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_7", Exit_Id_v: "Exit_Img_v_7", Heart_Id_v: "Heart_vid_7", Resize_Id_v: "Resize_Img_v_7", Source_Id_v: "Source_7_Vid_v", Picture_Id_v: "Play_Img_7_v"})}/>
-                <img id="Exit_Img_v_7" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_7", Exit_Id_Exit_v: "Exit_Img_v_7", Heart_Id_Exit_v: "Heart_vid_7", Resize_Id_Exit_v: "Resize_Img_v_7", Source_Id_Exit_v: "Source_7_Vid_v", Picture_Id_Exit_v: "Play_Img_7_v"})}/>
+                <div id="Loading_Spinner_V_7" style={Loading_Spinner_V} className="loading-spinner"></div>
+                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_7", src: videoArray_v[6], url: videoArrayurl_v[6], load: "Loading_Spinner_V_7"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_7"/>
+                <img id="Resize_Img_v_7" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_7", Exit_Id_v: "Exit_Img_v_7", Heart_Id_v: "Heart_vid_7", Resize_Id_v: "Resize_Img_v_7", Source_Id_v: "Source_7_Vid_v", Picture_Id_v: "Play_Img_7_v", Loading_Id_v: "Loading_Spinner_V_7"})}/>
+                <img id="Exit_Img_v_7" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_7", Exit_Id_Exit_v: "Exit_Img_v_7", Heart_Id_Exit_v: "Heart_vid_7", Resize_Id_Exit_v: "Resize_Img_v_7", Source_Id_Exit_v: "Source_7_Vid_v", Picture_Id_Exit_v: "Play_Img_7_v", Load_Id_Exit_v: "Loading_Spinner_V_7"})}/>
             </div>  
 
             <div id="Video_Item_8" style={Video_Item_Style} >
                 <video id="Video_8_v" src={videoArray_v[7]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(7)} controls={controlsEnabled} muted></video>
                 <img style={Play_Img_Style} src={PlayImg} id="Play_Img_8_v" />
-               
-                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_8"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_8"/>
-                <img id="Resize_Img_v_8" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_8", Exit_Id_v: "Exit_Img_v_8", Heart_Id_v: "Heart_vid_8", Resize_Id_v: "Resize_Img_v_8", Source_Id_v: "Source_8_Vid_v", Picture_Id_v: "Play_Img_8_v"})}/>
-                <img id="Exit_Img_v_8" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_8", Exit_Id_Exit_v: "Exit_Img_v_8", Heart_Id_Exit_v: "Heart_vid_8", Resize_Id_Exit_v: "Resize_Img_v_8", Source_Id_Exit_v: "Source_8_Vid_v", Picture_Id_Exit_v: "Play_Img_8_v"})}/>
+                <div id="Loading_Spinner_V_8" style={Loading_Spinner_V} className="loading-spinner"></div>
+                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_8", src: videoArray_v[7], url: videoArrayurl_v[7], load: "Loading_Spinner_V_8"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_8"/>
+                <img id="Resize_Img_v_8" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_8", Exit_Id_v: "Exit_Img_v_8", Heart_Id_v: "Heart_vid_8", Resize_Id_v: "Resize_Img_v_8", Source_Id_v: "Source_8_Vid_v", Picture_Id_v: "Play_Img_8_v", Loading_Id_v: "Loading_Spinner_V_8"})}/>
+                <img id="Exit_Img_v_8" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_8", Exit_Id_Exit_v: "Exit_Img_v_8", Heart_Id_Exit_v: "Heart_vid_8", Resize_Id_Exit_v: "Resize_Img_v_8", Source_Id_Exit_v: "Source_8_Vid_v", Picture_Id_Exit_v: "Play_Img_8_v", Load_Id_Exit_v: "Loading_Spinner_V_8"})}/>
             </div>  
 
             <div id="Video_Item_9" style={Video_Item_Style} >
                 <video id="Video_9_v" src={videoArray_v[8]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(8)} controls={controlsEnabled} muted></video>
                 <img style={Play_Img_Style} src={PlayImg} id="Play_Img_9_v" />
-               
-                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_9"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_9"/>
-                <img id="Resize_Img_v_9" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_9", Exit_Id_v: "Exit_Img_v_9", Heart_Id_v: "Heart_vid_9", Resize_Id_v: "Resize_Img_v_9", Source_Id_v: "Source_9_Vid_v", Picture_Id_v: "Play_Img_9_v"})}/>
-                <img id="Exit_Img_v_9" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_9", Exit_Id_Exit_v: "Exit_Img_v_9", Heart_Id_Exit_v: "Heart_vid_9", Resize_Id_Exit_v: "Resize_Img_v_9", Source_Id_Exit_v: "Source_9_Vid_v", Picture_Id_Exit_v: "Play_Img_9_v"})}/>
+                <div id="Loading_Spinner_V_9" style={Loading_Spinner_V} className="loading-spinner"></div>
+                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_9", src: videoArray_v[8], url: videoArrayurl_v[8], load: "Loading_Spinner_V_9"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_9"/>
+                <img id="Resize_Img_v_9" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_9", Exit_Id_v: "Exit_Img_v_9", Heart_Id_v: "Heart_vid_9", Resize_Id_v: "Resize_Img_v_9", Source_Id_v: "Source_9_Vid_v", Picture_Id_v: "Play_Img_9_v", Loading_Id_v: "Loading_Spinner_V_9"})}/>
+                <img id="Exit_Img_v_9" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_9", Exit_Id_Exit_v: "Exit_Img_v_9", Heart_Id_Exit_v: "Heart_vid_9", Resize_Id_Exit_v: "Resize_Img_v_9", Source_Id_Exit_v: "Source_9_Vid_v", Picture_Id_Exit_v: "Play_Img_9_v", Load_Id_Exit_v: "Loading_Spinner_V_9"})}/>
             </div>  
 
             <div id="Video_Item_10" style={Video_Item_Style} >
                 <video id="Video_10_v" src={videoArray_v[9]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(9)} controls={controlsEnabled} muted></video>
                 <img style={Play_Img_Style} src={PlayImg} id="Play_Img_10_v" />
-              
-                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_10"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_10"/>
-                <img id="Resize_Img_v_10" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_10", Exit_Id_v: "Exit_Img_v_10", Heart_Id_v: "Heart_vid_10", Resize_Id_v: "Resize_Img_v_10", Source_Id_v: "Source_10_Vid_v", Picture_Id_v: "Play_Img_10_v"})}/>
-                <img id="Exit_Img_v_10" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_10", Exit_Id_Exit_v: "Exit_Img_v_10", Heart_Id_Exit_v: "Heart_vid_10", Resize_Id_Exit_v: "Resize_Img_v_10", Source_Id_Exit_v: "Source_10_Vid_v", Picture_Id_Exit_v: "Play_Img_10_v"})}/>
+                <div id="Loading_Spinner_V_10" style={Loading_Spinner_V} className="loading-spinner"></div>
+                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_10", src: videoArray_v[9], url: videoArrayurl_v[9], load: "Loading_Spinner_V_10"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_10"/>
+                <img id="Resize_Img_v_10" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_10", Exit_Id_v: "Exit_Img_v_10", Heart_Id_v: "Heart_vid_10", Resize_Id_v: "Resize_Img_v_10", Source_Id_v: "Source_10_Vid_v", Picture_Id_v: "Play_Img_10_v", Loading_Id_v: "Loading_Spinner_V_10"})}/>
+                <img id="Exit_Img_v_10" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_10", Exit_Id_Exit_v: "Exit_Img_v_10", Heart_Id_Exit_v: "Heart_vid_10", Resize_Id_Exit_v: "Resize_Img_v_10", Source_Id_Exit_v: "Source_10_Vid_v", Picture_Id_Exit_v: "Play_Img_10_v", Load_Id_Exit_v: "Loading_Spinner_V_10"})}/>
             </div> 
 
             <div id="Video_Item_11" style={Video_Item_Style} >
                 <video id="Video_11_v" src={videoArray_v[10]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(10)} controls={controlsEnabled} muted></video>
                 <img style={Play_Img_Style} src={PlayImg} id="Play_Img_11_v" />
-               
-                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_11"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_11"/>
-                <img id="Resize_Img_v_11" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_11", Exit_Id_v: "Exit_Img_v_11", Heart_Id_v: "Heart_vid_11", Resize_Id_v: "Resize_Img_v_11", Source_Id_v: "Source_11_Vid_v", Picture_Id_v: "Play_Img_11_v"})}/>
-                <img id="Exit_Img_v_11" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_11", Exit_Id_Exit_v: "Exit_Img_v_11", Heart_Id_Exit_v: "Heart_vid_11", Resize_Id_Exit_v: "Resize_Img_v_11", Source_Id_Exit_v: "Source_11_Vid_v", Picture_Id_Exit_v: "Play_Img_11_v"})}/>
+                <div id="Loading_Spinner_V_11" style={Loading_Spinner_V} className="loading-spinner"></div>
+                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_11", src: videoArray_v[10], url: videoArrayurl_v[10], load: "Loading_Spinner_V_11"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_11"/>
+                <img id="Resize_Img_v_11" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_11", Exit_Id_v: "Exit_Img_v_11", Heart_Id_v: "Heart_vid_11", Resize_Id_v: "Resize_Img_v_11", Source_Id_v: "Source_11_Vid_v", Picture_Id_v: "Play_Img_11_v", Loading_Id_v: "Loading_Spinner_V_11"})}/>
+                <img id="Exit_Img_v_11" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_11", Exit_Id_Exit_v: "Exit_Img_v_11", Heart_Id_Exit_v: "Heart_vid_11", Resize_Id_Exit_v: "Resize_Img_v_11", Source_Id_Exit_v: "Source_11_Vid_v", Picture_Id_Exit_v: "Play_Img_11_v", Load_Id_Exit_v: "Loading_Spinner_V_11"})}/>
             </div>  
 
             <div id="Video_Item_12" style={Video_Item_Style} >
                 <video id="Video_12_v" src={videoArray_v[11]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(11)} controls={controlsEnabled} muted></video>
                 <img style={Play_Img_Style} src={PlayImg} id="Play_Img_12_v" />
-             
-                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_12"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_12"/>
-                <img id="Resize_Img_v_12" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_12", Exit_Id_v: "Exit_Img_v_12", Heart_Id_v: "Heart_vid_12", Resize_Id_v: "Resize_Img_v_12", Source_Id_v: "Source_12_Vid_v", Picture_Id_v: "Play_Img_12_v"})}/>
-                <img id="Exit_Img_v_12" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_12", Exit_Id_Exit_v: "Exit_Img_v_12", Heart_Id_Exit_v: "Heart_vid_12", Resize_Id_Exit_v: "Resize_Img_v_12", Source_Id_Exit_v: "Source_12_Vid_v", Picture_Id_Exit_v: "Play_Img_12_v"})}/>
+                <div id="Loading_Spinner_V_12" style={Loading_Spinner_V} className="loading-spinner"></div>
+                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_12", src: videoArray_v[11], url: videoArrayurl_v[11], load: "Loading_Spinner_V_12"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_12"/>
+                <img id="Resize_Img_v_12" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_12", Exit_Id_v: "Exit_Img_v_12", Heart_Id_v: "Heart_vid_12", Resize_Id_v: "Resize_Img_v_12", Source_Id_v: "Source_12_Vid_v", Picture_Id_v: "Play_Img_12_v", Loading_Id_v: "Loading_Spinner_V_12"})}/>
+                <img id="Exit_Img_v_12" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_12", Exit_Id_Exit_v: "Exit_Img_v_12", Heart_Id_Exit_v: "Heart_vid_12", Resize_Id_Exit_v: "Resize_Img_v_12", Source_Id_Exit_v: "Source_12_Vid_v", Picture_Id_Exit_v: "Play_Img_12_v", Load_Id_Exit_v: "Loading_Spinner_V_12"})}/>
             </div> 
 
             <div id="Video_Item_13" style={Video_Item_Style} >
                 <video id="Video_13_v" src={videoArray_v[12]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(12)} controls={controlsEnabled} muted></video>
                 <img style={Play_Img_Style} src={PlayImg} id="Play_Img_13_v" />
-             
-                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_13"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_13"/>
-                <img id="Resize_Img_v_13" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_13", Exit_Id_v: "Exit_Img_v_13", Heart_Id_v: "Heart_vid_13", Resize_Id_v: "Resize_Img_v_13", Source_Id_v: "Source_13_Vid_v", Picture_Id_v: "Play_Img_13_v"})}/>
-                <img id="Exit_Img_v_13" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_13", Exit_Id_Exit_v: "Exit_Img_v_13", Heart_Id_Exit_v: "Heart_vid_13", Resize_Id_Exit_v: "Resize_Img_v_13", Source_Id_Exit_v: "Source_13_Vid_v", Picture_Id_Exit_v: "Play_Img_13_v"})}/>
+                <div id="Loading_Spinner_V_13" style={Loading_Spinner_V} className="loading-spinner"></div>
+                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_13", src: videoArray_v[12], url: videoArrayurl_v[12], load: "Loading_Spinner_V_13"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_13"/>
+                <img id="Resize_Img_v_13" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_13", Exit_Id_v: "Exit_Img_v_13", Heart_Id_v: "Heart_vid_13", Resize_Id_v: "Resize_Img_v_13", Source_Id_v: "Source_13_Vid_v", Picture_Id_v: "Play_Img_13_v", Loading_Id_v: "Loading_Spinner_V_13"})}/>
+                <img id="Exit_Img_v_13" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_13", Exit_Id_Exit_v: "Exit_Img_v_13", Heart_Id_Exit_v: "Heart_vid_13", Resize_Id_Exit_v: "Resize_Img_v_13", Source_Id_Exit_v: "Source_13_Vid_v", Picture_Id_Exit_v: "Play_Img_13_v", Load_Id_Exit_v: "Loading_Spinner_V_13"})}/>
             </div>  
 
             <div id="Video_Item_14" style={Video_Item_Style} >
                 <video id="Video_14_v" src={videoArray_v[13]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(13)} controls={controlsEnabled} muted></video>
                 <img style={Play_Img_Style} src={PlayImg} id="Play_Img_14_v" />
-          
-                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_14"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_14"/>
-                <img id="Resize_Img_v_14" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_14", Exit_Id_v: "Exit_Img_v_14", Heart_Id_v: "Heart_vid_14", Resize_Id_v: "Resize_Img_v_14", Source_Id_v: "Source_14_Vid_v", Picture_Id_v: "Play_Img_14_v"})}/>
-                <img id="Exit_Img_v_14" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_14", Exit_Id_Exit_v: "Exit_Img_v_14", Heart_Id_Exit_v: "Heart_vid_14", Resize_Id_Exit_v: "Resize_Img_v_14", Source_Id_Exit_v: "Source_14_Vid_v", Picture_Id_Exit_v: "Play_Img_14_v"})}/>
+                <div id="Loading_Spinner_V_14" style={Loading_Spinner_V} className="loading-spinner"></div>
+                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_14", src: videoArray_v[13], url: videoArrayurl_v[13], load: "Loading_Spinner_V_14"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_14"/>
+                <img id="Resize_Img_v_14" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_14", Exit_Id_v: "Exit_Img_v_14", Heart_Id_v: "Heart_vid_14", Resize_Id_v: "Resize_Img_v_14", Source_Id_v: "Source_14_Vid_v", Picture_Id_v: "Play_Img_14_v", Loading_Id_v: "Loading_Spinner_V_14"})}/>
+                <img id="Exit_Img_v_14" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_14", Exit_Id_Exit_v: "Exit_Img_v_14", Heart_Id_Exit_v: "Heart_vid_14", Resize_Id_Exit_v: "Resize_Img_v_14", Source_Id_Exit_v: "Source_14_Vid_v", Picture_Id_Exit_v: "Play_Img_14_v", Load_Id_Exit_v: "Loading_Spinner_V_14"})}/>
             </div>  
 
             <div id="Video_Item_15" style={Video_Item_Style} >
                 <video id="Video_15_v" src={videoArray_v[14]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(14)} controls={controlsEnabled} muted></video>
                 <img style={Play_Img_Style} src={PlayImg} id="Play_Img_15_v" />
-               
-                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_15"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_15"/>
-                <img id="Resize_Img_v_15" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_15", Exit_Id_v: "Exit_Img_v_15", Heart_Id_v: "Heart_vid_15", Resize_Id_v: "Resize_Img_v_15", Source_Id_v: "Source_15_Vid_v", Picture_Id_v: "Play_Img_15_v"})}/>
-                <img id="Exit_Img_v_15" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_15", Exit_Id_Exit_v: "Exit_Img_v_15", Heart_Id_Exit_v: "Heart_vid_15", Resize_Id_Exit_v: "Resize_Img_v_15", Source_Id_Exit_v: "Source_15_Vid_v", Picture_Id_Exit_v: "Play_Img_15_v"})}/>
+                <div id="Loading_Spinner_V_15" style={Loading_Spinner_V} className="loading-spinner"></div>
+                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_15", src: videoArray_v[14], url: videoArrayurl_v[14], load: "Loading_Spinner_V_15"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_15"/>
+                <img id="Resize_Img_v_15" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_15", Exit_Id_v: "Exit_Img_v_15", Heart_Id_v: "Heart_vid_15", Resize_Id_v: "Resize_Img_v_15", Source_Id_v: "Source_15_Vid_v", Picture_Id_v: "Play_Img_15_v", Loading_Id_v: "Loading_Spinner_V_15"})}/>
+                <img id="Exit_Img_v_15" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_15", Exit_Id_Exit_v: "Exit_Img_v_15", Heart_Id_Exit_v: "Heart_vid_15", Resize_Id_Exit_v: "Resize_Img_v_15", Source_Id_Exit_v: "Source_15_Vid_v", Picture_Id_Exit_v: "Play_Img_15_v", Load_Id_Exit_v: "Loading_Spinner_V_15"})}/>
             </div>  
 
             <div id="Video_Item_16" style={Video_Item_Style} >
                 <video id="Video_16_v" src={videoArray_v[15]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(15)} controls={controlsEnabled} muted></video>
                 <img style={Play_Img_Style} src={PlayImg} id="Play_Img_16_v" />
-              
-                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_16"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_16"/>
-                <img id="Resize_Img_v_16" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_16", Exit_Id_v: "Exit_Img_v_16", Heart_Id_v: "Heart_vid_16", Resize_Id_v: "Resize_Img_v_16", Source_Id_v: "Source_16_Vid_v", Picture_Id_v: "Play_Img_16_v"})}/>
-                <img id="Exit_Img_v_16" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_16", Exit_Id_Exit_v: "Exit_Img_v_16", Heart_Id_Exit_v: "Heart_vid_16", Resize_Id_Exit_v: "Resize_Img_v_16", Source_Id_Exit_v: "Source_16_Vid_v", Picture_Id_Exit_v: "Play_Img_16_v"})}/>
+                <div id="Loading_Spinner_V_16" style={Loading_Spinner_V} className="loading-spinner"></div>
+                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_16", src: videoArray_v[15], url: videoArrayurl_v[15], load: "Loading_Spinner_V_16"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_16"/>
+                <img id="Resize_Img_v_16" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_16", Exit_Id_v: "Exit_Img_v_16", Heart_Id_v: "Heart_vid_16", Resize_Id_v: "Resize_Img_v_16", Source_Id_v: "Source_16_Vid_v", Picture_Id_v: "Play_Img_16_v", Loading_Id_v: "Loading_Spinner_V_16"})}/>
+                <img id="Exit_Img_v_16" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_16", Exit_Id_Exit_v: "Exit_Img_v_16", Heart_Id_Exit_v: "Heart_vid_16", Resize_Id_Exit_v: "Resize_Img_v_16", Source_Id_Exit_v: "Source_16_Vid_v", Picture_Id_Exit_v: "Play_Img_16_v", Load_Id_Exit_v: "Loading_Spinner_V_16"})}/>
             </div> 
 
             <div id="Video_Item_17" style={Video_Item_Style} >
                 <video id="Video_17_v" src={videoArray_v[16]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(16)} controls={controlsEnabled} muted></video>
                 <img style={Play_Img_Style} src={PlayImg} id="Play_Img_17_v" />
-            
-                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_17"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_17"/>
-                <img id="Resize_Img_v_17" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_17", Exit_Id_v: "Exit_Img_v_17", Heart_Id_v: "Heart_vid_17", Resize_Id_v: "Resize_Img_v_17", Source_Id_v: "Source_17_Vid_v", Picture_Id_v: "Play_Img_17_v"})}/>
-                <img id="Exit_Img_v_17" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_17", Exit_Id_Exit_v: "Exit_Img_v_17", Heart_Id_Exit_v: "Heart_vid_17", Resize_Id_Exit_v: "Resize_Img_v_17", Source_Id_Exit_v: "Source_17_Vid_v", Picture_Id_Exit_v: "Play_Img_17_v"})}/>
+                <div id="Loading_Spinner_V_17" style={Loading_Spinner_V} className="loading-spinner"></div>
+                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_17", src: videoArray_v[16], url: videoArrayurl_v[16], load: "Loading_Spinner_V_17"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_17"/>
+                <img id="Resize_Img_v_17" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_17", Exit_Id_v: "Exit_Img_v_17", Heart_Id_v: "Heart_vid_17", Resize_Id_v: "Resize_Img_v_17", Source_Id_v: "Source_17_Vid_v", Picture_Id_v: "Play_Img_17_v", Loading_Id_v: "Loading_Spinner_V_17"})}/>
+                <img id="Exit_Img_v_17" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_17", Exit_Id_Exit_v: "Exit_Img_v_17", Heart_Id_Exit_v: "Heart_vid_17", Resize_Id_Exit_v: "Resize_Img_v_17", Source_Id_Exit_v: "Source_17_Vid_v", Picture_Id_Exit_v: "Play_Img_17_v", Load_Id_Exit_v: "Loading_Spinner_V_17"})}/>
             </div> 
             
             <div id="Video_Item_18" style={Video_Item_Style} >
                 <video id="Video_18_v" src={videoArray_v[17]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(17)} controls={controlsEnabled} muted></video>
                 <img style={Play_Img_Style} src={PlayImg} id="Play_Img_18_v" />
-                
-                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_18"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_18"/>
-                <img id="Resize_Img_v_18" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_18", Exit_Id_v: "Exit_Img_v_18", Heart_Id_v: "Heart_vid_18", Resize_Id_v: "Resize_Img_v_18", Source_Id_v: "Source_18_Vid_v", Picture_Id_v: "Play_Img_18_v"})}/>
-                <img id="Exit_Img_v_18" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_18", Exit_Id_Exit_v: "Exit_Img_v_18", Heart_Id_Exit_v: "Heart_vid_18", Resize_Id_Exit_v: "Resize_Img_v_18", Source_Id_Exit_v: "Source_18_Vid_v", Picture_Id_Exit_v: "Play_Img_18_v"})}/>
+                <div id="Loading_Spinner_V_18" style={Loading_Spinner_V} className="loading-spinner"></div>
+                <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_18", src: videoArray_v[17], url: videoArrayurl_v[17], load: "Loading_Spinner_V_18"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_18"/>
+                <img id="Resize_Img_v_18" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_18", Exit_Id_v: "Exit_Img_v_18", Heart_Id_v: "Heart_vid_18", Resize_Id_v: "Resize_Img_v_18", Source_Id_v: "Source_18_Vid_v", Picture_Id_v: "Play_Img_18_v", Loading_Id_v: "Loading_Spinner_V_18"})}/>
+                <img id="Exit_Img_v_18" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_18", Exit_Id_Exit_v: "Exit_Img_v_18", Heart_Id_Exit_v: "Heart_vid_18", Resize_Id_Exit_v: "Resize_Img_v_18", Source_Id_Exit_v: "Source_18_Vid_v", Picture_Id_Exit_v: "Play_Img_18_v", Load_Id_Exit_v: "Loading_Spinner_V_18"})}/>
             </div>  
 
             <div style={Space}></div>

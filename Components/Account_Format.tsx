@@ -72,6 +72,36 @@ function Account_Style() {
             const Email = Get_Email.textContent;
             console.log("Email from textContent: ",Email); //Text from email feild, previously verified
 
+
+            
+            fetch('http://localhost:5000/api/delete_saved_pics_vids', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: Email }), //sends login token to server.js
+                })
+                .then((response) => {
+                if (response.ok) {
+                    console.log("request from delete saved pics and vids sent");
+                    return response.json();
+                } else {
+                    console.log("request from delete saved pics and vids did not send");
+                    return response.json();
+            
+                }
+                })
+                .then((data) => {
+                if (data.success === 1) { //Accounts Deleted
+                    console.log("Accounts in saved deleted");
+                } else if (data.success === 0) {
+                    console.log("none were found or something went wrong");
+                } else {
+                    console.log("something went wrong");
+                }
+            
+            });
+
             fetch('http://localhost:5000/api/delete_account', {
                 method: 'POST',
                 headers: {

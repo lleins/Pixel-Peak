@@ -197,41 +197,147 @@ function Photo_Search_Style(){
 
       interface Save_Photo_Ids_Search{
         id_Heart_Photo_Search: string;
+        src: string;
+        url: string;
+        load: string;
       }
 
-      function Save_Photo_Search({ id_Heart_Photo_Search }: Save_Photo_Ids_Search) : void {
+      function Save_Photo_Search({ id_Heart_Photo_Search, src, url, load }: Save_Photo_Ids_Search) : void {
         const HeartImg = document.getElementById(id_Heart_Photo_Search);
-        const Check_Login_S = Cookies.get("Login_Token");
+        const Loader = document.getElementById(load);
+        if(Loader) Loader.style.display = "block";
+        const Check_Login = Cookies.get("Login_Token"); //Checks Login Token
+    if(Check_Login !== undefined){
 
-        if(Check_Login_S !== undefined){
-          if (HeartImg) {
-            const HeartStyle = getComputedStyle(HeartImg);
-            if (HeartStyle.filter === "brightness(5)") {
-              HeartImg.style.filter = "brightness(100%)";
-              const Fail_Notif = document.getElementById("Saved_1");
-              if(Fail_Notif) Fail_Notif.style.display = "block";
-              setTimeout(() => {
-                if(Fail_Notif) Fail_Notif.style.display = "none";
+      if (HeartImg) {
+        const HeartStyle = getComputedStyle(HeartImg);
+        if (HeartStyle.filter === "brightness(5)") { //checks Heart color
+          
+          fetch('http://localhost:5000/api/save', { //fetch to /save endpoint in Server.js
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email_data: Check_Login, src_data : src.toString(), url_data: url.toString(), type_data: "P"  }),
+            })
+            .then(response => {
+                if (response.ok) { //request sent
+                  
+                    console.log("From Sign React: Request sent"); //Sent to express server
+                    return response.json(); 
+                } else {
+                  const Success_Notif = document.getElementById("Saved_0"); //request did not send
+                  if(Loader) Loader.style.display = "none";
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+                    console.log("From Sign React: Request failed"); //Failed to send
+                    return response.json(); 
+                }
+            })
+            .then(data => {
+                if (data.message === 1) { //successfully saved
+                  HeartImg.style.filter = "brightness(100%)";
+                  console.log("Saved in Photos_Format");
+                  if(Loader) Loader.style.display = "none";
+                  const Success_Notif = document.getElementById("Saved_1"); //changes heart color and display notif
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+                    
+                } else if (data.message === 0) { //failed to save
+                  console.log("Didnt Save in Photos_Format 0");
+                  if(Loader) Loader.style.display = "none";
+                  const Success_Notif = document.getElementById("Saved_0"); //displays notif
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+                }else if (data.message === 3) { //fail in server
+                  console.log("Didnt Save in Photos_Format 3");
+                  if(Loader) Loader.style.display = "none";
+                  const Success_Notif = document.getElementById("Saved_0");
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+                }
+            })
+            .catch(error => { //catch error with response
+              
+            });
+
+        } else if (HeartStyle.filter === "brightness(1)") { //checks heart color
+          const Check_Cookie = Cookies.get("Login_Token");
+          fetch('http://localhost:5000/api/delete_saved', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email_data: Check_Cookie, url_data: url }), //sends login token and url to server.js delete save endpoint
+          })
+            .then((response) => {
+              if (response.ok) {
+                return response.json(); //request is sent
+              } else {
                 
-              }, 2000);
-            } else if (HeartStyle.filter === "brightness(1)") {
-              HeartImg.style.filter = "brightness(500%)";
-              const Save_Notif = document.getElementById("Saved_10");
-              if(Save_Notif) Save_Notif.style.display = "block";
-              setTimeout(() => {
-                if(Save_Notif) Save_Notif.style.display = "none";
-                
-              }, 2000);
-      
-            }
-          }
-        } else if(Check_Login_S === undefined){
-          const Login_Notif = document.getElementById("Login_Request_0");
-          if(Login_Notif) Login_Notif.style.display = "block";
-          setTimeout(function () {
-            if (Login_Notif) Login_Notif.style.display = 'none';
-          }, 4000);
+                return { success: 0 }; //request is not sent
+              }
+            })
+            .then((data) => {
+              if (data.success === 1) { // saved is deleted
+                HeartImg.style.filter = "brightness(500%)";
+                console.log("Removed in Photos_Format 1");
+                  if(Loader) Loader.style.display = "none";
+                  const Success_Notif = document.getElementById("Saved_10"); //changes heart color and displays notif
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+
+              } else if (data.success === 0) { //did not delete save
+                console.log("Didnt Remove in Photos_Format 0");
+                if(Loader) Loader.style.display = "none";
+                const Success_Notif = document.getElementById("Saved_0"); //displays notif
+                if(Success_Notif) Success_Notif.style.display = "block";
+                setTimeout(() => {
+                  if(Success_Notif) Success_Notif.style.display = "none";
+                  
+                }, 2000);
+              } else {
+                console.log("Didnt Remove in Photos_Format 4");
+                  if(Loader) Loader.style.display = "none";
+                  const Success_Notif = document.getElementById("Saved_0");
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+              }
+            })
+            .catch((error) => {
+              // Handle any error that occurred during the fetch.
+              console.error('Fetch error:', error);
+            });
+
+          
         }
+      }
+    } else if(Check_Login === undefined){
+      if(Loader) Loader.style.display = "none";
+      const Login_Notif = document.getElementById("Login_Request_0");
+      if(Login_Notif) Login_Notif.style.display = "block";
+      setTimeout(function () {
+        if (Login_Notif) Login_Notif.style.display = 'none';
+      }, 4000);
+    }
 
        
       }
@@ -275,10 +381,11 @@ function Photo_Search_Style(){
       Source_Id: string;
       Picture_Id: string;
       Main_id: string;
+      Loading_id: string;
     }
 
 
-    function Resize_Photo_Item({Container_Id, Exit_Id, Heart_Id, Resize_Id, Source_Id, Picture_Id, Main_id }: Resize_ids){
+    function Resize_Photo_Item({Container_Id, Exit_Id, Heart_Id, Resize_Id, Source_Id, Picture_Id, Main_id, Loading_id }: Resize_ids){
       const element = document.getElementById("Item_1_Photo_s");
       if (element) {
           element.scrollIntoView({ behavior: 'instant' });
@@ -291,6 +398,7 @@ function Photo_Search_Style(){
       const actual_source = document.getElementById(Source_Id);
       const actual_picture = document.getElementById(Picture_Id);
       const actual_main = document.getElementById(Main_id);
+      const actual_load = document.getElementById(Loading_id);
 
       if(actual_container){
         actual_container.style.width = "100%";
@@ -307,6 +415,12 @@ function Photo_Search_Style(){
       if(actual_exit){
         actual_exit.style.display = "block";
       }
+
+      if(actual_load){
+        actual_load.style.left = "480px";
+        actual_load.style.top = "240px";
+      }
+
 
       if(actual_heart){
         actual_heart.style.position = "absolute";
@@ -338,9 +452,10 @@ function Photo_Search_Style(){
       Source_Id_Exit: string;
       Picture_Id_Exit: string;
       Main_Id_Exit: string;
+      Load_Id_Exit: string;
     }
 
-    function Exit_Photo_Item({Container_Id_Exit, Exit_Id_Exit, Heart_Id_Exit, Resize_Id_Exit, Source_Id_Exit, Picture_Id_Exit, Main_Id_Exit }: Exit_Resize_ids){
+    function Exit_Photo_Item({Container_Id_Exit, Exit_Id_Exit, Heart_Id_Exit, Resize_Id_Exit, Source_Id_Exit, Picture_Id_Exit, Main_Id_Exit, Load_Id_Exit }: Exit_Resize_ids){
       toggleOverflow();
       
       const actual_container = document.getElementById(Container_Id_Exit);
@@ -350,6 +465,7 @@ function Photo_Search_Style(){
       const actual_source = document.getElementById(Source_Id_Exit);
       const actual_picture = document.getElementById(Picture_Id_Exit);
       const actual_main = document.getElementById(Main_Id_Exit);
+      const actual_load = document.getElementById(Load_Id_Exit);
       if(actual_container){
         actual_container.style.width = "300px";
         actual_container.style.height = "200px";
@@ -365,7 +481,12 @@ function Photo_Search_Style(){
       if(actual_exit){
         actual_exit.style.display = "none";
       }
-  
+      
+      if(actual_load){
+        actual_load.style.left = "140px";
+        actual_load.style.top = "85px";
+      }
+
       if(actual_heart){
         actual_heart.style.position = "relative";
         actual_heart.style.top = "-195px";
@@ -654,6 +775,12 @@ function Photo_Search_Style(){
       display: "none",
     }
     
+    const Loading_Spinner_P: CSSProperties = {
+      top: "90px",
+      left: "140px",
+      zIndex: "9",
+      display: "none",
+    };
 
     return(
 
@@ -690,164 +817,164 @@ function Photo_Search_Style(){
       
             <div id="Item_1_Photo_s" style={Photo_Item_Style}>
                 <img id="" style={Image_Style} src={photoArray_s[0]} onClick={() => TriggerLink_s(0)}/>
-               
+                <div id="Loading_Spinner_P_1" style={Loading_Spinner_P} className="loading-spinner"></div>
                 <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_1_s" />
-                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_1"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_1"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_1" onClick={() => Resize_Photo_Item({Container_Id: "Item_1_Photo_s", Exit_Id: "Exit_Resize_1", Heart_Id: "Heart_Photo_1", Resize_Id: "Resize_Photo_1", Source_Id: "Source_1_Photo_s", Picture_Id: "Play_Img_1_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_1" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_1_Photo_s", Exit_Id_Exit: "Exit_Resize_1", Heart_Id_Exit: "Heart_Photo_1", Resize_Id_Exit: "Resize_Photo_1", Source_Id_Exit: "Source_1_Photo_s", Picture_Id_Exit: "Play_Img_1_s", Main_Id_Exit: "Main_Container"})}/>
+                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_1", src: photoArray_s[0], url: urlArray_s[0], load: "Loading_Spinner_P_1"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_1"/>
+                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_1" onClick={() => Resize_Photo_Item({Container_Id: "Item_1_Photo_s", Exit_Id: "Exit_Resize_1", Heart_Id: "Heart_Photo_1", Resize_Id: "Resize_Photo_1", Source_Id: "Source_1_Photo_s", Picture_Id: "Play_Img_1_s", Main_id: "Main_Container", Loading_id: "Loading_Spinner_P_1"})}/>
+                <img id="Exit_Resize_1" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_1_Photo_s", Exit_Id_Exit: "Exit_Resize_1", Heart_Id_Exit: "Heart_Photo_1", Resize_Id_Exit: "Resize_Photo_1", Source_Id_Exit: "Source_1_Photo_s", Picture_Id_Exit: "Play_Img_1_s", Main_Id_Exit: "Main_Container", Load_Id_Exit: "Loading_Spinner_P_1"})}/>
             </div>  
         
             <div id="Item_2_Photo_s" style={Photo_Item_Style} >
                 <img style={Image_Style} src={photoArray_s[1]} onClick={() => TriggerLink_s(1)}/>
-            
+                <div id="Loading_Spinner_P_2" style={Loading_Spinner_P} className="loading-spinner"></div>
                 <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_2_s" />
-                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_2"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_2"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_2" onClick={() => Resize_Photo_Item({Container_Id: "Item_2_Photo_s", Exit_Id: "Exit_Resize_2", Heart_Id: "Heart_Photo_2", Resize_Id: "Resize_Photo_2", Source_Id: "Source_2_Photo_s", Picture_Id: "Play_Img_2_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_2" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_2_Photo_s", Exit_Id_Exit: "Exit_Resize_2", Heart_Id_Exit: "Heart_Photo_2", Resize_Id_Exit: "Resize_Photo_2", Source_Id_Exit: "Source_2_Photo_s", Picture_Id_Exit: "Play_Img_2_s", Main_Id_Exit: "Main_Container"})}/>
+                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_2", src: photoArray_s[1], url: urlArray_s[1], load: "Loading_Spinner_P_2"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_2"/>
+                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_2" onClick={() => Resize_Photo_Item({Container_Id: "Item_2_Photo_s", Exit_Id: "Exit_Resize_2", Heart_Id: "Heart_Photo_2", Resize_Id: "Resize_Photo_2", Source_Id: "Source_2_Photo_s", Picture_Id: "Play_Img_2_s", Main_id: "Main_Container", Loading_id: "Loading_Spinner_P_2"})}/>
+                <img id="Exit_Resize_2" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_2_Photo_s", Exit_Id_Exit: "Exit_Resize_2", Heart_Id_Exit: "Heart_Photo_2", Resize_Id_Exit: "Resize_Photo_2", Source_Id_Exit: "Source_2_Photo_s", Picture_Id_Exit: "Play_Img_2_s", Main_Id_Exit: "Main_Container", Load_Id_Exit: "Loading_Spinner_P_2"})}/>
             </div>  
 
             <div id="Item_3_Photo_s" style={Photo_Item_Style} >
                 <img style={Image_Style} src={photoArray_s[2]} onClick={() => TriggerLink_s(2)}/>
-   
+                <div id="Loading_Spinner_P_3" style={Loading_Spinner_P} className="loading-spinner"></div>
                 <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_3_s" />
-                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_3"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_3"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_3" onClick={() => Resize_Photo_Item({Container_Id: "Item_3_Photo_s", Exit_Id: "Exit_Resize_3", Heart_Id: "Heart_Photo_3", Resize_Id: "Resize_Photo_3", Source_Id: "Source_3_Photo_s", Picture_Id: "Play_Img_3_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_3" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_3_Photo_s", Exit_Id_Exit: "Exit_Resize_3", Heart_Id_Exit: "Heart_Photo_3", Resize_Id_Exit: "Resize_Photo_3", Source_Id_Exit: "Source_3_Photo_s", Picture_Id_Exit: "Play_Img_3_s", Main_Id_Exit: "Main_Container"})}/>
+                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_3", src: photoArray_s[2], url: urlArray_s[2], load: "Loading_Spinner_P_3"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_3"/>
+                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_3" onClick={() => Resize_Photo_Item({Container_Id: "Item_3_Photo_s", Exit_Id: "Exit_Resize_3", Heart_Id: "Heart_Photo_3", Resize_Id: "Resize_Photo_3", Source_Id: "Source_3_Photo_s", Picture_Id: "Play_Img_3_s", Main_id: "Main_Container", Loading_id: "Loading_Spinner_P_3"})}/>
+                <img id="Exit_Resize_3" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_3_Photo_s", Exit_Id_Exit: "Exit_Resize_3", Heart_Id_Exit: "Heart_Photo_3", Resize_Id_Exit: "Resize_Photo_3", Source_Id_Exit: "Source_3_Photo_s", Picture_Id_Exit: "Play_Img_3_s", Main_Id_Exit: "Main_Container", Load_Id_Exit: "Loading_Spinner_P_3"})}/>
             </div>  
 
             <div id="Item_4_Photo_s" style={Photo_Item_Style} >
                 <img style={Image_Style} src={photoArray_s[3]} onClick={() => TriggerLink_s(3)}/>
-              
+                <div id="Loading_Spinner_P_4" style={Loading_Spinner_P} className="loading-spinner"></div>
                 <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_4_s" />
-                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_4"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_4"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_4" onClick={() => Resize_Photo_Item({Container_Id: "Item_4_Photo_s", Exit_Id: "Exit_Resize_4", Heart_Id: "Heart_Photo_4", Resize_Id: "Resize_Photo_4", Source_Id: "Source_4_Photo_s", Picture_Id: "Play_Img_4_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_4" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_4_Photo_s", Exit_Id_Exit: "Exit_Resize_4", Heart_Id_Exit: "Heart_Photo_4", Resize_Id_Exit: "Resize_Photo_4", Source_Id_Exit: "Source_4_Photo_s", Picture_Id_Exit: "Play_Img_4_s", Main_Id_Exit: "Main_Container"})}/>
+                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_4", src: photoArray_s[3], url: urlArray_s[3], load: "Loading_Spinner_P_4"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_4"/>
+                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_4" onClick={() => Resize_Photo_Item({Container_Id: "Item_4_Photo_s", Exit_Id: "Exit_Resize_4", Heart_Id: "Heart_Photo_4", Resize_Id: "Resize_Photo_4", Source_Id: "Source_4_Photo_s", Picture_Id: "Play_Img_4_s", Main_id: "Main_Container", Loading_id: "Loading_Spinner_P_4"})}/>
+                <img id="Exit_Resize_4" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_4_Photo_s", Exit_Id_Exit: "Exit_Resize_4", Heart_Id_Exit: "Heart_Photo_4", Resize_Id_Exit: "Resize_Photo_4", Source_Id_Exit: "Source_4_Photo_s", Picture_Id_Exit: "Play_Img_4_s", Main_Id_Exit: "Main_Container", Load_Id_Exit: "Loading_Spinner_P_4"})}/>
             </div>  
 
             <div id="Item_5_Photo_s" style={Photo_Item_Style} >
                 <img style={Image_Style} src={photoArray_s[4]} onClick={() => TriggerLink_s(4)}/>
-         
+                <div id="Loading_Spinner_P_5" style={Loading_Spinner_P} className="loading-spinner"></div>
                 <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_5_s" />
-                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_5"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_5"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_5" onClick={() => Resize_Photo_Item({Container_Id: "Item_5_Photo_s", Exit_Id: "Exit_Resize_5", Heart_Id: "Heart_Photo_5", Resize_Id: "Resize_Photo_5", Source_Id: "Source_5_Photo_s", Picture_Id: "Play_Img_5_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_5" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_5_Photo_s", Exit_Id_Exit: "Exit_Resize_5", Heart_Id_Exit: "Heart_Photo_5", Resize_Id_Exit: "Resize_Photo_5", Source_Id_Exit: "Source_5_Photo_s", Picture_Id_Exit: "Play_Img_5_s", Main_Id_Exit: "Main_Container"})}/>
+                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_5", src: photoArray_s[4], url: urlArray_s[4], load: "Loading_Spinner_P_5"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_5"/>
+                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_5" onClick={() => Resize_Photo_Item({Container_Id: "Item_5_Photo_s", Exit_Id: "Exit_Resize_5", Heart_Id: "Heart_Photo_5", Resize_Id: "Resize_Photo_5", Source_Id: "Source_5_Photo_s", Picture_Id: "Play_Img_5_s", Main_id: "Main_Container", Loading_id: "Loading_Spinner_P_5"})}/>
+                <img id="Exit_Resize_5" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_5_Photo_s", Exit_Id_Exit: "Exit_Resize_5", Heart_Id_Exit: "Heart_Photo_5", Resize_Id_Exit: "Resize_Photo_5", Source_Id_Exit: "Source_5_Photo_s", Picture_Id_Exit: "Play_Img_5_s", Main_Id_Exit: "Main_Container", Load_Id_Exit: "Loading_Spinner_P_5"})}/>
             </div>  
 
             <div id="Item_6_Photo_s" style={Photo_Item_Style} >
                 <img style={Image_Style} src={photoArray_s[5]} onClick={() => TriggerLink_s(5)}/>
-           
+                <div id="Loading_Spinner_P_6" style={Loading_Spinner_P} className="loading-spinner"></div>
                 <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_6_s" />
-                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_6"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_6"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_6" onClick={() => Resize_Photo_Item({Container_Id: "Item_6_Photo_s", Exit_Id: "Exit_Resize_6", Heart_Id: "Heart_Photo_6", Resize_Id: "Resize_Photo_6", Source_Id: "Source_6_Photo_s", Picture_Id: "Play_Img_6_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_6" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_6_Photo_s", Exit_Id_Exit: "Exit_Resize_6", Heart_Id_Exit: "Heart_Photo_6", Resize_Id_Exit: "Resize_Photo_6", Source_Id_Exit: "Source_6_Photo_s", Picture_Id_Exit: "Play_Img_6_s", Main_Id_Exit: "Main_Container"})}/>
+                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_6", src: photoArray_s[5], url: urlArray_s[5], load: "Loading_Spinner_P_6"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_6"/>
+                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_6" onClick={() => Resize_Photo_Item({Container_Id: "Item_6_Photo_s", Exit_Id: "Exit_Resize_6", Heart_Id: "Heart_Photo_6", Resize_Id: "Resize_Photo_6", Source_Id: "Source_6_Photo_s", Picture_Id: "Play_Img_6_s", Main_id: "Main_Container", Loading_id: "Loading_Spinner_P_6"})}/>
+                <img id="Exit_Resize_6" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_6_Photo_s", Exit_Id_Exit: "Exit_Resize_6", Heart_Id_Exit: "Heart_Photo_6", Resize_Id_Exit: "Resize_Photo_6", Source_Id_Exit: "Source_6_Photo_s", Picture_Id_Exit: "Play_Img_6_s", Main_Id_Exit: "Main_Container", Load_Id_Exit: "Loading_Spinner_P_6"})}/>
             </div>  
 
             <div id="Item_7_Photo_s" style={Photo_Item_Style} >
                 <img style={Image_Style} src={photoArray_s[6]} onClick={() => TriggerLink_s(6)}/>
-            
+                <div id="Loading_Spinner_P_7" style={Loading_Spinner_P} className="loading-spinner"></div>
                 <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_7_s" />
-                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_7"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_7"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_7" onClick={() => Resize_Photo_Item({Container_Id: "Item_7_Photo_s", Exit_Id: "Exit_Resize_7", Heart_Id: "Heart_Photo_7", Resize_Id: "Resize_Photo_7", Source_Id: "Source_7_Photo_s", Picture_Id: "Play_Img_7_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_7" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_7_Photo_s", Exit_Id_Exit: "Exit_Resize_7", Heart_Id_Exit: "Heart_Photo_7", Resize_Id_Exit: "Resize_Photo_7", Source_Id_Exit: "Source_7_Photo_s", Picture_Id_Exit: "Play_Img_7_s", Main_Id_Exit: "Main_Container"})}/>
+                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_7", src: photoArray_s[6], url: urlArray_s[6], load: "Loading_Spinner_P_7"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_7"/>
+                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_7" onClick={() => Resize_Photo_Item({Container_Id: "Item_7_Photo_s", Exit_Id: "Exit_Resize_7", Heart_Id: "Heart_Photo_7", Resize_Id: "Resize_Photo_7", Source_Id: "Source_7_Photo_s", Picture_Id: "Play_Img_7_s", Main_id: "Main_Container", Loading_id: "Loading_Spinner_P_7"})}/>
+                <img id="Exit_Resize_7" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_7_Photo_s", Exit_Id_Exit: "Exit_Resize_7", Heart_Id_Exit: "Heart_Photo_7", Resize_Id_Exit: "Resize_Photo_7", Source_Id_Exit: "Source_7_Photo_s", Picture_Id_Exit: "Play_Img_7_s", Main_Id_Exit: "Main_Container", Load_Id_Exit: "Loading_Spinner_P_7"})}/>
             </div>  
 
             <div id="Item_8_Photo_s" style={Photo_Item_Style} >
                 <img style={Image_Style} src={photoArray_s[7]} onClick={() => TriggerLink_s(7)}/>
-      
+                <div id="Loading_Spinner_P_8" style={Loading_Spinner_P} className="loading-spinner"></div>
                 <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_8_s" />
-                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_8"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_8"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_8" onClick={() => Resize_Photo_Item({Container_Id: "Item_8_Photo_s", Exit_Id: "Exit_Resize_8", Heart_Id: "Heart_Photo_8", Resize_Id: "Resize_Photo_8", Source_Id: "Source_8_Photo_s", Picture_Id: "Play_Img_8_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_8" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_8_Photo_s", Exit_Id_Exit: "Exit_Resize_8", Heart_Id_Exit: "Heart_Photo_8", Resize_Id_Exit: "Resize_Photo_8", Source_Id_Exit: "Source_8_Photo_s", Picture_Id_Exit: "Play_Img_8_s", Main_Id_Exit: "Main_Container"})}/>
+                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_8", src: photoArray_s[7], url: urlArray_s[7], load: "Loading_Spinner_P_8"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_8"/>
+                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_8" onClick={() => Resize_Photo_Item({Container_Id: "Item_8_Photo_s", Exit_Id: "Exit_Resize_8", Heart_Id: "Heart_Photo_8", Resize_Id: "Resize_Photo_8", Source_Id: "Source_8_Photo_s", Picture_Id: "Play_Img_8_s", Main_id: "Main_Container", Loading_id: "Loading_Spinner_P_8"})}/>
+                <img id="Exit_Resize_8" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_8_Photo_s", Exit_Id_Exit: "Exit_Resize_8", Heart_Id_Exit: "Heart_Photo_8", Resize_Id_Exit: "Resize_Photo_8", Source_Id_Exit: "Source_8_Photo_s", Picture_Id_Exit: "Play_Img_8_s", Main_Id_Exit: "Main_Container", Load_Id_Exit: "Loading_Spinner_P_8"})}/>
             </div>  
 
             <div id="Item_9_Photo_s" style={Photo_Item_Style}>
                 <img style={Image_Style} src={photoArray_s[8]}  onClick={() => TriggerLink_s(8)}/>
-               
+                <div id="Loading_Spinner_P_9" style={Loading_Spinner_P} className="loading-spinner"></div>
                 <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_9_s" />
-                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_9"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_9"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_9" onClick={() => Resize_Photo_Item({Container_Id: "Item_9_Photo_s", Exit_Id: "Exit_Resize_9", Heart_Id: "Heart_Photo_9", Resize_Id: "Resize_Photo_9", Source_Id: "Source_9_Photo_s", Picture_Id: "Play_Img_9_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_9" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_9_Photo_s", Exit_Id_Exit: "Exit_Resize_9", Heart_Id_Exit: "Heart_Photo_9", Resize_Id_Exit: "Resize_Photo_9", Source_Id_Exit: "Source_9_Photo_s", Picture_Id_Exit: "Play_Img_9_s", Main_Id_Exit: "Main_Container"})}/>
+                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_9", src: photoArray_s[8], url: urlArray_s[8], load: "Loading_Spinner_P_9"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_9"/>
+                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_9" onClick={() => Resize_Photo_Item({Container_Id: "Item_9_Photo_s", Exit_Id: "Exit_Resize_9", Heart_Id: "Heart_Photo_9", Resize_Id: "Resize_Photo_9", Source_Id: "Source_9_Photo_s", Picture_Id: "Play_Img_9_s", Main_id: "Main_Container", Loading_id: "Loading_Spinner_P_9"})}/>
+                <img id="Exit_Resize_9" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_9_Photo_s", Exit_Id_Exit: "Exit_Resize_9", Heart_Id_Exit: "Heart_Photo_9", Resize_Id_Exit: "Resize_Photo_9", Source_Id_Exit: "Source_9_Photo_s", Picture_Id_Exit: "Play_Img_9_s", Main_Id_Exit: "Main_Container", Load_Id_Exit: "Loading_Spinner_P_9"})}/>
             </div>  
 
             <div id="Item_10_Photo_s" style={Photo_Item_Style} >
                 <img style={Image_Style} src={photoArray_s[9]} onClick={() => TriggerLink_s(9)}/>
-          
+                <div id="Loading_Spinner_P_10" style={Loading_Spinner_P} className="loading-spinner"></div>
                 <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_10_s" />
-                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_10"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_10"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_10" onClick={() => Resize_Photo_Item({Container_Id: "Item_10_Photo_s", Exit_Id: "Exit_Resize_10", Heart_Id: "Heart_Photo_10", Resize_Id: "Resize_Photo_10", Source_Id: "Source_10_Photo_s", Picture_Id: "Play_Img_10_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_10" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_10_Photo_s", Exit_Id_Exit: "Exit_Resize_10", Heart_Id_Exit: "Heart_Photo_10", Resize_Id_Exit: "Resize_Photo_10", Source_Id_Exit: "Source_10_Photo_s", Picture_Id_Exit: "Play_Img_10_s", Main_Id_Exit: "Main_Container"})}/>
+                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_10", src: photoArray_s[9], url: urlArray_s[9], load: "Loading_Spinner_P_10"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_10"/>
+                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_10" onClick={() => Resize_Photo_Item({Container_Id: "Item_10_Photo_s", Exit_Id: "Exit_Resize_10", Heart_Id: "Heart_Photo_10", Resize_Id: "Resize_Photo_10", Source_Id: "Source_10_Photo_s", Picture_Id: "Play_Img_10_s", Main_id: "Main_Container", Loading_id: "Loading_Spinner_P_10"})}/>
+                <img id="Exit_Resize_10" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_10_Photo_s", Exit_Id_Exit: "Exit_Resize_10", Heart_Id_Exit: "Heart_Photo_10", Resize_Id_Exit: "Resize_Photo_10", Source_Id_Exit: "Source_10_Photo_s", Picture_Id_Exit: "Play_Img_10_s", Main_Id_Exit: "Main_Container", Load_Id_Exit: "Loading_Spinner_P_10"})}/>
             </div> 
 
             <div id="Item_11_Photo_s" style={Photo_Item_Style} >
                 <img style={Image_Style} src={photoArray_s[10]} onClick={() => TriggerLink_s(10)}/>
-       
+                <div id="Loading_Spinner_P_11" style={Loading_Spinner_P} className="loading-spinner"></div>
                 <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_11_s" />
-                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_11"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_11"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_11" onClick={() => Resize_Photo_Item({Container_Id: "Item_11_Photo_s", Exit_Id: "Exit_Resize_11", Heart_Id: "Heart_Photo_11", Resize_Id: "Resize_Photo_11", Source_Id: "Source_11_Photo_s", Picture_Id: "Play_Img_11_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_11" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_11_Photo_s", Exit_Id_Exit: "Exit_Resize_11", Heart_Id_Exit: "Heart_Photo_11", Resize_Id_Exit: "Resize_Photo_11", Source_Id_Exit: "Source_11_Photo_s", Picture_Id_Exit: "Play_Img_11_s", Main_Id_Exit: "Main_Container"})}/>
+                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_11", src: photoArray_s[10], url: urlArray_s[10], load: "Loading_Spinner_P_11"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_11"/>
+                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_11" onClick={() => Resize_Photo_Item({Container_Id: "Item_11_Photo_s", Exit_Id: "Exit_Resize_11", Heart_Id: "Heart_Photo_11", Resize_Id: "Resize_Photo_11", Source_Id: "Source_11_Photo_s", Picture_Id: "Play_Img_11_s", Main_id: "Main_Container", Loading_id: "Loading_Spinner_P_11"})}/>
+                <img id="Exit_Resize_11" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_11_Photo_s", Exit_Id_Exit: "Exit_Resize_11", Heart_Id_Exit: "Heart_Photo_11", Resize_Id_Exit: "Resize_Photo_11", Source_Id_Exit: "Source_11_Photo_s", Picture_Id_Exit: "Play_Img_11_s", Main_Id_Exit: "Main_Container", Load_Id_Exit: "Loading_Spinner_P_11"})}/>
             </div>  
 
             <div id="Item_12_Photo_s" style={Photo_Item_Style} >
                 <img style={Image_Style} src={photoArray_s[11]} onClick={() => TriggerLink_s(11)}/>
-              
+                <div id="Loading_Spinner_P_12" style={Loading_Spinner_P} className="loading-spinner"></div>
                 <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_12_s" />
-                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_12"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_12"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_12" onClick={() => Resize_Photo_Item({Container_Id: "Item_12_Photo_s", Exit_Id: "Exit_Resize_12", Heart_Id: "Heart_Photo_12", Resize_Id: "Resize_Photo_12", Source_Id: "Source_12_Photo_s", Picture_Id: "Play_Img_12_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_12" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_12_Photo_s", Exit_Id_Exit: "Exit_Resize_12", Heart_Id_Exit: "Heart_Photo_12", Resize_Id_Exit: "Resize_Photo_12", Source_Id_Exit: "Source_12_Photo_s", Picture_Id_Exit: "Play_Img_12_s", Main_Id_Exit: "Main_Container"})}/>
+                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_12", src: photoArray_s[11], url: urlArray_s[11], load: "Loading_Spinner_P_12"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_12"/>
+                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_12" onClick={() => Resize_Photo_Item({Container_Id: "Item_12_Photo_s", Exit_Id: "Exit_Resize_12", Heart_Id: "Heart_Photo_12", Resize_Id: "Resize_Photo_12", Source_Id: "Source_12_Photo_s", Picture_Id: "Play_Img_12_s", Main_id: "Main_Container", Loading_id: "Loading_Spinner_P_12"})}/>
+                <img id="Exit_Resize_12" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_12_Photo_s", Exit_Id_Exit: "Exit_Resize_12", Heart_Id_Exit: "Heart_Photo_12", Resize_Id_Exit: "Resize_Photo_12", Source_Id_Exit: "Source_12_Photo_s", Picture_Id_Exit: "Play_Img_12_s", Main_Id_Exit: "Main_Container", Load_Id_Exit: "Loading_Spinner_P_12"})}/>
             </div> 
 
             <div id="Item_13_Photo_s" style={Photo_Item_Style} >
                 <img style={Image_Style} src={photoArray_s[12]} onClick={() => TriggerLink_s(12)}/>
-          
+                <div id="Loading_Spinner_P_13" style={Loading_Spinner_P} className="loading-spinner"></div>
                 <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_13_s" />
-                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_13"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_13"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_13" onClick={() => Resize_Photo_Item({Container_Id: "Item_13_Photo_s", Exit_Id: "Exit_Resize_13", Heart_Id: "Heart_Photo_13", Resize_Id: "Resize_Photo_13", Source_Id: "Source_13_Photo_s", Picture_Id: "Play_Img_13_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_13" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_13_Photo_s", Exit_Id_Exit: "Exit_Resize_13", Heart_Id_Exit: "Heart_Photo_13", Resize_Id_Exit: "Resize_Photo_13", Source_Id_Exit: "Source_13_Photo_s", Picture_Id_Exit: "Play_Img_13_s", Main_Id_Exit: "Main_Container"})}/>
+                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_13", src: photoArray_s[12], url: urlArray_s[12], load: "Loading_Spinner_P_13"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_13"/>
+                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_13" onClick={() => Resize_Photo_Item({Container_Id: "Item_13_Photo_s", Exit_Id: "Exit_Resize_13", Heart_Id: "Heart_Photo_13", Resize_Id: "Resize_Photo_13", Source_Id: "Source_13_Photo_s", Picture_Id: "Play_Img_13_s", Main_id: "Main_Container", Loading_id: "Loading_Spinner_P_13"})}/>
+                <img id="Exit_Resize_13" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_13_Photo_s", Exit_Id_Exit: "Exit_Resize_13", Heart_Id_Exit: "Heart_Photo_13", Resize_Id_Exit: "Resize_Photo_13", Source_Id_Exit: "Source_13_Photo_s", Picture_Id_Exit: "Play_Img_13_s", Main_Id_Exit: "Main_Container", Load_Id_Exit: "Loading_Spinner_P_13"})}/>
             </div>  
 
             <div id="Item_14_Photo_s" style={Photo_Item_Style} >
                 <img style={Image_Style} src={photoArray_s[13]} onClick={() => TriggerLink_s(13)}/>
-                
+                <div id="Loading_Spinner_P_14" style={Loading_Spinner_P} className="loading-spinner"></div>
                 <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_14_s" />
-                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_14"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_14"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_14" onClick={() => Resize_Photo_Item({Container_Id: "Item_14_Photo_s", Exit_Id: "Exit_Resize_14", Heart_Id: "Heart_Photo_14", Resize_Id: "Resize_Photo_14", Source_Id: "Source_14_Photo_s", Picture_Id: "Play_Img_14_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_14" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_14_Photo_s", Exit_Id_Exit: "Exit_Resize_14", Heart_Id_Exit: "Heart_Photo_14", Resize_Id_Exit: "Resize_Photo_14", Source_Id_Exit: "Source_14_Photo_s", Picture_Id_Exit: "Play_Img_14_s", Main_Id_Exit: "Main_Container"})}/>
+                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_14", src: photoArray_s[13], url: urlArray_s[13], load: "Loading_Spinner_P_14"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_14"/>
+                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_14" onClick={() => Resize_Photo_Item({Container_Id: "Item_14_Photo_s", Exit_Id: "Exit_Resize_14", Heart_Id: "Heart_Photo_14", Resize_Id: "Resize_Photo_14", Source_Id: "Source_14_Photo_s", Picture_Id: "Play_Img_14_s", Main_id: "Main_Container", Loading_id: "Loading_Spinner_P_14"})}/>
+                <img id="Exit_Resize_14" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_14_Photo_s", Exit_Id_Exit: "Exit_Resize_14", Heart_Id_Exit: "Heart_Photo_14", Resize_Id_Exit: "Resize_Photo_14", Source_Id_Exit: "Source_14_Photo_s", Picture_Id_Exit: "Play_Img_14_s", Main_Id_Exit: "Main_Container", Load_Id_Exit: "Loading_Spinner_P_14"})}/>
             </div>  
 
             <div id="Item_15_Photo_s" style={Photo_Item_Style} >
                 <img style={Image_Style} src={photoArray_s[14]} onClick={() => TriggerLink_s(14)}/>
-              
+                <div id="Loading_Spinner_P_15" style={Loading_Spinner_P} className="loading-spinner"></div>
                 <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_15_s" />
-                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_15"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_15"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_15" onClick={() => Resize_Photo_Item({Container_Id: "Item_15_Photo_s", Exit_Id: "Exit_Resize_15", Heart_Id: "Heart_Photo_15", Resize_Id: "Resize_Photo_15", Source_Id: "Source_15_Photo_s", Picture_Id: "Play_Img_15_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_15" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_15_Photo_s", Exit_Id_Exit: "Exit_Resize_15", Heart_Id_Exit: "Heart_Photo_15", Resize_Id_Exit: "Resize_Photo_15", Source_Id_Exit: "Source_15_Photo_s", Picture_Id_Exit: "Play_Img_15_s", Main_Id_Exit: "Main_Container"})}/>
+                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_15", src: photoArray_s[14], url: urlArray_s[14], load: "Loading_Spinner_P_15"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_15"/>
+                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_15" onClick={() => Resize_Photo_Item({Container_Id: "Item_15_Photo_s", Exit_Id: "Exit_Resize_15", Heart_Id: "Heart_Photo_15", Resize_Id: "Resize_Photo_15", Source_Id: "Source_15_Photo_s", Picture_Id: "Play_Img_15_s", Main_id: "Main_Container", Loading_id: "Loading_Spinner_P_15"})}/>
+                <img id="Exit_Resize_15" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_15_Photo_s", Exit_Id_Exit: "Exit_Resize_15", Heart_Id_Exit: "Heart_Photo_15", Resize_Id_Exit: "Resize_Photo_15", Source_Id_Exit: "Source_15_Photo_s", Picture_Id_Exit: "Play_Img_15_s", Main_Id_Exit: "Main_Container", Load_Id_Exit: "Loading_Spinner_P_15"})}/>
             </div>  
 
             <div id="Item_16_Photo_s" style={Photo_Item_Style} >
                 <img style={Image_Style} src={photoArray_s[15]} onClick={() => TriggerLink_s(15)}/>
-             
+                <div id="Loading_Spinner_P_16" style={Loading_Spinner_P} className="loading-spinner"></div>
                 <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_16_s" />
-                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_16"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_16"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_16" onClick={() => Resize_Photo_Item({Container_Id: "Item_16_Photo_s", Exit_Id: "Exit_Resize_16", Heart_Id: "Heart_Photo_16", Resize_Id: "Resize_Photo_16", Source_Id: "Source_16_Photo_s", Picture_Id: "Play_Img_16_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_16" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_16_Photo_s", Exit_Id_Exit: "Exit_Resize_16", Heart_Id_Exit: "Heart_Photo_16", Resize_Id_Exit: "Resize_Photo_16", Source_Id_Exit: "Source_16_Photo_s", Picture_Id_Exit: "Play_Img_16_s", Main_Id_Exit: "Main_Container"})}/>
+                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_16", src: photoArray_s[15], url: urlArray_s[15], load: "Loading_Spinner_P_16"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_16"/>
+                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_16" onClick={() => Resize_Photo_Item({Container_Id: "Item_16_Photo_s", Exit_Id: "Exit_Resize_16", Heart_Id: "Heart_Photo_16", Resize_Id: "Resize_Photo_16", Source_Id: "Source_16_Photo_s", Picture_Id: "Play_Img_16_s", Main_id: "Main_Container", Loading_id: "Loading_Spinner_P_16"})}/>
+                <img id="Exit_Resize_16" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_16_Photo_s", Exit_Id_Exit: "Exit_Resize_16", Heart_Id_Exit: "Heart_Photo_16", Resize_Id_Exit: "Resize_Photo_16", Source_Id_Exit: "Source_16_Photo_s", Picture_Id_Exit: "Play_Img_16_s", Main_Id_Exit: "Main_Container", Load_Id_Exit: "Loading_Spinner_P_16"})}/>
             </div> 
 
             <div id="Item_17_Photo_s" style={Photo_Item_Style} >
                 <img style={Image_Style} src={photoArray_s[16]} onClick={() => TriggerLink_s(16)}/>
-          
+                <div id="Loading_Spinner_P_17" style={Loading_Spinner_P} className="loading-spinner"></div>
                 <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_17_s" />
-                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_17"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_17"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_17" onClick={() => Resize_Photo_Item({Container_Id: "Item_17_Photo_s", Exit_Id: "Exit_Resize_17", Heart_Id: "Heart_Photo_17", Resize_Id: "Resize_Photo_17", Source_Id: "Source_17_Photo_s", Picture_Id: "Play_Img_17_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_17" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_17_Photo_s", Exit_Id_Exit: "Exit_Resize_17", Heart_Id_Exit: "Heart_Photo_17", Resize_Id_Exit: "Resize_Photo_17", Source_Id_Exit: "Source_17_Photo_s", Picture_Id_Exit: "Play_Img_17_s", Main_Id_Exit: "Main_Container"})}/>
+                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_17", src: photoArray_s[16], url: urlArray_s[16], load: "Loading_Spinner_P_17"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_17"/>
+                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_17" onClick={() => Resize_Photo_Item({Container_Id: "Item_17_Photo_s", Exit_Id: "Exit_Resize_17", Heart_Id: "Heart_Photo_17", Resize_Id: "Resize_Photo_17", Source_Id: "Source_17_Photo_s", Picture_Id: "Play_Img_17_s", Main_id: "Main_Container", Loading_id: "Loading_Spinner_P_17"})}/>
+                <img id="Exit_Resize_17" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_17_Photo_s", Exit_Id_Exit: "Exit_Resize_17", Heart_Id_Exit: "Heart_Photo_17", Resize_Id_Exit: "Resize_Photo_17", Source_Id_Exit: "Source_17_Photo_s", Picture_Id_Exit: "Play_Img_17_s", Main_Id_Exit: "Main_Container", Load_Id_Exit: "Loading_Spinner_P_17"})}/>
             </div> 
             
             <div id="Item_18_Photo_s" style={Photo_Item_Style} >
                 <img style={Image_Style} src={photoArray_s[17]} onClick={() => TriggerLink_s(17)}/>
-                
+                <div id="Loading_Spinner_P_18" style={Loading_Spinner_P} className="loading-spinner"></div>
                 <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_18_s" />
-                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_18"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_18"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_18" onClick={() => Resize_Photo_Item({Container_Id: "Item_18_Photo_s", Exit_Id: "Exit_Resize_18", Heart_Id: "Heart_Photo_18", Resize_Id: "Resize_Photo_18", Source_Id: "Source_18_Photo_s", Picture_Id: "Play_Img_18_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_18" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_18_Photo_s", Exit_Id_Exit: "Exit_Resize_18", Heart_Id_Exit: "Heart_Photo_18", Resize_Id_Exit: "Resize_Photo_18", Source_Id_Exit: "Source_18_Photo_s", Picture_Id_Exit: "Play_Img_18_s", Main_Id_Exit: "Main_Container"})}/>
+                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_18", src: photoArray_s[17], url: urlArray_s[17], load: "Loading_Spinner_P_18"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_18"/>
+                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_18" onClick={() => Resize_Photo_Item({Container_Id: "Item_18_Photo_s", Exit_Id: "Exit_Resize_18", Heart_Id: "Heart_Photo_18", Resize_Id: "Resize_Photo_18", Source_Id: "Source_18_Photo_s", Picture_Id: "Play_Img_18_s", Main_id: "Main_Container", Loading_id: "Loading_Spinner_P_18"})}/>
+                <img id="Exit_Resize_18" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_18_Photo_s", Exit_Id_Exit: "Exit_Resize_18", Heart_Id_Exit: "Heart_Photo_18", Resize_Id_Exit: "Resize_Photo_18", Source_Id_Exit: "Source_18_Photo_s", Picture_Id_Exit: "Play_Img_18_s", Main_Id_Exit: "Main_Container", Load_Id_Exit: "Loading_Spinner_P_18"})}/>
             </div>  
 
             <div style={Space}></div>

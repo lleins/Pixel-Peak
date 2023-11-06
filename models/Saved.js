@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const savedSchema = new mongoose.Schema({
     email: String,
-    link: String,
+    src: String,
     url: String,
     type: String
 }, {

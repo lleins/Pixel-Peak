@@ -100,7 +100,7 @@ app.post('/api/create_account', async (req, res) => {  //Creating Account
 
         const token = jsonwebtoken.sign( //Assigns a login token
             {
-                email: User.email,
+                email: email_create,
             },
             secretKey, // Replace with your actual secret key
             {
@@ -167,7 +167,7 @@ function removeUserByEmail(email) {
     return User.findOneAndRemove({ email: email }).exec();
 }
 
-app.post('/api/delete_account', (req, res) => {
+app.post('/api/delete_account', (req, res) => { //Delete Login Account
     const { email } = req.body
     removeUserByEmail(email)
         .then(user => {
@@ -185,9 +185,102 @@ app.post('/api/delete_account', (req, res) => {
         });
 });
 
+
+async function removeUserByEmailSaved(email) {
+    try {
+        //Deletes all documents with specified email
+        const result = await Saved.deleteMany({ email: email });
+
+        if (result.deletedCount === 0) {
+            console.log('No users found with this email.');
+            return;
+        }
+
+        console.log(`Removed ${result.deletedCount} users with email ${email}.`);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+app.post('/api/delete_saved_pics_vids', (req, res) => {
+    const { email } = req.body
+    removeUserByEmailSaved(email) //uses same email used in fetch above.
+        .then(user => {
+            if (user) {
+                // User with the specified email removed
+                res.status(200).json({ success: 1, message: 'Accounts deleted successfully' });
+            } else {
+                // User not found
+                return res.status(404).json({ success: 0, message: 'User not found' });
+            }
+        })
+        .catch(err => {
+            // Handle any errors that occurred during the removal
+            res.status(500).json({ success: 3, message: 'Server error' });
+        });
+});
+
 //Delete Account---------------------------------------------------------------------------------------------------------
 
 
+
+
+//Save a Video or Picture------------------------------------------------------------------------------------------------
+
+
+app.post('/api/save', async (req, res) => {  //Saving video/picture
+    const { email_data, src_data, url_data, type_data } = req.body;
+
+    const Decoded_Login_Token = jsonwebtoken.verify(email_data, secretKey); //Decoded Token tested for validity
+    console.log("Email from Token in Saved: ", Decoded_Login_Token.email);
+    const Login_Email = Decoded_Login_Token.email; //Uses email in payload to find user in database
+
+    try {
+
+        const newUser = new Saved({ email: Login_Email, src: src_data, url: url_data, type: type_data }); // Create and save pic or vid
+        await newUser.save();
+
+        return res.status(201).json({ message: 1 }); // Saved Succesfully
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({ message: 0 }); // Server error
+    }
+});
+//Save a Video or Picture------------------------------------------------------------------------------------------------
+
+
+
+//Remove a Video or Picture----------------------------------------------------------------------------------------------
+
+function removeUserByEmail_link(email, url) {
+    return Saved.findOneAndRemove({ email: email, url: url }).exec();
+}
+
+app.post('/api/delete_saved', (req, res) => {
+    const { email_data, url_data } = req.body
+
+    const Decoded_Login_Token = jsonwebtoken.verify(email_data, secretKey); //Decoded Token tested for validity
+    console.log("Email from Token in Remove: ", Decoded_Login_Token.email);
+    const email_cookie = Decoded_Login_Token.email; //Uses email in payload to find user in database
+
+    removeUserByEmail_link(email_cookie, url_data)
+        .then(user => {
+            if (user) {
+                // User with the specified email and link removed
+                res.status(200).json({ success: 1 });
+            } else {
+                // User not found
+                return res.status(404).json({ success: 0 });
+            }
+        })
+        .catch(err => {
+            // Handle any errors that occurred during the removal
+            res.status(500).json({ success: 3 });
+        });
+});
+
+
+//Remove a Video or Picture----------------------------------------------------------------------------------------------
 
 
 mongoose.connect('mongodb://127.0.0.1:27017/Pixel-Peak', {

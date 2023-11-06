@@ -232,36 +232,130 @@ function Video_Style() {
 
   interface Save_Vid_Ids{
     id_Heart: string;
+    src: string;
+    url: string;
   }
 
-  function Save_Video({ id_Heart }: Save_Vid_Ids) : void {
+  function Save_Video({ id_Heart, src, url}: Save_Vid_Ids) : void {
     const HeartImg = document.getElementById(id_Heart);
+    const Check_Login = Cookies.get("Login_Token"); //Checks Login Token
+    if(Check_Login !== undefined){
 
-    const Check_Logged = Cookies.get("Login_Token");
-
-    if(Check_Logged !== undefined){
       if (HeartImg) {
         const HeartStyle = getComputedStyle(HeartImg);
-        if (HeartStyle.filter === "brightness(5)") {
-          HeartImg.style.filter = "brightness(100%)";
-          const Fail_Notif = document.getElementById("Saved_1");
-          if(Fail_Notif) Fail_Notif.style.display = "block";
-          setTimeout(() => {
-            if(Fail_Notif) Fail_Notif.style.display = "none";
-            
-          }, 2000);
-        } else if (HeartStyle.filter === "brightness(1)") {
-          HeartImg.style.filter = "brightness(500%)";
-          const Save_Notif = document.getElementById("Saved_10");
-          if(Save_Notif) Save_Notif.style.display = "block";
-          setTimeout(() => {
-            if(Save_Notif) Save_Notif.style.display = "none";
-            
-          }, 2000);
-  
+        if (HeartStyle.filter === "brightness(5)") { //checks Heart color
+          
+          fetch('http://localhost:5000/api/save', { //fetch to /save endpoint in Server.js
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email_data: Check_Login, src_data : src.toString(), url_data: url.toString(), type_data: "V"  }),
+            })
+            .then(response => {
+                if (response.ok) { //request sent
+                  
+                    console.log("From Sign React: Request sent"); //Sent to express server
+                    return response.json(); 
+                } else {
+                  const Success_Notif = document.getElementById("Saved_0"); //request did not send
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+                    console.log("From Sign React: Request failed"); //Failed to send
+                    return response.json(); 
+                }
+            })
+            .then(data => {
+                if (data.message === 1) { //successfully saved
+                  HeartImg.style.filter = "brightness(100%)";
+                  console.log("Saved in Photos_Format");
+                  const Success_Notif = document.getElementById("Saved_1"); //changes heart color and display notif
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+                    
+                } else if (data.message === 0) { //failed to save
+                  console.log("Didnt Save in Photos_Format 0");
+                  const Success_Notif = document.getElementById("Saved_0"); //displays notif
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+                }else if (data.message === 3) { //fail in server
+                  console.log("Didnt Save in Photos_Format 3");
+                  const Success_Notif = document.getElementById("Saved_0");
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+                }
+            })
+            .catch(error => { //catch error with response
+              
+            });
+
+        } else if (HeartStyle.filter === "brightness(1)") { //checks heart color
+          const Check_Cookie = Cookies.get("Login_Token");
+          fetch('http://localhost:5000/api/delete_saved', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email_data: Check_Cookie, url_data: url }), //sends login token and url to server.js delete save endpoint
+          })
+            .then((response) => {
+              if (response.ok) {
+                return response.json(); //request is sent
+              } else {
+                
+                return { success: 0 }; //request is not sent
+              }
+            })
+            .then((data) => {
+              if (data.success === 1) { // saved is deleted
+                HeartImg.style.filter = "brightness(500%)";
+                console.log("Removed in Photos_Format 1");
+                  const Success_Notif = document.getElementById("Saved_10"); //changes heart color and displays notif
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+
+              } else if (data.success === 0) { //did not delete save
+                console.log("Didnt Remove in Photos_Format 0");
+                const Success_Notif = document.getElementById("Saved_0"); //displays notif
+                if(Success_Notif) Success_Notif.style.display = "block";
+                setTimeout(() => {
+                  if(Success_Notif) Success_Notif.style.display = "none";
+                  
+                }, 2000);
+              } else {
+                console.log("Didnt Remove in Photos_Format 4");
+                  const Success_Notif = document.getElementById("Saved_0");
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+              }
+            })
+            .catch((error) => {
+              // Handle any error that occurred during the fetch.
+              console.error('Fetch error:', error);
+            });
+
+          
         }
       }
-    }else if(Check_Logged === undefined){
+    } else if(Check_Login === undefined){
       const Login_Notif = document.getElementById("Login_Request_0");
       if(Login_Notif) Login_Notif.style.display = "block";
       setTimeout(function () {
@@ -269,7 +363,6 @@ function Video_Style() {
       }, 4000);
     }
 
-    
   }
 
 
@@ -623,7 +716,7 @@ function Video_Style() {
             muted
             onClick={() => TriggerLink(0)}></video>
           <img style={Play_Img_Style} src={PlayImg} id="Play_Img_1" />
-          <img onClick={() => Save_Video({id_Heart: "Heart_v_1"})} src={Heart_Img_v} style={Heart_Style_v} id="Heart_v_1"/>
+          <img onClick={() => Save_Video({id_Heart: "Heart_v_1", src: videoArray[0], url: videoArrayurl[0] })} src={Heart_Img_v} style={Heart_Style_v} id="Heart_v_1"/>
           <p style={Source_Text_Style} id="Source_1_Vid">
             Source:{" "}
             <span id="Img_Source1" style={Actual_Source_Text}>
@@ -641,7 +734,7 @@ function Video_Style() {
             muted
             onClick={() => TriggerLink(1)}></video>
           <img style={Play_Img_Style} src={PlayImg} id="Play_Img_2" />
-          <img onClick={() => Save_Video({id_Heart: "Heart_v_2"})} src={Heart_Img_v} style={Heart_Style_v} id="Heart_v_2"/>
+          <img onClick={() => Save_Video({id_Heart: "Heart_v_2", src: videoArray[1], url: videoArrayurl[1] })} src={Heart_Img_v} style={Heart_Style_v} id="Heart_v_2"/>
           <p style={Source_Text_Style} id="Source_2_Vid">
             Source:{" "}
             <span id="Img_Source1" style={Actual_Source_Text}>
@@ -659,7 +752,7 @@ function Video_Style() {
             muted
             onClick={() => TriggerLink(2)}></video>
           <img style={Play_Img_Style} src={PlayImg} id="Play_Img_3" />
-          <img onClick={() => Save_Video({id_Heart: "Heart_v_3"})} src={Heart_Img_v} style={Heart_Style_v} id="Heart_v_3"/>
+          <img onClick={() => Save_Video({id_Heart: "Heart_v_3", src: videoArray[2], url: videoArrayurl[2] })} src={Heart_Img_v} style={Heart_Style_v} id="Heart_v_3"/>
           <p style={Source_Text_Style} id="Source_3_Vid">
             Source:{" "}
             <span id="Img_Source1" style={Actual_Source_Text}>
@@ -677,7 +770,7 @@ function Video_Style() {
             muted
             onClick={() => TriggerLink(3)}></video>
           <img style={Play_Img_Style} src={PlayImg} id="Play_Img_4" />
-          <img onClick={() => Save_Video({id_Heart: "Heart_v_4"})} src={Heart_Img_v} style={Heart_Style_v} id="Heart_v_4"/>
+          <img onClick={() => Save_Video({id_Heart: "Heart_v_4", src: videoArray[3], url: videoArrayurl[3] })} src={Heart_Img_v} style={Heart_Style_v} id="Heart_v_4"/>
           <p style={Source_Text_Style} id="Source_4_Vid">
             Source:{" "}
             <span id="Img_Source1" style={Actual_Source_Text}>
@@ -695,7 +788,7 @@ function Video_Style() {
             muted
             onClick={() => TriggerLink(4)}></video>
           <img style={Play_Img_Style} src={PlayImg} id="Play_Img_5" />
-          <img onClick={() => Save_Video({id_Heart: "Heart_v_5"})} src={Heart_Img_v} style={Heart_Style_v} id="Heart_v_5"/>
+          <img onClick={() => Save_Video({id_Heart: "Heart_v_5", src: videoArray[4], url: videoArrayurl[4] })} src={Heart_Img_v} style={Heart_Style_v} id="Heart_v_5"/>
           <p style={Source_Text_Style} id="Source_5_Vid">
             Source:{" "}
             <span id="Img_Source1" style={Actual_Source_Text}>
@@ -713,7 +806,7 @@ function Video_Style() {
             muted
             onClick={() => TriggerLink(5)}></video>
           <img style={Play_Img_Style} src={PlayImg} id="Play_Img_6" />
-          <img onClick={() => Save_Video({id_Heart: "Heart_v_6"})} src={Heart_Img_v} style={Heart_Style_v} id="Heart_v_6"/>
+          <img onClick={() => Save_Video({id_Heart: "Heart_v_6", src: videoArray[5], url: videoArrayurl[5] })} src={Heart_Img_v} style={Heart_Style_v} id="Heart_v_6"/>
           <p style={Source_Text_Style} id="Source_6_Vid">
             Source:{" "}
             <span id="Img_Source1" style={Actual_Source_Text}>
@@ -731,7 +824,7 @@ function Video_Style() {
             muted
             onClick={() => TriggerLink(6)}></video>
           <img style={Play_Img_Style} src={PlayImg} id="Play_Img_7" />
-          <img onClick={() => Save_Video({id_Heart: "Heart_v_7"})} src={Heart_Img_v} style={Heart_Style_v} id="Heart_v_7"/>
+          <img onClick={() => Save_Video({id_Heart: "Heart_v_7", src: videoArray[6], url: videoArrayurl[6] })} src={Heart_Img_v} style={Heart_Style_v} id="Heart_v_7"/>
           <p style={Source_Text_Style} id="Source_7_Vid">
             Source:{" "}
             <span id="Img_Source1" style={Actual_Source_Text}>
@@ -749,7 +842,7 @@ function Video_Style() {
             muted
             onClick={() => TriggerLink(7)}></video>
           <img style={Play_Img_Style} src={PlayImg} id="Play_Img_8" />
-          <img onClick={() => Save_Video({id_Heart: "Heart_v_8"})} src={Heart_Img_v} style={Heart_Style_v} id="Heart_v_8"/>
+          <img onClick={() => Save_Video({id_Heart: "Heart_v_8", src: videoArray[7], url: videoArrayurl[7] })} src={Heart_Img_v} style={Heart_Style_v} id="Heart_v_8"/>
           <p style={Source_Text_Style} id="Source_8_Vid">
             Source:{" "}
             <span id="Img_Source1" style={Actual_Source_Text}>
@@ -767,7 +860,7 @@ function Video_Style() {
             muted
             onClick={() => TriggerLink(8)}></video>
           <img style={Play_Img_Style} src={PlayImg} id="Play_Img_9" />
-          <img onClick={() => Save_Video({id_Heart: "Heart_v_9"})} src={Heart_Img_v} style={Heart_Style_v} id="Heart_v_9"/>
+          <img onClick={() => Save_Video({id_Heart: "Heart_v_9", src: videoArray[8], url: videoArrayurl[8] })} src={Heart_Img_v} style={Heart_Style_v} id="Heart_v_9"/>
           <p style={Source_Text_Style} id="Source_9_Vid">
             Source:{" "}
             <span id="Img_Source1" style={Actual_Source_Text}>
@@ -785,7 +878,7 @@ function Video_Style() {
             muted
             onClick={() => TriggerLink(9)}></video>
           <img style={Play_Img_Style} src={PlayImg} id="Play_Img_10" />
-          <img onClick={() => Save_Video({id_Heart: "Heart_v_10"})} src={Heart_Img_v} style={Heart_Style_v} id="Heart_v_10"/>
+          <img onClick={() => Save_Video({id_Heart: "Heart_v_10", src: videoArray[9], url: videoArrayurl[9]})} src={Heart_Img_v} style={Heart_Style_v} id="Heart_v_10"/>
           <p style={Source_Text_Style} id="Source_10_Vid">
             Source:{" "}
             <span id="Img_Source1" style={Actual_Source_Text}>
