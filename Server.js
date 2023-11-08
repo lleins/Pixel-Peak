@@ -144,7 +144,7 @@ app.post('/api/account_information', (req, res) => { //Grabbing Account Informat
                 } else {
 
                     res.status(200).json({ success: 1, message: 'Authentication successful', email: user.email, date: user.date }); //sends email and date as a reponse
-                    console.log("Here is Data Sending to Account: ", user.email, " ", user.date);
+                    console.log("Here is Data Sending to Account: ", user.email, "", user.date);
                 }
             })
 
@@ -223,8 +223,6 @@ app.post('/api/delete_saved_pics_vids', (req, res) => {
 //Delete Account---------------------------------------------------------------------------------------------------------
 
 
-
-
 //Save a Video or Picture------------------------------------------------------------------------------------------------
 
 
@@ -260,7 +258,7 @@ app.post('/api/delete_saved', (req, res) => {
     const { email_data, url_data } = req.body
 
     const Decoded_Login_Token = jsonwebtoken.verify(email_data, secretKey); //Decoded Token tested for validity
-    console.log("Email from Token in Remove: ", Decoded_Login_Token.email);
+    console.log("Email from Token in Remove 2: ", Decoded_Login_Token.email);
     const email_cookie = Decoded_Login_Token.email; //Uses email in payload to find user in database
 
     removeUserByEmail_link(email_cookie, url_data)
@@ -281,6 +279,72 @@ app.post('/api/delete_saved', (req, res) => {
 
 
 //Remove a Video or Picture----------------------------------------------------------------------------------------------
+
+
+//Delete a Saved item in Saved Tab---------------------------------------------------------------------------------
+function removeUserByEmail_src(email, src) {
+    return Saved.findOneAndRemove({ email: email, src: src }).exec();
+}
+
+app.post('/api/delete_saved_Item_Saved', (req, res) => {
+    const { email_data, src_data } = req.body
+    console.log(src_data);
+    const Decoded_Login_Token = jsonwebtoken.verify(email_data, secretKey); //Decoded Token tested for validity
+    console.log("Email from Token in Remove 1: ", Decoded_Login_Token.email);
+    const email_cookie = Decoded_Login_Token.email; //Uses email in payload to find user in database
+
+    removeUserByEmail_src(email_cookie, src_data)
+        .then(user => {
+            if (user) {
+                // User with the specified email and link removed
+                res.status(200).json({ success: 1 });
+            } else {
+                console.log("User not found Delete: ")
+                return res.status(404).json({ success: 0 });
+            }
+        })
+        .catch(err => {
+            console.log("went wrong ", err);
+            res.status(500).json({ success: 3 });
+        });
+});
+//Delete a Saved item in Saved Tab---------------------------------------------------------------------------------
+
+
+//Display Saved Items----------------------------------------------------------------------------------------------------
+function findDocumentsByEmail(email) {
+    return Saved.find({ email: email }).exec();
+}
+
+app.post('/api/Saved_Get_Pics_Vids', (req, res) => {
+    const { email_data } = req.body;
+
+    const Decoded_Login_Token = jsonwebtoken.verify(email_data, secretKey); // Decoded Token tested for validity
+    console.log("Email from Token in Get Documents 4: ", Decoded_Login_Token.email);
+    const email_cookie = Decoded_Login_Token.email; // Uses email in payload to find user in the database
+
+    findDocumentsByEmail(email_cookie)
+        .then(docs => {
+            if (docs.length > 0) {
+
+                res.status(200).json({ success: 1, documents: docs });
+            } else {
+
+                res.status(404).json({ success: 0 });
+            }
+        })
+        .catch(err => {
+
+            res.status(500).json({ success: 3 });
+        });
+});
+
+
+
+
+
+//Display Saved Items----------------------------------------------------------------------------------------------------
+
 
 
 mongoose.connect('mongodb://127.0.0.1:27017/Pixel-Peak', {
@@ -314,21 +378,4 @@ app.listen(port, () => {
 
 
 
-/* for mongo communication
-const { email } = req.body;
-    User.findOne({ email: email })
-        .then(user => {
-            if (!user) {
-                console.log('User not found');
-                res.status(400).json({ success: 0 });
-            } else {
-                console.log('Found user:', user);
-                res.status(200).json({ success: 1 });
-            }
-        })
-        .catch(err => {
-            console.error('Error finding user:', err);
-            res.status(500).json({ success: "01" });
-        });
-});
-*/
+

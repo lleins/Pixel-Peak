@@ -1,3 +1,9 @@
+/*
+Problems:
+1. Saved.Format is being called serveral times per second.
+
+*/
+
 body {
     background-color: rgb(10, 10, 10) !important;
     overflow-x: hidden;
@@ -135,7 +141,7 @@ body {
     position: fixed;
     top: 40px;
     left: 20px;
-    z-index: 100;
+    z-index: 99999;
     width: 70%;
     height: 50px;
     padding-left: 10px;
