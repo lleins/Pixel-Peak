@@ -247,6 +247,14 @@ body {
     border-left: 40px solid rgb(255, 61, 27);
 }
 
+#Max_Saved_0 {
+    /**/
+    display: none;
+    background-color: rgb(240, 240, 240);
+    color: rgb(100, 100, 100);
+    border-left: 40px solid rgb(255, 61, 27);
+}
+
 /*Page Notifications*/
 
 

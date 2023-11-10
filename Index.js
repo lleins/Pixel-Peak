@@ -198,6 +198,13 @@ function Accept_Cookies() {
 
 
 
+//Cookies for Deleting Saved-----------------------------------------------------------
+
+
+
+
+//Cookies for Deleting Saved-----------------------------------------------------------
+
 
 
 
@@ -215,7 +222,6 @@ function ViewSaved() {
   const Account_Container = document.getElementById("Login_Container");
   Account_React.style.left = "50%";
   Account_Container.style.visibility = "hidden";
-
 }
 
 //Function Account-----------------------------------------------------------
@@ -502,6 +508,4 @@ function Hover_Photo_Video(container, dropdown) {
 Hover_Photo_Video("Hover_Video", "Video_Dropdown_Change");
 Hover_Photo_Video("Hover_Photo", "Photo_Dropdown_Change");
 //Hover Chnage Photo/Video-----------------------------------------------------------------
-
-
 

@@ -226,22 +226,30 @@ app.post('/api/delete_saved_pics_vids', (req, res) => {
 //Save a Video or Picture------------------------------------------------------------------------------------------------
 
 
-app.post('/api/save', async (req, res) => {  //Saving video/picture
+app.post('/api/save', async (req, res) => {
     const { email_data, src_data, url_data, type_data } = req.body;
 
-    const Decoded_Login_Token = jsonwebtoken.verify(email_data, secretKey); //Decoded Token tested for validity
+    const Decoded_Login_Token = jsonwebtoken.verify(email_data, secretKey);
+
     console.log("Email from Token in Saved: ", Decoded_Login_Token.email);
-    const Login_Email = Decoded_Login_Token.email; //Uses email in payload to find user in database
+    const Login_Email = Decoded_Login_Token.email;
 
     try {
 
-        const newUser = new Saved({ email: Login_Email, src: src_data, url: url_data, type: type_data }); // Create and save pic or vid
+        const count = await Saved.countDocuments({ email: Login_Email });
+
+        if (count >= 10) {
+            return res.status(400).json({ message: 3 });
+        }
+
+        // If less than 10, proceed to save the new document
+        const newUser = new Saved({ email: Login_Email, src: src_data, url: url_data, type: type_data });
         await newUser.save();
 
-        return res.status(201).json({ message: 1 }); // Saved Succesfully
+        return res.status(201).json({ message: 1 });
     } catch (error) {
         console.error('Error:', error);
-        return res.status(500).json({ message: 0 }); // Server error
+        return res.status(500).json({ message: 0 });
     }
 });
 //Save a Video or Picture------------------------------------------------------------------------------------------------
@@ -286,7 +294,7 @@ function removeUserByEmail_src(email, src) {
     return Saved.findOneAndRemove({ email: email, src: src }).exec();
 }
 
-app.post('/api/delete_saved_Item_Saved', (req, res) => {
+app.post('/api/Item_Saved_Delete', (req, res) => {
     const { email_data, src_data } = req.body
     console.log(src_data);
     const Decoded_Login_Token = jsonwebtoken.verify(email_data, secretKey); //Decoded Token tested for validity
@@ -316,14 +324,14 @@ function findDocumentsByEmail(email) {
     return Saved.find({ email: email }).exec();
 }
 
-app.post('/api/Saved_Get_Pics_Vids', (req, res) => {
+app.post('/api/Get_Pics_Vids', (req, res) => {
     const { email_data } = req.body;
 
-    const Decoded_Login_Token = jsonwebtoken.verify(email_data, secretKey); // Decoded Token tested for validity
-    console.log("Email from Token in Get Documents 4: ", Decoded_Login_Token.email);
-    const email_cookie = Decoded_Login_Token.email; // Uses email in payload to find user in the database
+    const Decoded_Login_Token_saved = jsonwebtoken.verify(email_data, secretKey); // Decoded Token tested for validity
+    console.log("why is this getting called 100 times: ", Decoded_Login_Token_saved.email);
+    const email_cookie_saved = Decoded_Login_Token_saved.email;
 
-    findDocumentsByEmail(email_cookie)
+    findDocumentsByEmail(email_cookie_saved)
         .then(docs => {
             if (docs.length > 0) {
 

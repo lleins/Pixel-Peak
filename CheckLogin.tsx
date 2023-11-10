@@ -1,4 +1,5 @@
 import Cookies from "js-cookie";
+import Saved from "./models/Saved";
 
 //For Checking LoginToken validity--------------------------------------
 
@@ -144,3 +145,20 @@ if (LogoutButton) {
 }
 
 
+
+function Deleted_Saved() {
+  const Check_Delete_Cookie = Cookies.get("Deleted_Saved");
+  const Account_btn =  document.getElementById("Account");
+  const Saved_btn = document.getElementById("Saved_Acc_Btn");
+  if (Check_Delete_Cookie === undefined) {
+    ""
+  } else if (Check_Delete_Cookie !== undefined) {
+    if(Saved_btn)Saved_btn.click();
+    if(Account_btn)Account_btn.click();
+    Cookies.remove('Deleted_Saved');
+
+
+  }
+
+}
+Deleted_Saved();

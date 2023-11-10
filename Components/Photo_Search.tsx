@@ -261,7 +261,7 @@ function Photo_Search_Style(){
                 }else if (data.message === 3) { //fail in server
                   console.log("Didnt Save in Photos_Format 3");
                   if(Loader) Loader.style.display = "none";
-                  const Success_Notif = document.getElementById("Saved_0");
+                  const Success_Notif = document.getElementById("Max_Saved_0");
                   if(Success_Notif) Success_Notif.style.display = "block";
                   setTimeout(() => {
                     if(Success_Notif) Success_Notif.style.display = "none";

@@ -289,7 +289,7 @@ function Video_Style() {
                   }, 2000);
                 }else if (data.message === 3) { //fail in server
                   console.log("Didnt Save in Photos_Format 3");
-                  const Success_Notif = document.getElementById("Saved_0");
+                  const Success_Notif = document.getElementById("Max_Saved_0");
                   if(Success_Notif) Success_Notif.style.display = "block";
                   setTimeout(() => {
                     if(Success_Notif) Success_Notif.style.display = "none";
