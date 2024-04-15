@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function() {
       const Cokies_Container = document.getElementById("Cookies_Confirmation_Container");
       if(Cokies_Container){
         const Accept_Cookie_Status = Cookies.get("Cookies_Accept");
-        console.log("Cookie: ", Accept_Cookie_Status );
+        //console.log("Cookie: ", Accept_Cookie_Status );
         if(Accept_Cookie_Status == undefined){
             Cokies_Container.style.opacity = "1";
             Cokies_Container.style.bottom = "0px";
@@ -31,6 +31,3 @@ if (Accept_Cookie) {
         Cookies.set("Cookies_Accept", Accepted, { path: '/', expires: sevenDaysFromNow  });
     });
 }
-
-
-
