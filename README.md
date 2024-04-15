@@ -11,3 +11,12 @@ Pixel-Peak is a video/photo browser application made with the MERN stack. It uti
 - **MERN Stack**: Built with MongoDB, Express.js, React.js, and Node.js, Pixel-Peak provides a robust and efficient web application framework.
 - **Responsive Design**: The user interface is designed to be responsive, ensuring a consistent experience across various devices and screen sizes.
 
+## Usage
+
+[Visit website](http://18.225.95.230:5173/)
+
+Once you're on the Pixel Peak platform, you can:
+
+Sign up for a new account or log in with existing credentials.
+Browse thousands of videos and photos.
+Save videos and photos in account for later reference.
