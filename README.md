@@ -13,7 +13,7 @@ Pixel-Peak is a video/photo browser application made with the MERN stack. It uti
 
 ## Usage
 
-[Visit website](http://18.225.95.230:5173/)
+[Visit Website](http://18.225.95.230:5173/)
 
 Once you're on the Pixel Peak platform, you can:
 
