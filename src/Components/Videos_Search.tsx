@@ -1,860 +1,1491 @@
 import { CSSProperties } from "react";
 import React, { useRef, RefObject, useEffect, useState } from "react";
-import SearchImg from "C:\\Users\\Big_T\\OneDrive\\Desktop\\VsCode\\MERN\\react-app\\Images\\Search.png"
-import PlayImg from "C:\\Users\\Big_T\\OneDrive\\Desktop\\VsCode\\MERN\\react-app\\src\\Components\\Images\\PlayImg.png";
-import Heart_Img_vid from "C:\\Users\\Big_T\\OneDrive\\Desktop\\VsCode\\MERN\\react-app\\src\\Components\\Images\\Heart.png";
-import Resize_Img_v_Search from "C:\\Users\\Big_T\\OneDrive\\Desktop\\VsCode\\MERN\\react-app\\src\\Components\\Images\\ResizeImg.png";
-import Exit_Img_p_Search from "C:\\Users\\Big_T\\OneDrive\\Desktop\\VsCode\\MERN\\react-app\\src\\Components\\Images\\ExitImg.png";
+import SearchImg from "\\home\\ec2-user\\Pixel Peak\\react-app\\Images\\Search.png";
+import PlayImg from "\\home\\ec2-user\\\Pixel Peak\\react-app\\src\\Components\\Images\\PlayImg.png";
+import Heart_Img_vid from "\\home\\ec2-user\\Pixel Peak\\react-app\\src\\Components\\Images\\Heart.png";
+import Resize_Img_v_Search from "\\home\\ec2-user\\Pixel Peak\\react-app\\src\\Components\\Images\\Fullscreen.png";
+import Exit_Img_p_Search from "\\home\\ec2-user\\Pixel Peak\\react-app\\src\\Components\\Images\\ExitImg.png";
+import download_Img from "\\home\\ec2-user\\Pixel Peak\\react-app\\src\\Components\\Images\\download.png";
+import Cookies from 'js-cookie';
+const apiKey_v = "GTKZGX1qr6cVxMS1Dl88v1xUVe2edF3qaozGZMucbID3XTPE3Z2fSdbh";
 
 function Video_Search_Style(){
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup function to remove the event listener when component unmounts
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []); 
 
 
 
+  {
+      /*API Call, PEXELS-------------------------------------------------------------*/
+    }
+
+    const getRandomString = (): string => {
+      const strings: string[] = ['dark', 'nature', 'forest', 'sky'];
+      const randomIndex: number = Math.floor(Math.random() * strings.length);
+      return strings[randomIndex];
+    };
+    const randomString: string = getRandomString();
+
+    const [searchQuery_v, setSearchQuery_v] = useState("");
+    
+    const [PageQuery_v, setPageQuery_v] = useState(1);
+    const apiUrl_v = `https://api.pexels.com/videos/search?query=${searchQuery_v}&per_page=18&page=${PageQuery_v}`;
+
+
+    interface Video_v {
+      video_files: {
+        link: string;
+      }[];
+    }
+  
+
+    interface Video2_v {
+      url: {
+        url: string;
+      }[];
+    }
+    
+
+    interface Video3_v {
+      user: {
+          name: string;
+      };
+    }
+    const [videoArray_v, setVideoArray_v] = useState<string[]>([]);
+    const [videoArrayurl_v, setVideoArrayurl_v] = useState<string[]>([]);
+    const [videoArrayuser_v, setVideoArrayuser_v] = useState<string[]>([]);
+    const [videoResults, setVideoResults] = useState<string[]>([]);
+    useEffect(() => {
+      const fetchVideos = async () => {
+        try {
+          const response = await fetch(apiUrl_v, {
+            headers: {
+              Authorization: apiKey_v,
+            },
+          });
+          
+          if (!response.ok) {
+           
+          }
+          
+          const data_v = await response.json();
+
+          const videos = data_v.videos.map((video: Video_v) => video.video_files[0].link.toString());
+          setVideoArray_v(videos);
+    
+          const videosurl_v = data_v.videos.map((video: Video2_v) => video.url);
+          setVideoArrayurl_v(videosurl_v);
+         
+
+          const videosuser_v = data_v.videos.map((video: Video3_v) => video.user.name);
+          setVideoArrayuser_v(videosuser_v);
+
+          const videoResult_v = data_v.total_results;
+          setVideoResults(videoResult_v);
+
+
+        } catch (error) {
+         
+        }
+      };
+  
+      fetchVideos();
+    }, [apiKey_v, apiUrl_v]);
+  
+    const handleQueryChange_v = (newQuery: string) => {
+      setSearchQuery_v(newQuery);
+    };
+
+    const handlePageChange_v = (newPage_v: number) => {
+      setPageQuery_v(newPage_v);
+    };
+
+    function TriggerLink_v(i: number) {
+      const url = videoArrayurl_v[i];
+  
+      window.open(url, "_blank");
+    }
+
+
+    function TriggerLink_v_url(url: string) {
+      window.open(url, "_blank");
+    }
+
+    function ChangeSearch(){
+
+      const load_spinner_vid = document.getElementById("Loading_Spinner_vid");
+      if(load_spinner_vid) load_spinner_vid.style.display = "block";
+      
+      setTimeout(() => {
+          const load_spinner_vid = document.getElementById("Loading_Spinner_vid");
+          if(load_spinner_vid) load_spinner_vid.style.display = "none";
+          
+          const ActualInput =  document.getElementById('Search_Videos') as HTMLInputElement
+          const ActualResult =  document.getElementById('Search_Result_v');
+
+          if(ActualInput) handleQueryChange_v(ActualInput.value);
+          if(ActualResult) ActualResult.textContent = ActualInput.value;
+          setIsDisplayBlock_v(true);
+          
+      }, 1500); 
+  }  
+
+  interface query_interface{
+    query: string;
+  }
+
+  function ChangeSearch_Trending({query}:query_interface){
+
+    const load_spinner_vid = document.getElementById("Loading_Spinner_vid");
+    if(load_spinner_vid) load_spinner_vid.style.display = "block";
+    
+    setTimeout(() => {
+        const load_spinner_vid = document.getElementById("Loading_Spinner_vid");
+        if(load_spinner_vid) load_spinner_vid.style.display = "none";
+        
+        const ActualInput =  document.getElementById('Search_Videos') as HTMLInputElement
+        const ActualResult =  document.getElementById('Search_Result_v');
+
+        setSearchValue(query);
+        ChangeSearch();
+        
+    }, 1500); 
+}  
+
+  const handleKeyPress_v = (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === 'Enter') {
+        const SearchButton = document.getElementById('Search_Button_v');
+        if (SearchButton) {
+            SearchButton.click();
+        }
+      }
+  };
+
+
+  const increaseBrightness_vid = () => {
+    const elements = document.querySelectorAll('.Heart_Style_Class_Vid');
+    
+    for (let i = 0; i < elements.length; i++){
+      const element = elements[i] as HTMLElement; 
+      const element_style = getComputedStyle(element);
+      
+      if (element_style.filter === "brightness(1)"){
+        element.style.filter = "brightness(500%)";
+      } else {
+       
+      }
+    }
+  };
+
+
+  interface Resize_ids_v{
+    Container_Id_v: string;
+    Exit_Id_v: string;
+    Heart_Id_v: string;
+    Resize_Id_v: string;
+    Source_Id_v: string;
+    Picture_Id_v: string;
+    Loading_Id_v: string;
+  }
+
+
+  function Resize_Photo_Item_v({Container_Id_v, Exit_Id_v, Heart_Id_v, Resize_Id_v, Source_Id_v, Picture_Id_v, Loading_Id_v }: Resize_ids_v){
+    const element = document.getElementById("main_style");
+    if (element) {
+        element.scrollIntoView({ behavior: 'instant' });
+        element.textContent = "";
+        element.textContent = Container_Id_v;
+    }
+ 
+    toggleControls();
+
+    const View_Video_Container = document.getElementById("View_Video");
+    
+    const download_btn = document.getElementById("View_Download_Btn");
+
+    const nav_bar = document.getElementById("Main_Nav");
+    const exit_img = document.getElementById("View_Exit_Img");
+    const user = document.getElementById("view_video_user");
+    const Heart_Img = document.getElementById("View_Heart_Img");
+    const actual_heart = document.getElementById(Heart_Id_v);
+    const actual_video = document.getElementById("Video_View_Actual") as HTMLVideoElement | null;
+    if(actual_heart){ 
+      const HeartStyle = getComputedStyle(actual_heart);
+      if(actual_heart){
+        if (HeartStyle.filter === "brightness(1)"){
+          if(Heart_Img) Heart_Img.style.filter = "brightness(100%)";
+        }
+      }else if(actual_heart){
+        if (HeartStyle.filter === "brightness(5)"){
+          if(Heart_Img) Heart_Img.style.filter = "brightness(500%)";
+        }
+      }
+    }
+
+    if(download_btn){
+      download_btn.onclick=(() => Download_video({Download_Btn_Id: "View_Download_Btn", url: Picture_Id_v}));
+    }
+   
+  
+    if(Heart_Img){
+      Heart_Img.onclick=(() =>Save_Vid_Search({id_Heart_vid_Search: `View_Heart_Img`, src: Picture_Id_v, url: Resize_Id_v, load: ``, user: Source_Id_v }));
+    }
+
+    if(user){
+      user.textContent = "";
+      user.textContent = "By: " + Source_Id_v;
+      user.onclick=(() =>TriggerLink_v_url(Resize_Id_v));
+    }
+
+    if(exit_img){
+      exit_img.style.display = "block";
+    }
+
+    if(actual_video){
+      actual_video.src = Picture_Id_v;
+    }
+
+    if(nav_bar){
+      nav_bar.style.display = "none";
+    }
+    if(View_Video_Container){
+      View_Video_Container.style.display = "block";
+    }
+
+
+  }
+
+
+
+
+  function Exit_Photo_Item_v(){
+    
+    const View_Video_Container = document.getElementById("View_Video");
+    const nav_bar = document.getElementById("Main_Nav");
+    const exit_img = document.getElementById("View_Exit_Img");
+
+    if(exit_img){
+      exit_img.style.display = "none";
+    }
+
+    if(nav_bar){
+      nav_bar.style.display = "flex";
+    }
+    if(View_Video_Container){
+      View_Video_Container.style.display = "none";
+    }
+
+    toggleControls();
+    
+    const mainStyleElement = document.getElementById("main_style");
+    if (mainStyleElement) {
+        const elementText = mainStyleElement.textContent;
+        const element = document.querySelector(`#${elementText}`); // Assuming you want to select by ID
+        
+        if (element instanceof HTMLElement) {
+            element.scrollIntoView({ behavior: 'instant' });
+        }
+    }
+  }
+  const [isOverflowVisible_v, setIsOverflowVisible_v] = useState(true);
+
+  const toggleOverflow_v = () => {
+    setIsOverflowVisible_v(prev => !prev);
+  };
+
+
+
+  function ChangeNextPage_v(){
+      handlePageChange_v(PageQuery_v + 1);
+    
+      increaseBrightness_vid();
+         
+      const element = document.getElementById("Search_Videos");
+        if (element) {
+            element.scrollIntoView({ behavior: 'instant' });
+        }
+    
+    }
+
+    function ChangePrevPage_v(){
+      if (PageQuery_v <= 1){
+
+      }else if(PageQuery_v > 1){
+          handlePageChange_v(PageQuery_v - 1);
+  
+          increaseBrightness_vid();
+          const element = document.getElementById("Search_Videos");
+          if (element) {
+            element.scrollIntoView({ behavior: 'instant' });
+          }
+      
+      };
+      
+    }
 
     {
-        /*API Call, PEXELS-------------------------------------------------------------*/
-      }
-      const apiKey_v = "GTKZGX1qr6cVxMS1Dl88v1xUVe2edF3qaozGZMucbID3XTPE3Z2fSdbh";
-      const [searchQuery_v, setSearchQuery_v] = useState('');
-      const [PageQuery_v, setPageQuery_v] = useState(1);
-      const apiUrl_v = `https://api.pexels.com/videos/search?query=${searchQuery_v}&per_page=18&page=${PageQuery_v}`;
-    
-      interface Video_v {
-        video_files: {
-          link: string;
-        }[];
-      }
-    
-      interface Video2_v {
-        url: {
-          url: string;
-        }[];
-      }
-    
-      const [videoArray_v, setVideoArray_v] = useState<string[]>([]);
-      const [videoArrayurl_v, setVideoArrayurl_v] = useState<string[]>([]);
-      useEffect(() => {
-        const fetchVideos = async () => {
-          try {
-            const response = await fetch(apiUrl_v, {
-              headers: {
-                Authorization: apiKey_v,
-              },
-            });
-    
-            if (!response.ok) {
-              throw new Error("Network response was not ok");
-            }
-    
-            const data_v = await response.json();
-            const videos = data_v.videos.map((video: Video_v) =>
-              video.video_files[1].link.toString()
-            );
-            setVideoArray_v(videos);
-    
-            const videosurl_v = data_v.videos.map((video: Video2_v) => video.url);
-            setVideoArrayurl_v(videosurl_v);
-          } catch (error) {
-            console.error("Error:", error);
-          }
-        };
-    
-        fetchVideos();
-      }, [apiKey_v, apiUrl_v]);
-    
-      const handleQueryChange_v = (newQuery: string) => {
-        setSearchQuery_v(newQuery);
-      };
+      /*API Call, PEXELS-------------------------------------------------------------*/
+    }
 
-      const handlePageChange_v = (newPage_v: number) => {
-        setPageQuery_v(newPage_v);
-      };
+   
 
-      function TriggerLink_v(i: number) {
-        const url = videoArrayurl_v[i];
-    
-        window.open(url, "_blank");
-      }
-
-
-      function ChangeSearch(){
-        const load_spinner_vid = document.getElementById("Loading_Spinner_vid");
-        if(load_spinner_vid) load_spinner_vid.style.display = "block";
-        
-        setTimeout(() => {
-            const load_spinner_vid = document.getElementById("Loading_Spinner_vid");
-            if(load_spinner_vid) load_spinner_vid.style.display = "none";
-            
-            const ActualInput =  document.getElementById('Search_Videos') as HTMLInputElement
-            const ActualResult =  document.getElementById('Search_Result_v');
-        
-            if(ActualInput) handleQueryChange_v(ActualInput.value);
-            if(ActualResult) ActualResult.textContent = ActualInput.value;
-            setIsDisplayBlock_v(true);
-            handlePageChange_v(PageQuery_v / PageQuery_v);
-
-        }, 1500); 
-    }  
-
-    const handleKeyPress_v = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
-          const SearchButton = document.getElementById('Search_Button_v');
-          if (SearchButton) {
-              SearchButton.click();
-          }
-        }
-    };
-
-
-    interface Resize_ids_v{
-      Container_Id_v: string;
-      Exit_Id_v: string;
-      Heart_Id_v: string;
+  interface HoverImgProps {
+      containerId: string;
+      sourceTextId: string;
+      Video: string;
+      PlayImg: string;
       Resize_Id_v: string;
-      Source_Id_v: string;
-      Picture_Id_v: string;
+      enabled: boolean;
     }
-
-
-    function Resize_Photo_Item_v({Container_Id_v, Exit_Id_v, Heart_Id_v, Resize_Id_v, Source_Id_v, Picture_Id_v }: Resize_ids_v){
-      const element = document.getElementById("Video_Item_1");
-      if (element) {
-          element.scrollIntoView({ behavior: 'instant' });
-      }
-      toggleOverflow_v();
-      toggleControls();
-      const actual_container = document.getElementById(Container_Id_v);
-      const actual_exit = document.getElementById(Exit_Id_v);
-      const actual_heart = document.getElementById(Heart_Id_v);
-      const actual_resize = document.getElementById(Resize_Id_v);
-      const actual_source = document.getElementById(Source_Id_v);
-      const actual_picture = document.getElementById(Picture_Id_v);
-
-
-      if(actual_container){
-        actual_container.style.width = "100%";
-        actual_container.style.height = "95%";
-        actual_container.style.position = "absolute";
-        actual_container.style.left = "50%";
-        actual_container.style.top = "49%";
-        actual_container.style.transform = "translate(-50%, -50%)";
-        actual_container.style.zIndex = "12";
-        actual_container.style.boxShadow = '0px 0px 0px 100vw rgba(0, 0, 0, .9)';
-      }
-      
-      if(actual_exit){
-        actual_exit.style.display = "block";
-      }
-
-      if(actual_heart){
-        actual_heart.style.position = "absolute";
-        actual_heart.style.top = "5px";
-        actual_heart.style.left = "5px";
-      }
-
-      if(actual_resize){
-        actual_resize.style.display = "none";
-      }
-
-      if(actual_source){
-        actual_source.style.display = "none";
-      }
-      
-      if(actual_picture){
-        actual_picture.style.left = "81%";
-        actual_picture.style.top = "50%";
-        actual_picture.style.transform = "translate(-50%, -50%)";
-      }
-
-
-
-    }
-
-    interface Exit_Resize_ids_v{
-      Container_Id_Exit_v: string;
-      Exit_Id_Exit_v: string;
-      Heart_Id_Exit_v: string;
-      Resize_Id_Exit_v: string;
-      Source_Id_Exit_v: string;
-      Picture_Id_Exit_v: string;
-    }
-
-    function Exit_Photo_Item_v({Container_Id_Exit_v, Exit_Id_Exit_v, Heart_Id_Exit_v, Resize_Id_Exit_v, Source_Id_Exit_v, Picture_Id_Exit_v }: Exit_Resize_ids_v){
-      toggleOverflow_v();
-      toggleControls();
-      
-      const actual_container = document.getElementById(Container_Id_Exit_v);
-      const actual_exit = document.getElementById(Exit_Id_Exit_v);
-      const actual_heart = document.getElementById(Heart_Id_Exit_v);
-      const actual_resize = document.getElementById(Resize_Id_Exit_v);
-      const actual_source = document.getElementById(Source_Id_Exit_v);
-      const actual_picture = document.getElementById(Picture_Id_Exit_v);
-      
-      if(actual_container){
-        actual_container.style.width = "300px";
-        actual_container.style.height = "200px";
-        actual_container.style.position = "relative";
-        actual_container.style.left = "50%";
-        actual_container.style.top = "0%";
-        actual_container.style.transform = "translate(-50%)";
-        actual_container.style.zIndex = "10";
-        actual_container.style.boxShadow = '2px 2px 5px rgba(0, 0, 0, 0)'
-      }
-      
-      if(actual_exit){
-        actual_exit.style.display = "none";
-      }
   
-      if(actual_heart){
-        actual_heart.style.position = "relative";
-        actual_heart.style.top = "-200px";
-        actual_heart.style.left = "260px";
-      }
-
-      if(actual_resize){
-        actual_resize.style.display = "flex";
-        actual_resize.style.position = "relative";
-        actual_resize.style.left = "265px";
-        actual_resize.style.top = "-70px";
-      }
-
-      if(actual_source){
-        actual_source.style.display = "flex";
-      }
-      
-      if(actual_picture){
-        actual_picture.style.display = "flex";
-        actual_picture.style.position = "absolute";
-        actual_picture.style.left = "300px";
-        actual_picture.style.top = "5px";
-        actual_picture.style.transform = "scale(.7)";
-      }
-      
-      const element = document.getElementById(Container_Id_Exit_v);
-      if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
-      }
-
+    function HoverImg({
+      containerId,
+      sourceTextId,
+      Video,
+      PlayImg,
+      Resize_Id_v,
+      enabled, // Add a default value to enable the function by default
+    }: HoverImgProps) {
+      useEffect(() => {
+        if (!enabled) return; // If the function is disabled, return early
+    
+        const sourceTextActual = document.getElementById(sourceTextId);
+        const containerActual = document.getElementById(containerId);
+        const PlayImgActual = document.getElementById(PlayImg);
+        const videoElement = document.getElementById(Video) as HTMLVideoElement | null;
+        const ResizeActual = document.getElementById(Resize_Id_v);
+    
+        const handleMouseOver = () => {
+          if(videoElement) videoElement.play();
+          if (PlayImgActual) PlayImgActual.style.opacity = "0";
+          if (ResizeActual) ResizeActual.style.opacity = "1";
+          if(sourceTextActual) sourceTextActual.style.opacity = "1";
+        };
+    
+        const handleMouseOut = () => {
+          if(videoElement) videoElement.pause();
+          if (PlayImgActual) PlayImgActual.style.opacity = "1";
+          if (ResizeActual) ResizeActual.style.opacity = "1";
+          if(sourceTextActual) sourceTextActual.style.opacity = "1";
+        };
+    
+        if (containerActual) {
+          containerActual.addEventListener("mouseover", handleMouseOver);
+          containerActual.addEventListener("mouseout", handleMouseOut);
+        }
+    
+        return () => {
+          if (containerActual) {
+            containerActual.removeEventListener("mouseover", handleMouseOver);
+            containerActual.removeEventListener("mouseout", handleMouseOut);
+          }
+        };
+      }, [containerId, sourceTextId, enabled]); // Include 'enabled' in the dependency array
+    
+      return null;
     }
 
-    const [isOverflowVisible_v, setIsOverflowVisible_v] = useState(true);
+    interface Save_Vid_Ids_Search{
+      id_Heart_vid_Search: string;
+      src: string;
+      url: string;
+      load: string;
+      user: string;
+    }
 
-    const toggleOverflow_v = () => {
-      setIsOverflowVisible_v(prev => !prev);
-    };
-
-
-
-
-
-
-
-    function ChangeNextPage_v(){
-        handlePageChange_v(PageQuery_v + 1);
-
-        const load_spinner_vid = document.getElementById("Loading_Spinner_vid_Bottom");
-        if(load_spinner_vid) load_spinner_vid.style.display = "block";
-
-        
-        setTimeout(() => {
-            const load_spinner_vid = document.getElementById("Loading_Spinner_vid_Bottom");
-            if(load_spinner_vid) load_spinner_vid.style.display = "none";
-            const element = document.getElementById("Search_Videos");
-              if (element) {
-                  element.scrollIntoView({ behavior: 'smooth' });
-              }
-    
-        }, 1500); 
-
-        
-        
-      }
-
-      function ChangePrevPage_v(){
-        if (PageQuery_v <= 1){
-
-        }else if(PageQuery_v > 1){
-            handlePageChange_v(PageQuery_v - 1);
-            const load_spinner_vid = document.getElementById("Loading_Spinner_vid_Bottom");
-            if(load_spinner_vid) load_spinner_vid.style.display = "block";
-    
-            
-            setTimeout(() => {
-                const load_spinner_vid = document.getElementById("Loading_Spinner_vid_Bottom");
-                if(load_spinner_vid) load_spinner_vid.style.display = "none";
-                const element = document.getElementById("Search_Videos");
-                if (element) {
-                  element.scrollIntoView({ behavior: 'smooth' });
-                }
-            }, 1500);
-        };
-        
-        
-      }
-
-      {
-        /*API Call, PEXELS-------------------------------------------------------------*/
-      }
-
-
-
-    interface HoverImgProps {
-        containerId: string;
-        sourceTextId: string;
-        Video: string;
-        PlayImg: string;
-        Resize_Id_v: string;
-      }
-    
-      function HoverImg({
-        containerId,
-        sourceTextId,
-        Video,
-        PlayImg, Resize_Id_v
-      }: HoverImgProps) {
-        useEffect(() => {
-          const sourceTextActual = document.getElementById(sourceTextId);
-          const containerActual = document.getElementById(containerId);
-          const PlayImgActual = document.getElementById(PlayImg);
-          const videoElement = document.getElementById(
-            Video
-          ) as HTMLVideoElement | null;
-          const ResizeActual = document.getElementById(Resize_Id_v);
-    
-          const handleMouseOver = () => {
-            if (sourceTextActual) sourceTextActual.style.opacity = "0";
-            videoElement?.play();
-            if (PlayImgActual) PlayImgActual.style.opacity = "0";
-            if (ResizeActual) ResizeActual.style.opacity = "1";
-          };
-    
-          const handleMouseOut = () => {
-            if (sourceTextActual) sourceTextActual.style.opacity = "1";
-            videoElement?.pause(); 
-            if (PlayImgActual) PlayImgActual.style.opacity = "1";
-            if (ResizeActual) ResizeActual.style.opacity = "0";
-          };
-    
-          if (containerActual) {
-            containerActual.addEventListener("mouseover", handleMouseOver);
-            containerActual.addEventListener("mouseout", handleMouseOut);
-          }
-    
-          return () => {
-            if (containerActual) {
-              containerActual.removeEventListener("mouseover", handleMouseOver);
-              containerActual.removeEventListener("mouseout", handleMouseOut);
-            }
-          };
-        }, [containerId, sourceTextId]);
-    
-        return null;
-      }
-
-      interface Save_Vid_Ids_Search{
-        id_Heart_vid_Search: string;
-      }
-
-      function Save_Vid_Search({ id_Heart_vid_Search }: Save_Vid_Ids_Search) : void {
-        const HeartImg = document.getElementById(id_Heart_vid_Search);
+    function Save_Vid_Search({ id_Heart_vid_Search, src, url, load, user }: Save_Vid_Ids_Search) : void {
+      const HeartImg = document.getElementById(id_Heart_vid_Search);
+      const Loader = document.getElementById(load);
+      
+      const Check_Login = Cookies.get("Login_Token"); //Checks Login Token
+      if(Check_Login !== undefined){
+  
         if (HeartImg) {
           const HeartStyle = getComputedStyle(HeartImg);
-          if (HeartStyle.filter === "brightness(5)") {
-            HeartImg.style.filter = "brightness(100%)";
-            const Fail_Notif = document.getElementById("Saved_1");
-            if(Fail_Notif) Fail_Notif.style.display = "block";
-            setTimeout(() => {
-              if(Fail_Notif) Fail_Notif.style.display = "none";
+          if (HeartStyle.filter === "brightness(5)") { //checks Heart color
+            
+            fetch('http://localhost:5000/api/save', { //fetch to /save endpoint in Server.js
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ email_data: Check_Login, src_data : src.toString(), url_data: url.toString(), type_data: "V", user: user }),
+              })
+              .then(response => {
+                  if (response.ok) { //request sent
+                    
+                      //console.log("From Sign React: Request sent"); //Sent to express server
+                      return response.json(); 
+                  } else {
+             
+                    const Success_Notif = document.getElementById("Saved_0"); //request did not send
+                    if(Success_Notif) Success_Notif.style.display = "block";
+                    setTimeout(() => {
+                      if(Success_Notif) Success_Notif.style.display = "none";
+                      
+                    }, 2000);
+                      //console.log("From Sign React: Request failed"); //Failed to send
+                      return response.json(); 
+                  }
+              })
+              .then(data => {
+                  if (data.message === 1) { //successfully saved
               
-            }, 2000);
-          } else if (HeartStyle.filter === "brightness(1)") {
-            HeartImg.style.filter = "brightness(500%)";
-            const Save_Notif = document.getElementById("Saved_10");
-            if(Save_Notif) Save_Notif.style.display = "block";
-            setTimeout(() => {
-              if(Save_Notif) Save_Notif.style.display = "none";
-              
-            }, 2000);
-    
+                    HeartImg.style.filter = "brightness(100%)";
+                    //console.log("Saved in Photos_Format");
+                    const Success_Notif = document.getElementById("Saved_1"); //changes heart color and display notif
+                    if(Success_Notif) Success_Notif.style.display = "block";
+                    setTimeout(() => {
+                      if(Success_Notif) Success_Notif.style.display = "none";
+                      
+                    }, 2000);
+                      
+                  } else if (data.message === 0) { //failed to save
+      
+                    //console.log("Didnt Save in Photos_Format 0");
+                    const Success_Notif = document.getElementById("Saved_0"); //displays notif
+                    if(Success_Notif) Success_Notif.style.display = "block";
+                    setTimeout(() => {
+                      if(Success_Notif) Success_Notif.style.display = "none";
+                      
+                    }, 2000);
+                  }else if (data.message === 3) { //fail in server
+               
+                    //console.log("Didnt Save in Photos_Format 3");
+                    const Success_Notif = document.getElementById("Max_Saved_0");
+                    if(Success_Notif) Success_Notif.style.display = "block";
+                    setTimeout(() => {
+                      if(Success_Notif) Success_Notif.style.display = "none";
+                      
+                    }, 2000);
+                  }
+              })
+              .catch(error => { //catch error with response
+                
+              });
+  
+          } else if (HeartStyle.filter === "brightness(1)") { //checks heart color
+            const Check_Cookie = Cookies.get("Login_Token");
+            fetch('http://localhost:5000/api/delete_saved', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ email_data: Check_Cookie, url_data: url }), //sends login token and url to server.js delete save endpoint
+            })
+              .then((response) => {
+                if (response.ok) {
+                  return response.json(); //request is sent
+                } else {
+                  
+                  return { success: 0 }; //request is not sent
+                }
+              })
+              .then((data) => {
+                if (data.success === 1) { // saved is deleted
+           
+                  HeartImg.style.filter = "brightness(500%)";
+                  //console.log("Removed in Photos_Format 1");
+                    const Success_Notif = document.getElementById("Saved_10"); //changes heart color and displays notif
+                    if(Success_Notif) Success_Notif.style.display = "block";
+                    setTimeout(() => {
+                      if(Success_Notif) Success_Notif.style.display = "none";
+                      
+                    }, 2000);
+  
+                } else if (data.success === 0) { //did not delete save
+             
+                  //console.log("Didnt Remove in Photos_Format 0");
+                  const Success_Notif = document.getElementById("Saved_0"); //displays notif
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+                } else {
+                  //console.log("Didnt Remove in Photos_Format 4");
+         
+                    const Success_Notif = document.getElementById("Saved_0");
+                    if(Success_Notif) Success_Notif.style.display = "block";
+                    setTimeout(() => {
+                      if(Success_Notif) Success_Notif.style.display = "none";
+                      
+                    }, 2000);
+                }
+              })
+              .catch((error) => {
+                // Handle any error that occurred during the fetch.
+                //console.error('Fetch error:', error);
+              });
+  
           }
         }
+      } else if(Check_Login === undefined){
+   
+        const Login_Notif = document.getElementById("Login_Request_0");
+        if(Login_Notif) Login_Notif.style.display = "block";
+        setTimeout(function () {
+          if (Login_Notif) Login_Notif.style.display = 'none';
+        }, 4000);
       }
-    
+     
+    }
 
 
-    const Main_Style: CSSProperties={
-        position: "absolute",
-        border: "2px solid rgb(200, 200, 200)",
-        height: "93%",
-        width: "100%",
-        left: "50%",
-        top: "50%",
-        marginTop: "19px",
-        transform: "translate(-50%, -50%)",
-        borderRadius: "0px",
-        overflowY: isOverflowVisible_v ? 'auto' : 'hidden',
-        backgroundColor: "rgb(40, 40, 40)",
-    };
-
-    const Input_Style: CSSProperties={
-        position: "absolute",
-        border: "0px solid rgb(200, 200, 200)",
-        left: "50%",
-        transform: "translate(-50%, 0%)",
-        width: "50%",
-        height: "30px",
-        fontFamily: "verdana",
-        fontSize: "14px",
-        color: "rgb(255, 255, 255)",
-        marginTop: "10px",
-        borderRadius: "5px",
-        backgroundColor: "rgb(150, 150, 150, 0.3)",
-        paddingLeft: "35px",
-       
-    };
-
-    const Search_Img_Style: CSSProperties={
-        position: "absolute",
-        top: "10px",
-        transform: "scale(.8)",
-        left: "25%",       
-        cursor: "pointer",
-    };
+    function calculateTotalPages(totalResults: number, resultsPerPage: number): number {
+      return Math.ceil(totalResults / resultsPerPage);
+    }
 
 
-    const Search_Title_Style: CSSProperties={
-        position: "absolute",
-        border: "0px solid rgb(200, 200, 200)",
-        left: "50%",
-        transform: "translate(-50%, 0%)",
-        fontFamily: "verdana",
-        fontSize: "20px",
-        color: "rgb(255, 255, 255)",
-        top: "65px",
-    };
-    
-    const Video_Container_Style: CSSProperties={
-        position: "absolute",
-        border: "0px solid rgb(200, 200, 200)",
-        height: "100%",
-        width: "1000px",
-        left: "50%",
-        top: "50%",
-        marginTop: "130px",
-        transform: "translate(-50%, -50%)",
-        borderRadius: "0px",
-        display: "grid",
-        gridTemplateColumns: "repeat(3, 1fr)",
-        gridTemplateRows: "repeat(6, 1fr)",
-        gridGap: "20px",
-        paddingBottom: "30px",
-       
-    };
+    interface download_ids{
+      Download_Btn_Id: string;
+      url: string;
+  }
+  
+  async function Download_video({Download_Btn_Id, url, }: download_ids){
+    const download_btn = document.getElementById(Download_Btn_Id);
 
-    const [isDisplayBlock_v, setIsDisplayBlock_v] = useState(false);
-
-    const Video_Item_Style: CSSProperties={
-        position: "relative",
-        height: "200px",
-        width: "300px",
-        borderRadius: "5px",
-        backgroundColor: "rgb(150, 150, 150, 0.3)",
-        left: "50%",
-        transform: "translate(-50%, 0%)",
-        cursor: "pointer",
-        display: isDisplayBlock_v? "block" : "none",
-        transition: ".3s",
-    };
-
-    const Video_Style: CSSProperties={
-        position: "relative",
-        height: "100%",
-        width: "100%",
-        borderRadius: "5px",
-        backgroundColor: "rgb(150, 150, 150, 0.3)",
-        objectFit: "cover",
-        backgroundRepeat: "no-repeat",
-    };
-
-    const Play_Img_Style: CSSProperties = {
-        position: "absolute",
-        top: "5px",
-        marginLeft: "-295px",
-        transform: "scale(.7)",
-        opacity: "1",
-        transition: ".3s",
-    };
-
-
-    const Source_Text_Style_v: CSSProperties = {
-        position: "absolute",
-        color: "rgb(240, 240, 240)",
-        fontFamily: "verdana",
-        fontSize: "12px",
-        top: "151px",
-        marginLeft: "0px",
-        background:
-          "linear-gradient(to top, rgb(10, 10, 10, 1), rgb(10, 10, 10, 0))",
-        width: "300px",
-        height: "50px",
-        display: "flex",
-        alignItems: "flex-end",
-        opacity: "1",
-        transition: ".2s",
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        borderRadius: "5px",
-      };
-
-    const Actual_Source_Text_v: CSSProperties = {
-        color: "rgb(82, 156, 253)",
-        cursor: "pointer",
-        textDecoration: "underline",
-      };
-
-    const Space: CSSProperties={
-        position: "relative",
-        height: "200px",
-        width: "300px",
-        borderRadius: "5px",
-        backgroundColor: "rgb(200, 200, 200, 0)",
-        left: "50%",
-        transform: "translate(-50%, 0%)"
-    };
-
- 
-
-    const Bottom_Buttons_Style: CSSProperties={
-        position: "relative",
-        width: "100px",
-        height: "40px",
-        borderRadius: "5px",
-        backgroundColor: "rgb(255, 255, 255)",
-        color: "rgb(10, 10, 10)",
-        fontFamily: "verdana",
-        fontSize: "14px",
-        cursor: "pointer",
-        border: "none",
-        marginLeft: "20px",
-        marginRight: "20px",
-        marginTop: "10px",
-        marginBottom: "10px",
-        left: "20px",  
-    };
-
-
-    const Page_Counter_Style_v: CSSProperties = {
-        position: "absolute",
-        fontFamily: "verdana",
-        fontSize: "16px",
-        color: "rgb(255, 255, 255)",
-        left: "495px",
-        marginTop: "-40px",
-      
-    };
-
-    function updateStyles(){
-        const screenWidth = window.innerWidth;
-        const Small_ScreenSize: CSSProperties = {
-            width: "650px",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            gridTemplateRows: "repeat(6, 1fr)",
-        };
-
-        const Smaller_ScreenSize: CSSProperties = {
-            width: "400px",
-            gridTemplateColumns: "repeat(1, 1fr)",
-            gridTemplateRows: "repeat(6, 1fr)",
-    
-        };
-
-        const Small_ScreenSize_Button: CSSProperties = {
-            left: "-130px",
-        };
-
-        const Smaller_ScreenSize_Button: CSSProperties = {
-            top: "-200px",
-            left: "60px",
-        };
-
-        const Small_ScreenSize_Counter_v: CSSProperties = {
-            left: "320px",
-        };
-        const Smaller_ScreenSize_Counter_v: CSSProperties = {
-            marginTop: "-240px",
-            left: "195px",
-        };
-
-        if (screenWidth > 790 && screenWidth < 1165) {
-            Object.assign(Video_Container_Style, Small_ScreenSize);
-            Object.assign(Bottom_Buttons_Style, Small_ScreenSize_Button);
-            Object.assign(Page_Counter_Style_v, Small_ScreenSize_Counter_v);
+    if(download_btn){
+        download_btn.textContent = "Downloading";
+    }
+    try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        let result = '';
+        for (let i = 0; i < 8; i++) {
+            result += Math.floor(Math.random() * 10); // Generate a random digit (0-9)
         }
-        if(screenWidth <= 790){
-            Object.assign(Video_Container_Style, Smaller_ScreenSize);
-            Object.assign(Bottom_Buttons_Style, Smaller_ScreenSize_Button);
-            Object.assign(Page_Counter_Style_v, Smaller_ScreenSize_Counter_v);
+        link.download = 'video' + result + '.mp4';
+        link.click();
+        setTimeout(() => {
+            URL.revokeObjectURL(url);
+        }, 1000); //
+        if(download_btn){
+            download_btn.textContent = "Download";
+        }
+    } catch (error) {
+        //console.error('An error occurred while downloading the video:', error);
+        if(download_btn){
+            download_btn.textContent = "Download";
         }
     }
-    updateStyles();
-    window.addEventListener('resize', updateStyles);
+}
 
-    const Loading_Spinner_vid: CSSProperties = {
-      top: "250px",
-      zIndex: "30",
-      display: "none",
-      left: "48%",
-    };
 
-    const Loading_Spinner_vid_Bottom: CSSProperties = {
-      zIndex: "30",
-      display: "none",
-      left: "48%",
-    };
-    
-    const Heart_Style: CSSProperties = {
-      top: "-200px",
-      position: "relative",
-      transform: "scale(.8)",
-      left: "260px",
-      filter: "brightness(500%)",
-      opacity: "1",
-      transition: ".3s",
-    }
-    
-    
-    const Resize_Img_style: CSSProperties = {
-      top: "-40px",
-      position: "relative",
-      transform: "scale(.7)",
-      left: "230px",
-      filter: "brightness(500%)",
-      opacity: "0",
-      transition: ".3s",
-    }
-
-    const Exit_Img_Resize: CSSProperties = {
+  const Main_Style: CSSProperties={
       position: "absolute",
-      right: "5px",
-      top: "5px",
-      transform: "scale(1)",
-      opacity: "1",
-      transition: ".3s",
-      display: "none",
-      boxShadow: "0px 0px 5px rgb(0, 0, 0, .2)",
-      borderRadius: "50%",
-      backgroundColor: "rgb(0, 0, 0, .2)"
-    }
-    
-    const [controlsEnabled, setControlsEnabled] = useState(false);
+      border: "0px solid rgb(200, 200, 200)",
+      height: "100%",
+      width: "100%",
+      left: "0px",
+      marginTop: "0px",
+      borderRadius: "0px",
+      overflowY: isOverflowVisible_v ? 'auto' : 'hidden',
+      backgroundColor: "rgb(15, 15, 15)",
+      
+  };  
 
-    const toggleControls = () => {
-      setControlsEnabled(prevEnabled => !prevEnabled);
+  function getRandomNumber() {
+    return Math.floor(Math.random() * 20); 
+  }
+  const randomNumber = getRandomNumber();
+
+  const search_bar_img_container: CSSProperties = {
+    position: "absolute",
+    top: "0px",
+    height: "500px",
+    width: "100%",
+    left: "0px",
+    backgroundColor: "rgb(0, 0, 0, 1)",
+  };
+
+  const Video_top_text: CSSProperties = {
+    position: "absolute",
+    border: "0px solid rgb(200, 200, 200)",
+    left: "50%",
+    transform: "translate(-50%, -30%)",
+    width: "50%",
+    fontFamily: "helvetica",
+    fontSize: "30px",
+    color: "rgb(255, 255, 255)",
+    top: "30%",
+    fontWeight: "bold",
+  };
+
+  const Video_featured_text_container: CSSProperties = {
+    position: "absolute",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "50%",
+    fontFamily: "helvetica",
+    fontSize: "18px",
+    top: "66%",
+    display: "flex",
+    flexDirection: "row",
+  };
+
+
+  const Main_video_Style: CSSProperties = {
+    width: "100%",
+    height: "100%",
+    position: "absolute",
+    top: "0px",
+    left: "0px",
+    objectFit: "cover",
+    backgroundRepeat: "no-repeat",
+    opacity: ".5",
+  };
+
+  const Video_featured_text: CSSProperties = {
+    marginLeft: "2px",
+    marginRight: "2px",
+    color: "rgb(255, 255, 255)",
+    cursor: "pointer",
+  };
+
+ const Video_featured_text_title: CSSProperties = {
+  color: "rgb(200, 200, 200)",
+ };
+
+  const Input_Style: CSSProperties={
+      position: "absolute",
+      border: "0px solid rgb(200, 200, 200)",
+      left: "50%",
+      transform: "translate(-50%, -55%)",
+      width: "50%",
+      height: "50px",
+      fontFamily: "helvetica",
+      fontSize: "18px",
+      color: "rgb(255, 255, 255)",
+      top: "55%",
+      borderRadius: "12px",
+      backgroundColor: "rgb(15, 15, 15, 1)",
+      paddingRight: "55px",
+      paddingLeft: "20px",
+     
+  };
+
+  const Search_Img_Style: CSSProperties={
+      position: "absolute",
+      top: "55%",
+      transform: "scale(1) translate(0%, -54%)",
+      left: "72%",       
+      cursor: "pointer",
+      filter: "brightness(50%)",
+  };
+
+
+  const Search_Title_Style: CSSProperties={
+      position: "absolute",
+      border: "0px solid rgb(200, 200, 200)",
+      left: "50%",
+      transform: "translate(-50%, 0%)",
+      fontFamily: "helvetica",
+      fontSize: "20px",
+      color: "rgb(255, 255, 255)",
+      top: "575px",
+      fontWeight: "bold",
+      paddingBottom: "100px",
+  };
+  
+
+  const Result_Style: CSSProperties={
+    position: "absolute",
+    left: "20px",
+    fontFamily: "helvetica",
+    fontSize: "14px",
+    color: "rgb(255, 255, 255)",
+    top: "525px",
+  };
+  
+  const pageOf_Style: CSSProperties={
+    position: "absolute",
+    right: "20px",
+    fontFamily: "helvetica",
+    fontSize: "14px",
+    color: "rgb(255, 255, 255)",
+    top: "525px",
+  };  
+
+  const Download_Btn_Style_View: CSSProperties = {
+    color: "rgb(255, 255, 255)",
+    fontFamily: "helvetica",
+    fontSize: "15px",
+    position: "absolute",
+    bottom: "45px",
+    right: "100px",
+    transition: ".2s",
+    cursor: "pointer",
+    border: "0px",
+    backgroundColor: "rgb(45, 101, 255)",
+    borderRadius: "5px",
+    paddingLeft: "15px",
+    paddingRight: "15px",
+    paddingTop: "5px",
+    paddingBottom: "5px",
+};
+
+  const Download_Btn_Style: CSSProperties = {
+    color: "rgb(255, 255, 255)",
+    fontFamily: "helvetica",
+    fontSize: "15px",
+    position: "absolute",
+    bottom: "-43px",
+    right: "60px",
+    transition: ".2s",
+    cursor: "pointer",
+    border: "0px",
+    backgroundColor: "rgb(45, 101, 255)",
+    borderRadius: "5px",
+    paddingLeft: "15px",
+    paddingRight: "15px",
+    paddingTop: "5px",
+    paddingBottom: "5px",
+};
+
+const Download_Image_Style: CSSProperties = {
+  width: "15px",
+  height: "15px",
+  verticalAlign: "center",
+  marginTop: "-2px",
+  marginRight: "6px",
+};
+  const Video_Container_Style: CSSProperties={
+      position: "absolute",
+      border: "0px solid rgb(200, 200, 200)",
+      height: "100%",
+      width: "1200px",
+      left: "50%",
+      top: "50%",
+      marginTop: "650px",
+      transform: "translate(-50%, -50%)",
+      borderRadius: "0px",
+      display: "grid",
+      gridTemplateColumns: "repeat(1, 1fr)",
+      gridTemplateRows: "repeat(18, 1fr)",
+      gridGap: "100px",
+      paddingBottom: "10px",
+     
+  };
+
+  const [isDisplayBlock_v, setIsDisplayBlock_v] = useState(false);
+
+  const Video_Item_Style: CSSProperties={
+      position: "relative",
+      height: "500px",
+      width: "80%",
+      minWidth: "250px",
+      minHeight: "125px",
+      maxWidth: "1000px",
+      maxHeight: "500px",
+      borderRadius: "0px",
+      backgroundColor: "rgb(150, 150, 150, 0.3)",
+      left: "50%",
+      transform: "translate(-50%, 0%)",
+      cursor: "pointer",
+      display: isDisplayBlock_v? "block" : "none",
+ 
+  };
+
+  const Video_Style: CSSProperties={
+      position: "relative",
+      height: "100%",
+      width: "100%",
+      borderRadius: "0px",
+      backgroundColor: "rgb(150, 150, 150, 0.3)",
+      objectFit: "cover",
+      backgroundRepeat: "no-repeat",
+  };
+
+  const Play_Img_Style: CSSProperties = {
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      opacity: "1",
+      transition: ".2s",
+      backgroundColor: "rgb(10, 10, 10, .5)",
+      padding: "10px",
+      borderRadius: "50%",
+      width: "40px",
+      height: "40px",
+  };
+
+  const Space: CSSProperties={
+      position: "relative",
+      height: "0px",
+      width: "300px",
+      borderRadius: "5px",
+      backgroundColor: "rgb(200, 200, 200, 0)",
+      left: "50%",
+      transform: "translate(-50%, 0%)",
+      zIndex: "-1",
+  };
+
+    
+  const Space_2: CSSProperties={
+    position: "relative",
+    height: "150px",
+    width: "300px",
+    borderRadius: "5px",
+    backgroundColor: "rgb(200, 200, 200, 0)",
+    left: "50%",
+    transform: "translate(-50%, 0%)",
+    zIndex: "-1",
+  };
+
+
+
+  const Bottom_Buttons_Style_Left: CSSProperties={
+    position: "absolute",
+    width: "100px",
+    height: "40px",
+    borderRadius: "5px",
+    backgroundColor: "rgb(255, 255, 255)",
+    color: "rgb(10, 10, 10)",
+    fontFamily: "helvetica",
+    fontSize: "14px",
+    cursor: "pointer",
+    border: "none",
+    marginRight: "200px",
+    left: "calc(50% - 75px)",
+    transform: "translate(-50%, 0%)",
+  };
+
+  
+  const Bottom_Buttons_Style_Right: CSSProperties={
+    position: "absolute",
+    width: "100px",
+    height: "40px",
+    borderRadius: "5px",
+    backgroundColor: "rgb(255, 255, 255)",
+    color: "rgb(10, 10, 10)",
+    fontFamily: "helvetica",
+    fontSize: "14px",
+    cursor: "pointer",
+    border: "none",
+    left: "calc(50% + 75px)",
+    transform: "translate(-50%, 0%)",
+  };
+
+
+  const Page_Counter_Style_v: CSSProperties = {
+      position: "absolute",
+      fontFamily: "helvetica",
+      fontSize: "16px",
+      color: "rgb(255, 255, 255)",
+      marginTop: "10px",
+      left: "50%",
+      transform: "translate(-50%, 0%)",
+    
+  };
+  
+  const Heart_Style: CSSProperties = {
+    bottom: "-40px",
+    position: "absolute",
+    width: "32px",
+    height: "32px",
+    right: "0px",
+    filter: "brightness(500%)",
+    opacity: "1",
+    transition: ".2s",
+  };
+  
+
+  const View_Exit_Img_Resize: CSSProperties = {
+    position: "absolute",
+    right: "5%",
+    top: "60px",
+    opacity: "1",
+    transition: ".3s",
+    display: "none",
+    zIndex: "999999",
+    cursor: "pointer",
+    width: "32px",
+    height: "32px",
+  };
+
+  const View_Video_Style: CSSProperties = {
+    position: "absolute",
+    width: "90%",
+    height: "500px",
+    borderRadius: "0px",
+    backgroundColor: "rgb(20, 20, 20, 1)",
+    left: "50%",
+    top: "100px",
+    transform: "translate(-50%, 0%)",
+    cursor: "pointer",
+  };
+
+  const Heart_Style_View: CSSProperties = {
+    top: "625px",
+    position: "absolute",
+    width: "28px",
+    height: "28px",
+    right: "5%",
+    filter: "brightness(500%)",
+    opacity: "1",
+    transition: ".2s",
+    cursor: "pointer",
+    zIndex: "5",
+  };
+ 
+  const view_user_text_style: CSSProperties = {
+    top: "625px",
+    position: "absolute",
+    left: "5%",
+    color: "rgb(255, 255, 255)",
+    fontFamily: "helvetica",
+    fontSize: "15px",
+    opacity: "1",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    width: "45%",
+
+  };
+
+  const view_video_style_Container: CSSProperties = {
+    position: "fixed",
+    width: "100%",
+    height: "100vh",
+    backgroundColor: "rgb(10, 10, 10, .9)",
+    backdropFilter: "blur(5px)",
+    left: "0%",
+    top: "0px",
+    zIndex: "10000",
+    display: "none",
+    overflow: "auto",
+  };
+
+  const View_Video_Actual_Container: CSSProperties = {
+    position: "absolute",
+    width: "80%",
+    height: "700px",
+    backgroundColor: "rgb(20, 20, 20)",
+    left: "50%",
+    transform: "translate(-50%, 0%)",
+    top: "60px",
+    zIndex: "100001",
+  };
+
+  const Loading_Spinner_vid: CSSProperties = {
+    position: "absolute",
+    top: "90%",
+    zIndex: "30",
+    display: "none",
+    transform: "translate(-50%, -45%)",
+    left: "45%",
+  };
+
+
+  const Loading_Spinner_vid_Bottom: CSSProperties = {
+    position: "absolute",
+    zIndex: "30",
+    display: "none",
+    left: "48%",
+    transform: "translate(-50%, 0%)",
+    marginTop: "60px",
+  };
+
+  const Footer_Title: CSSProperties = {
+    position: "absolute",
+    color: "rgb(255, 255, 255)",
+    fontFamily: "arial",
+    letterSpacing: "1px",
+    fontSize: "25px",
+    fontVariant: "small-caps",
+    fontWeight: "bold",
+    left: "15px",
+    top: "15px",
+  };
+
+  const Resize_Img_style: CSSProperties = {
+    top: "-40px",
+    position: "relative",
+    transform: "scale(.5)",
+    left: "230px",
+    opacity: "0",
+    transition: ".1s",
+  };
+
+  const user_text_style_container: CSSProperties = {
+    bottom: "0px",
+    position: "absolute",
+    left: "0px",
+    height: "50px",
+    transition: ".1s",
+    color: "rgb(255, 255, 255)",
+    fontFamily: "helvetica",
+    fontSize: "14px",
+    opacity: "1",
+    width: "100%",
+  };
+
+  const user_text_style: CSSProperties = {
+    color: "rgb(255, 255, 255)",
+    fontFamily: "helvetica",
+    fontSize: "15px",
+    position: "absolute",
+    bottom: "-50px",
+    left: "0px",
+    transition: ".2s",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    width: "50%",
+  };
+
+  const Exit_Img_Resize: CSSProperties = {
+    position: "absolute",
+    right: "5px",
+    top: "5px",
+    transform: "scale(1)",
+    opacity: "1",
+    transition: ".3s",
+    display: "none",
+  };
+  
+  const Loading_Spinner_V: CSSProperties = {
+    top: "90px",
+    left: "140px",
+    zIndex: "9",
+    display: "none",
+  };
+
+  const top_items_style: CSSProperties = {
+    position: "absolute",
+    width: "90%",
+    height: "50px",
+    left: "5%",
+    top: "35px",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  };
+
+  const view_title_style: React.CSSProperties = {
+    fontFamily: 'Arial',
+    color: 'rgb(255, 255, 255)',
+    fontWeight: 'bold',
+    letterSpacing: '1px',
+    fontSize: '20px',
+    fontVariant: 'small-caps'
+  };
+
+  const top_marker: CSSProperties = {
+    position: "absolute",
+    left: "0px",
+    top: "0px",
+    opacity: "1",
+    zIndex: "-1",
+
+  };  
+
+  const footerStyle: CSSProperties = {
+    borderTop: '1px solid rgba(255, 255, 255, 1)',
+    position: 'relative',
+    backgroundColor: 'rgb(15, 15, 15)',
+    width: '100%',
+    left: "0px",
+    height: '180px',
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, 1fr)',
+    gridTemplateRows: 'repeat(1, 1fr)',
+
+  };
+
+
+  const titleStyle: CSSProperties = {
+    position: 'relative',
+    top: '50px',
+    color: 'white',
+    fontFamily: 'Helvetica',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  };
+
+  const linkStyle: CSSProperties = {
+    position: 'relative',
+    top: '50px',
+    color: 'rgb(220, 220, 220)',
+    fontFamily: 'Helvetica',
+    fontSize: '12px',
+    cursor: 'pointer',
+    transition: 'transform 0.1s',
+    textAlign: 'center',
+  };
+
+  const copyrightStyle: CSSProperties = {
+    position: 'absolute',
+    top: '65px',
+    left: '15px',
+    textAlign: 'left',
+    color: "rgb(200, 200, 200)",
+  };
+
+  function updateStyles(){
+      const screenWidth = window.innerWidth;
+      const Small_ScreenSize: CSSProperties = {
+          width: "100%",
+          gridTemplateColumns: "repeat(1, 1fr)",
+          gridTemplateRows: "repeat(18, 1fr)",
+          
+      };
+
+      const Smaller_ScreenSize: CSSProperties = {
+          width: "100%",
+          gridTemplateColumns: "repeat(1, 1fr)",
+          gridTemplateRows: "repeat(18, 1fr)",
+  
+      };
+      
+      const Smaller_ScreenSize_smallets: CSSProperties = {
+        width: "100%",
+      };
+
+  
+      const Smaller_ScreenSize_View_Heart: CSSProperties = {
+        top: "375px",
+      };
+
+      const Smaller_ScreenSize_View_user: CSSProperties = {
+        top: "375px",
+      };
+
+      const Smaller_ScreenSize_View_container: CSSProperties = {
+        height: "425px",
+      };
+
+      const Heart_Style_smallest: CSSProperties = {
+        bottom: "-35px",
+        width: "24px",
+        height: "24px",
+      };
+
+
+      const Smaller_SearchTitle_v: CSSProperties = {
+        fontSize: "17px",
+      };
+
+      const Smaller_SeachBar_v: CSSProperties = {
+          width: "75%",
+      };
+      
+      const Smaller_SeachIcon_v: CSSProperties = {
+          left: "80%",
+      };
+
+      const Smaller_SeachIcon_v_2: CSSProperties = {
+        left: "77%",
     };
 
-    return(
+      const Smaller_SeachIcon_1_v: CSSProperties = {
+        left: "70%",
+      };
 
-        <div style={Main_Style}>
+      const Video_Item_Style_smallest: CSSProperties={
+        height: "250px",
+        /*width: "90%",*/
+      };
 
-        <HoverImg containerId="Video_Item_1" sourceTextId="Source_1_Vid_v" Video="Video_1_v" PlayImg="Play_Img_1_v" Resize_Id_v="Resize_Img_v_1"/>
-        <HoverImg containerId="Video_Item_2" sourceTextId="Source_2_Vid_v" Video="Video_2_v" PlayImg="Play_Img_2_v" Resize_Id_v="Resize_Img_v_2"/>
-        <HoverImg containerId="Video_Item_3" sourceTextId="Source_3_Vid_v" Video="Video_3_v" PlayImg="Play_Img_3_v" Resize_Id_v="Resize_Img_v_3"/>
-        <HoverImg containerId="Video_Item_4" sourceTextId="Source_4_Vid_v" Video="Video_4_v" PlayImg="Play_Img_4_v" Resize_Id_v="Resize_Img_v_4"/>
-        <HoverImg containerId="Video_Item_5" sourceTextId="Source_5_Vid_v" Video="Video_5_v" PlayImg="Play_Img_5_v" Resize_Id_v="Resize_Img_v_5"/>
-        <HoverImg containerId="Video_Item_6" sourceTextId="Source_6_Vid_v" Video="Video_6_v" PlayImg="Play_Img_6_v" Resize_Id_v="Resize_Img_v_6"/>
-        <HoverImg containerId="Video_Item_7" sourceTextId="Source_7_Vid_v" Video="Video_7_v" PlayImg="Play_Img_7_v" Resize_Id_v="Resize_Img_v_7"/>
-        <HoverImg containerId="Video_Item_8" sourceTextId="Source_8_Vid_v" Video="Video_8_v" PlayImg="Play_Img_8_v" Resize_Id_v="Resize_Img_v_8"/>
-        <HoverImg containerId="Video_Item_9" sourceTextId="Source_9_Vid_v" Video="Video_9_v" PlayImg="Play_Img_9_v" Resize_Id_v="Resize_Img_v_9"/>
-        <HoverImg containerId="Video_Item_10" sourceTextId="Source_10_Vid_v" Video="Video_10_v" PlayImg="Play_Img_10_v" Resize_Id_v="Resize_Img_v_10"/>
-        <HoverImg containerId="Video_Item_11" sourceTextId="Source_11_Vid_v" Video="Video_11_v" PlayImg="Play_Img_11_v" Resize_Id_v="Resize_Img_v_11"/>
-        <HoverImg containerId="Video_Item_12" sourceTextId="Source_12_Vid_v" Video="Video_12_v" PlayImg="Play_Img_12_v" Resize_Id_v="Resize_Img_v_12"/>
-        <HoverImg containerId="Video_Item_13" sourceTextId="Source_13_Vid_v" Video="Video_13_v" PlayImg="Play_Img_13_v" Resize_Id_v="Resize_Img_v_13"/>
-        <HoverImg containerId="Video_Item_14" sourceTextId="Source_14_Vid_v" Video="Video_14_v" PlayImg="Play_Img_14_v" Resize_Id_v="Resize_Img_v_14"/>
-        <HoverImg containerId="Video_Item_15" sourceTextId="Source_15_Vid_v" Video="Video_15_v" PlayImg="Play_Img_15_v" Resize_Id_v="Resize_Img_v_15"/>
-        <HoverImg containerId="Video_Item_16" sourceTextId="Source_16_Vid_v" Video="Video_16_v" PlayImg="Play_Img_16_v" Resize_Id_v="Resize_Img_v_16"/>
-        <HoverImg containerId="Video_Item_17" sourceTextId="Source_17_Vid_v" Video="Video_17_v" PlayImg="Play_Img_17_v" Resize_Id_v="Resize_Img_v_17"/>
-        <HoverImg containerId="Video_Item_18" sourceTextId="Source_18_Vid_v" Video="Video_18_v" PlayImg="Play_Img_18_v" Resize_Id_v="Resize_Img_v_18"/>
+      const Video_Item_Style_small: CSSProperties={
+        height: "275px",
+        /*width: "500px",*/
+      };
 
-        <div id="Loading_Spinner_vid" style={Loading_Spinner_vid} className="loading-spinner"></div>
+      const Smaller_ScreenSize_Exit_View: CSSProperties = {
+        right: "1%",
+      };
 
-        <input id="Search_Videos" type="text" placeholder="Search for videos" style={Input_Style} onKeyDown={handleKeyPress_v} />
-        <img onClick={ChangeSearch} id="Search_Button_v" style={Search_Img_Style} src={SearchImg}/>
-        <h1 style={Search_Title_Style}>Search results for "<span id="Search_Result_v"></span>"</h1>
-        <div id="Video_Container" style={Video_Container_Style}>
-            <div id="Video_Item_1" style={Video_Item_Style}>
-                <video id="Video_1_v" src={videoArray_v[0]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(0)} controls={controlsEnabled} muted></video>
-                <img style={Play_Img_Style} src={PlayImg} id="Play_Img_1_v" />
-                <p style={Source_Text_Style_v} id="Source_1_Vid_v">Source: <span id="Img_Source1_v" style={Actual_Source_Text_v}>{videoArrayurl_v[0]}</span></p>
-                <img onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_1"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_1"/>
-                <img id="Resize_Img_v_1" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_1", Exit_Id_v: "Exit_Img_v_1", Heart_Id_v: "Heart_vid_1", Resize_Id_v: "Resize_Img_v_1", Source_Id_v: "Source_1_Vid_v", Picture_Id_v: "Play_Img_1_v"})}/>
-                <img id="Exit_Img_v_1" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_1", Exit_Id_Exit_v: "Exit_Img_v_1", Heart_Id_Exit_v: "Heart_vid_1", Resize_Id_Exit_v: "Resize_Img_v_1", Source_Id_Exit_v: "Source_1_Vid_v", Picture_Id_Exit_v: "Play_Img_1_v"})}/>
-            </div>  
+      const Smaller_ScreenSize_video_View: CSSProperties = {
+        height: "250px",
+      };
+
+      const Smaller_ScreenSize_Title: CSSProperties = {
+        fontSize: "22px",
+        width: "70%",
+      };
+      const Smaller_ScreenSize_Trending: CSSProperties = {
+        width: "70%",
+      };
+
+      const Smaller_ScreenSize_VidLoader: CSSProperties = {
+        top: "50%",
+      };
+
+      const Smaller_ScreenSize_bottomLoader: CSSProperties = {
+        marginTop: "-150px",
+        display: "none",
+        left: "47%",
+        transform: "translate(-50, 0%)",
+      };
+      const Smaller_ScreenSize_bottomLoader_2: CSSProperties = {
+        marginTop: "-150px",
+        display: "none",
+        left: "47%",
+        transform: "translate(-50, 0%)",
+      };
+
+      const Smaller_ScreenSize_bottomLoader_3: CSSProperties = {
+        marginTop: "20px",
+        display: "none",
+        left: "48%",
+        transform: "translate(-50, 0%)",
+      };
+
+      const Smaller_ScreenSize_download_btn: CSSProperties = {
+        fontSize: "12px",
+        bottom: "-37px",
+        paddingLeft: "10px",
+        paddingRight: "10px",
+        right: "40px",
+      };
+
+      const Smaller_ScreenSize_download_btn_view: CSSProperties = {
+        fontSize: "12px",
+        bottom: "25px",
+        paddingLeft: "10px",
+        paddingRight: "10px",
+        right: "60px",
+      };
+
+      const Smaller_ScreenSize_download_img: CSSProperties = {
+        width: "13px",
+        height: "13px",
+      };
+
+      const Smaller_ScreenSize_Space: CSSProperties = {
+        height: "0px",
+      };
+
+      const Smaller_ScreenSize_video_actual_View: CSSProperties = {
+        height: "425px",
+      };
+
+      
+      if (screenWidth > 890 && screenWidth < 1250) {
+          Object.assign(Video_Container_Style, Small_ScreenSize);
+          Object.assign(Search_Img_Style, Smaller_SeachIcon_1_v);
+          Object.assign(Loading_Spinner_vid_Bottom, Smaller_ScreenSize_bottomLoader_3);
+      }
+      if(screenWidth <= 890){
+          Object.assign(Video_Item_Style, Video_Item_Style_small);
+          Object.assign(Video_Container_Style, Smaller_ScreenSize);
+          Object.assign(Search_Title_Style, Smaller_SearchTitle_v);
+          Object.assign(Input_Style, Smaller_SeachBar_v);
+          Object.assign(Search_Img_Style, Smaller_SeachIcon_v);
+          Object.assign(Loading_Spinner_vid_Bottom, Smaller_ScreenSize_bottomLoader_2);
+          Object.assign(Space, Smaller_ScreenSize_Space);
+      }
+
+      if(screenWidth <= 600){
+        Object.assign(Video_top_text, Smaller_ScreenSize_Title);
+      }
+      
+      if(screenWidth <= 560){
+        Object.assign(Search_Img_Style, Smaller_SeachIcon_v_2);
+        Object.assign(Video_Item_Style, Video_Item_Style_smallest);
+        Object.assign(Video_Container_Style, Smaller_ScreenSize_smallets);
+        Object.assign(Heart_Style, Heart_Style_smallest);
+        Object.assign(View_Video_Actual_Container, Smaller_ScreenSize_video_actual_View);
+        Object.assign(View_Exit_Img_Resize, Smaller_ScreenSize_Exit_View);
+        Object.assign(View_Video_Style, Smaller_ScreenSize_video_View);
+        Object.assign(Heart_Style_View, Smaller_ScreenSize_View_Heart);
+        Object.assign(view_user_text_style, Smaller_ScreenSize_View_user);
+        Object.assign(Video_featured_text_container, Smaller_ScreenSize_Trending);
+        Object.assign(Loading_Spinner_vid_Bottom, Smaller_ScreenSize_bottomLoader);
+        Object.assign(Download_Btn_Style_View, Smaller_ScreenSize_download_btn_view);
+        Object.assign(Download_Btn_Style, Smaller_ScreenSize_download_btn);
+        Object.assign(Download_Image_Style, Smaller_ScreenSize_download_img);
+    }
+  }
+
+  updateStyles();
+  
+
+
+  const [searchValue, setSearchValue] = useState(randomString);
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(event.target.value);
+
+  };
+
+
+
+  const [controlsEnabled, setControlsEnabled] = useState(false);
+
+  const toggleControls = () => {
+    setControlsEnabled(prevEnabled => !prevEnabled);
+  };
+
+
+  ChangeSearch();
+
+  const Video_Items = [];
+
+  if(videoArray_v.length === 0){
+    const video_container = document.getElementById("Video_Container");
+    const search_title = document.getElementById("search_title");
+    const none_title = document.getElementById("none_title");
+    const button_title = document.getElementById("button_container_v");
+    const footer = document.getElementById("Footer");
+    if(video_container)video_container.style.display = "block";
+    if(footer) footer.style.display = "grid";
+    if(search_title)search_title.style.display = "none";
+    if(none_title)none_title.style.display = "block";
+    if(button_title)button_title.style.display = "none";
+    
+  }else{
+    Video_Items.length = 0;
+    const video_container = document.getElementById("Video_Container");
+    const search_title = document.getElementById("search_title");
+    const none_title = document.getElementById("none_title");
+    const button_title = document.getElementById("button_container_v");
+    if(video_container)video_container.style.display = "grid";
+    if(search_title)search_title.style.display = "block";
+    if(none_title)none_title.style.display = "none";
+    if(button_title)button_title.style.display = "block";
+    for (let i = 0; i < videoArray_v.length ; i++) {
+      if(videoArray_v[i] === ""){
         
-            <div id="Video_Item_2"  style={Video_Item_Style} >
-                <video id="Video_2_v" src={videoArray_v[1]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(1)} controls={controlsEnabled} muted></video>
-                <img style={Play_Img_Style} src={PlayImg} id="Play_Img_2_v" />
-                <p style={Source_Text_Style_v} id="Source_2_Vid_v">Source: <span id="Img_Source2_v" style={Actual_Source_Text_v}>{videoArrayurl_v[1]}</span></p>
-                <img onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_2"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_2"/>
-                <img id="Resize_Img_v_2" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_2", Exit_Id_v: "Exit_Img_v_2", Heart_Id_v: "Heart_vid_2", Resize_Id_v: "Resize_Img_v_2", Source_Id_v: "Source_2_Vid_v", Picture_Id_v: "Play_Img_2_v"})}/>
-                <img id="Exit_Img_v_2" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_2", Exit_Id_Exit_v: "Exit_Img_v_2", Heart_Id_Exit_v: "Heart_vid_2", Resize_Id_Exit_v: "Resize_Img_v_2", Source_Id_Exit_v: "Source_2_Vid_v", Picture_Id_Exit_v: "Play_Img_2_v"})}/>
-            </div>  
+      }else{
+        Video_Items.push(
+          <div id={`Video_Item_${i+1}`} key={i} style={Video_Item_Style}>
+              <video id={`Video_${i+1}_v`} src={videoArray_v[i]} style={Video_Style} typeof="video/mp4" onClick={() => Resize_Photo_Item_v({Container_Id_v: `Video_Item_${i+1}`, Exit_Id_v: videoArrayuser_v[i], Heart_Id_v: `Heart_vid_${i+1}`, Resize_Id_v: videoArrayurl_v[i], Source_Id_v: videoArrayuser_v[i], Picture_Id_v: videoArray_v[i], Loading_Id_v: `Loading_Spinner_V_${i+1}`})}  controls={controlsEnabled} loop muted></video>
+              <img style={Play_Img_Style} onClick={() => Resize_Photo_Item_v({Container_Id_v: `Video_Item_${i+1}`, Exit_Id_v: videoArrayuser_v[i], Heart_Id_v: `Heart_vid_${i+1}`, Resize_Id_v: videoArrayurl_v[i], Source_Id_v: videoArrayuser_v[i], Picture_Id_v: videoArray_v[i], Loading_Id_v: `Loading_Spinner_V_${i+1}`})}  src={PlayImg} id={`Play_Img_${i+1}_v`} />
+              <div id={`Loading_Spinner_V_${i+1}`} style={Loading_Spinner_V} className="loading-spinner"></div>
+              <img className="Heart_Style_Class_Vid" onClick={() => Save_Vid_Search({id_Heart_vid_Search: `Heart_vid_${i+1}`, src: videoArray_v[i], url: videoArrayurl_v[i], load: `Loading_Spinner_V_${i+1}`, user: videoArrayuser_v[i] })} src={Heart_Img_vid} style={Heart_Style} id={`Heart_vid_${i+1}`}/>
+              <img id={`Resize_Img_v_${i+1}`} src={Resize_Img_v_Search} style={Resize_Img_style} />
+              <img id={`Exit_Img_v_${i+1}`} src={Exit_Img_p_Search} style={Exit_Img_Resize}/>
+              <div id={`user_text_${i+1}`} style={user_text_style_container}>
+                <p onClick={() => TriggerLink_v(i)} className="video_user" style={user_text_style}>By: {videoArrayuser_v[i]}</p>
+              </div>
+              <button onClick={() => Download_video({Download_Btn_Id: `Download_Button_v${i+1}`, url: videoArray_v[i]})} style={Download_Btn_Style}> <img style={Download_Image_Style} src={download_Img}/><span id={`Download_Button_v${i+1}`}>Download</span></button>
+          </div>
+      );
+      }
 
-            <div id="Video_Item_3" style={Video_Item_Style}>
-                <video id="Video_3_v" src={videoArray_v[2]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(2)} controls={controlsEnabled} muted></video>
-                <img style={Play_Img_Style} src={PlayImg} id="Play_Img_3_v" />
-                <p style={Source_Text_Style_v} id="Source_3_Vid_v">Source: <span id="Img_Source3_v" style={Actual_Source_Text_v}>{videoArrayurl_v[2]}</span></p>
-                <img onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_3"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_3"/>
-                <img id="Resize_Img_v_3" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_3", Exit_Id_v: "Exit_Img_v_3", Heart_Id_v: "Heart_vid_3", Resize_Id_v: "Resize_Img_v_3", Source_Id_v: "Source_3_Vid_v", Picture_Id_v: "Play_Img_3_v"})}/>
-                <img id="Exit_Img_v_3" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_3", Exit_Id_Exit_v: "Exit_Img_v_3", Heart_Id_Exit_v: "Heart_vid_3", Resize_Id_Exit_v: "Resize_Img_v_3", Source_Id_Exit_v: "Source_3_Vid_v", Picture_Id_Exit_v: "Play_Img_3_v"})}/>
-            </div>  
+  }
+  } 
 
-            <div id="Video_Item_4" style={Video_Item_Style}>
-                <video id="Video_4_v" src={videoArray_v[3]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(3)} controls={controlsEnabled} muted></video>
-                <img style={Play_Img_Style} src={PlayImg} id="Play_Img_4_v" />
-                <p style={Source_Text_Style_v} id="Source_4_Vid_v">Source: <span id="Img_Source4_v" style={Actual_Source_Text_v}>{videoArrayurl_v[3]}</span></p>
-                <img onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_4"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_4"/>
-                <img id="Resize_Img_v_4" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_4", Exit_Id_v: "Exit_Img_v_4", Heart_Id_v: "Heart_vid_4", Resize_Id_v: "Resize_Img_v_4", Source_Id_v: "Source_4_Vid_v", Picture_Id_v: "Play_Img_4_v"})}/>
-                <img id="Exit_Img_v_4" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_4", Exit_Id_Exit_v: "Exit_Img_v_4", Heart_Id_Exit_v: "Heart_vid_4", Resize_Id_Exit_v: "Resize_Img_v_4", Source_Id_Exit_v: "Source_4_Vid_v", Picture_Id_Exit_v: "Play_Img_4_v"})}/>
-            </div>  
+  return(
 
-            <div id="Video_Item_5" style={Video_Item_Style} >
-                <video id="Video_5_v" src={videoArray_v[4]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(4)} controls={controlsEnabled} muted></video>
-                <img style={Play_Img_Style} src={PlayImg} id="Play_Img_5_v"/>
-                <p style={Source_Text_Style_v} id="Source_5_Vid_v">Source: <span id="Img_Source5_v" style={Actual_Source_Text_v}>{videoArrayurl_v[4]}</span></p>
-                <img onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_5"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_5"/>
-                <img id="Resize_Img_v_5" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_5", Exit_Id_v: "Exit_Img_v_5", Heart_Id_v: "Heart_vid_5", Resize_Id_v: "Resize_Img_v_5", Source_Id_v: "Source_5_Vid_v", Picture_Id_v: "Play_Img_5_v"})}/>
-                <img id="Exit_Img_v_5" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_5", Exit_Id_Exit_v: "Exit_Img_v_5", Heart_Id_Exit_v: "Heart_vid_5", Resize_Id_Exit_v: "Resize_Img_v_5", Source_Id_Exit_v: "Source_5_Vid_v", Picture_Id_Exit_v: "Play_Img_5_v"})}/>
-            </div>  
+      <div  style={Main_Style}>
+        <p id="main_style" style={top_marker}></p>
 
-            <div id="Video_Item_6" style={Video_Item_Style} >
-                <video id="Video_6_v" src={videoArray_v[5]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(5)} controls={controlsEnabled} muted></video>
-                <img style={Play_Img_Style} src={PlayImg} id="Play_Img_6_v" />
-                <p style={Source_Text_Style_v} id="Source_6_Vid_v">Source: <span id="Img_Source6_v" style={Actual_Source_Text_v}>{videoArrayurl_v[5]}</span></p>
-                <img onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_6"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_6"/>
-                <img id="Resize_Img_v_6" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_6", Exit_Id_v: "Exit_Img_v_6", Heart_Id_v: "Heart_vid_6", Resize_Id_v: "Resize_Img_v_6", Source_Id_v: "Source_6_Vid_v", Picture_Id_v: "Play_Img_6_v"})}/>
-                <img id="Exit_Img_v_6" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_6", Exit_Id_Exit_v: "Exit_Img_v_6", Heart_Id_Exit_v: "Heart_vid_6", Resize_Id_Exit_v: "Resize_Img_v_6", Source_Id_Exit_v: "Source_6_Vid_v", Picture_Id_Exit_v: "Play_Img_6_v"})}/>
-            </div>  
+      <HoverImg containerId="Video_Item_1" sourceTextId="user_text_1" Video="Video_1_v" PlayImg="Play_Img_1_v" Resize_Id_v="Heart_vid_1" enabled={true}/>
+      <HoverImg containerId="Video_Item_2" sourceTextId="user_text_2" Video="Video_2_v" PlayImg="Play_Img_2_v" Resize_Id_v="Heart_vid_2" enabled={true}/>
+      <HoverImg containerId="Video_Item_3" sourceTextId="user_text_3" Video="Video_3_v" PlayImg="Play_Img_3_v" Resize_Id_v="Heart_vid_3" enabled={true}/>
+      <HoverImg containerId="Video_Item_4" sourceTextId="user_text_4" Video="Video_4_v" PlayImg="Play_Img_4_v" Resize_Id_v="Heart_vid_4" enabled={true}/>
+      <HoverImg containerId="Video_Item_5" sourceTextId="user_text_5" Video="Video_5_v" PlayImg="Play_Img_5_v" Resize_Id_v="Heart_vid_5" enabled={true}/>
+      <HoverImg containerId="Video_Item_6" sourceTextId="user_text_6" Video="Video_6_v" PlayImg="Play_Img_6_v" Resize_Id_v="Heart_vid_6" enabled={true}/>
+      <HoverImg containerId="Video_Item_7" sourceTextId="user_text_7" Video="Video_7_v" PlayImg="Play_Img_7_v" Resize_Id_v="Heart_vid_7" enabled={true}/>
+      <HoverImg containerId="Video_Item_8" sourceTextId="user_text_8" Video="Video_8_v" PlayImg="Play_Img_8_v" Resize_Id_v="Heart_vid_8" enabled={true}/>
+      <HoverImg containerId="Video_Item_9" sourceTextId="user_text_9" Video="Video_9_v" PlayImg="Play_Img_9_v" Resize_Id_v="Heart_vid_9" enabled={true}/>
+      <HoverImg containerId="Video_Item_10" sourceTextId="user_text_10" Video="Video_10_v" PlayImg="Play_Img_10_v" Resize_Id_v="Heart_vid_10" enabled={true}/>
+      <HoverImg containerId="Video_Item_11" sourceTextId="user_text_11" Video="Video_11_v" PlayImg="Play_Img_11_v" Resize_Id_v="Heart_vid_11" enabled={true}/>
+      <HoverImg containerId="Video_Item_12" sourceTextId="user_text_12" Video="Video_12_v" PlayImg="Play_Img_12_v" Resize_Id_v="Heart_vid_12" enabled={true}/>
+      <HoverImg containerId="Video_Item_13" sourceTextId="user_text_13" Video="Video_13_v" PlayImg="Play_Img_13_v" Resize_Id_v="Heart_vid_13" enabled={true}/>
+      <HoverImg containerId="Video_Item_14" sourceTextId="user_text_14" Video="Video_14_v" PlayImg="Play_Img_14_v" Resize_Id_v="Heart_vid_14" enabled={true}/>
+      <HoverImg containerId="Video_Item_15" sourceTextId="user_text_15" Video="Video_15_v" PlayImg="Play_Img_15_v" Resize_Id_v="Heart_vid_15" enabled={true}/>
+      <HoverImg containerId="Video_Item_16" sourceTextId="user_text_16" Video="Video_16_v" PlayImg="Play_Img_16_v" Resize_Id_v="Heart_vid_16" enabled={true}/>
+      <HoverImg containerId="Video_Item_17" sourceTextId="user_text_17" Video="Video_17_v" PlayImg="Play_Img_17_v" Resize_Id_v="Heart_vid_17" enabled={true}/>
+      <HoverImg containerId="Video_Item_18" sourceTextId="user_text_18" Video="Video_18_v" PlayImg="Play_Img_18_v" Resize_Id_v="Heart_vid_18" enabled={true}/>
+      
 
-            <div id="Video_Item_7" style={Video_Item_Style} >
-                <video id="Video_7_v" src={videoArray_v[6]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(6)} controls={controlsEnabled} muted></video>   
-                <img style={Play_Img_Style} src={PlayImg} id="Play_Img_7_v" />
-                <p style={Source_Text_Style_v} id="Source_7_Vid_v">Source: <span id="Img_Source7_v" style={Actual_Source_Text_v}>{videoArrayurl_v[6]}</span></p>
-                <img onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_7"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_7"/>
-                <img id="Resize_Img_v_7" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_7", Exit_Id_v: "Exit_Img_v_7", Heart_Id_v: "Heart_vid_7", Resize_Id_v: "Resize_Img_v_7", Source_Id_v: "Source_7_Vid_v", Picture_Id_v: "Play_Img_7_v"})}/>
-                <img id="Exit_Img_v_7" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_7", Exit_Id_Exit_v: "Exit_Img_v_7", Heart_Id_Exit_v: "Heart_vid_7", Resize_Id_Exit_v: "Resize_Img_v_7", Source_Id_Exit_v: "Source_7_Vid_v", Picture_Id_Exit_v: "Play_Img_7_v"})}/>
-            </div>  
+      <div style={search_bar_img_container}>
+        <video style={Main_video_Style} autoPlay loop muted controls={controlsEnabled} src={videoArray_v[randomNumber]}></video>
+        <p style={Video_top_text}>Search endless free videos with no limit and royalty free.</p>
+        <input id="Search_Videos" onChange={handleInputChange} value={searchValue} type="text" placeholder="Search for videos" style={Input_Style} onKeyDown={handleKeyPress_v} />
+        <img onClick={ChangeSearch} id="Search_Button_v" style={Search_Img_Style} src={SearchImg}/>
+        <img id="View_Exit_Img" src={Exit_Img_p_Search} onClick={() => Exit_Photo_Item_v()} style={View_Exit_Img_Resize}/>
+          <div style={Video_featured_text_container}>
+              <p style={Video_featured_text_title}>Trending: </p>
+              <p style={Video_featured_text} onClick={() => ChangeSearch_Trending({query: "dark"})}>dark,</p>
+              <p style={Video_featured_text} onClick={() => ChangeSearch_Trending({query: "nature"})}>nature,</p>
+              <p style={Video_featured_text} onClick={() => ChangeSearch_Trending({query: "forest"})}>forest,</p>
+              <p style={Video_featured_text} onClick={() => ChangeSearch_Trending({query: "sky"})}>sky</p>
+              <div id="Loading_Spinner_vid" style={Loading_Spinner_vid} className="loading-spinner"></div>
+          </div>
+      </div>
+      <h1 id="search_title" style={Search_Title_Style}>Search results for "{searchQuery_v}"</h1>
+      <h1 id="none_title" style={Search_Title_Style}>No results were found...</h1>
+      <p style={Result_Style}>Total results: {videoResults}</p>
+      <p style={pageOf_Style}>Page {PageQuery_v} of {calculateTotalPages(Number(videoResults), 18)}</p>
+      <div id="View_Video" style={view_video_style_Container}> 
+        <div style={View_Video_Actual_Container}>
+          <div id="view_top_items" style={top_items_style}>
+            <p style={view_title_style}>Pixel Peak</p>
+            <p style={view_title_style}>Videos</p>
+          </div>
+          <video id="Video_View_Actual"  style={View_Video_Style} typeof="video/mp4" controls={controlsEnabled}></video>
+          <img id="View_Heart_Img" className="Heart_Style_Class_Vid" src={Heart_Img_vid} style={Heart_Style_View}/>
+          <p id="view_video_user" style={view_user_text_style}></p>
+          <button style={Download_Btn_Style_View}> <img style={Download_Image_Style} src={download_Img}/><span id="View_Download_Btn">Download</span></button>
+        </div>
+      </div>
+      <div id="Video_Container" style={Video_Container_Style}>
+         {Video_Items}
+          <div style={Space}></div>
+          <div id="button_container_v">
+              <button onClick={ChangePrevPage_v} style={Bottom_Buttons_Style_Left}>Prev Page</button>
+              <p style={Page_Counter_Style_v}>{PageQuery_v}</p>
+              <button onClick={ChangeNextPage_v} style={Bottom_Buttons_Style_Right}>Next Page</button> 
+              <div id="Loading_Spinner_vid_Bottom" style={Loading_Spinner_vid_Bottom} className="loading-spinner"></div>
+          </div>
+          <div style={Space_2}></div>
+          <div id="Footer" className="Scroll_Div" style={footerStyle}>
+              <p style={Footer_Title}>Pixel Peak</p>
+              {/*
+                <div id="Account">
+                  <p id="Acc_Title" className="Title_Class_Footer" style={titleStyle}>Account</p>
+                  <p className="Footer_Link" id="Login_Link_p" style={linkStyle}>Login</p>
+                </div>
 
-            <div id="Video_Item_8" style={Video_Item_Style} >
-                <video id="Video_8_v" src={videoArray_v[7]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(7)} controls={controlsEnabled} muted></video>
-                <img style={Play_Img_Style} src={PlayImg} id="Play_Img_8_v" />
-                <p style={Source_Text_Style_v} id="Source_8_Vid_v">Source: <span id="Img_Source8_v" style={Actual_Source_Text_v}>{videoArrayurl_v[7]}</span></p>
-                <img onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_8"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_8"/>
-                <img id="Resize_Img_v_8" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_8", Exit_Id_v: "Exit_Img_v_8", Heart_Id_v: "Heart_vid_8", Resize_Id_v: "Resize_Img_v_8", Source_Id_v: "Source_8_Vid_v", Picture_Id_v: "Play_Img_8_v"})}/>
-                <img id="Exit_Img_v_8" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_8", Exit_Id_Exit_v: "Exit_Img_v_8", Heart_Id_Exit_v: "Heart_vid_8", Resize_Id_Exit_v: "Resize_Img_v_8", Source_Id_Exit_v: "Source_8_Vid_v", Picture_Id_Exit_v: "Play_Img_8_v"})}/>
-            </div>  
+                <div id="QuickLinks">
+                  <p id="Quic_Title" className="Title_Class_Footer" style={titleStyle}>Quick Links</p>
+                  <p className="Footer_Link" id="Videos_Link_p" style={linkStyle}>Videos</p>
+                  <p className="Footer_Link" id="Photos_Link_p" style={linkStyle}>Photos</p>
+                </div>
 
-            <div id="Video_Item_9" style={Video_Item_Style} >
-                <video id="Video_9_v" src={videoArray_v[8]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(8)} controls={controlsEnabled} muted></video>
-                <img style={Play_Img_Style} src={PlayImg} id="Play_Img_9_v" />
-                <p style={Source_Text_Style_v} id="Source_9_Vid_v">Source: <span id="Img_Source9_v" style={Actual_Source_Text_v}>{videoArrayurl_v[8]}</span></p>
-                <img onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_9"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_9"/>
-                <img id="Resize_Img_v_9" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_9", Exit_Id_v: "Exit_Img_v_9", Heart_Id_v: "Heart_vid_9", Resize_Id_v: "Resize_Img_v_9", Source_Id_v: "Source_9_Vid_v", Picture_Id_v: "Play_Img_9_v"})}/>
-                <img id="Exit_Img_v_9" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_9", Exit_Id_Exit_v: "Exit_Img_v_9", Heart_Id_Exit_v: "Heart_vid_9", Resize_Id_Exit_v: "Resize_Img_v_9", Source_Id_Exit_v: "Source_9_Vid_v", Picture_Id_Exit_v: "Play_Img_9_v"})}/>
-            </div>  
-
-            <div id="Video_Item_10" style={Video_Item_Style} >
-                <video id="Video_10_v" src={videoArray_v[9]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(9)} controls={controlsEnabled} muted></video>
-                <img style={Play_Img_Style} src={PlayImg} id="Play_Img_10_v" />
-                <p style={Source_Text_Style_v} id="Source_10_Vid_v">Source: <span id="Img_Source10_v" style={Actual_Source_Text_v}>{videoArrayurl_v[9]}</span></p>
-                <img onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_10"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_10"/>
-                <img id="Resize_Img_v_10" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_10", Exit_Id_v: "Exit_Img_v_10", Heart_Id_v: "Heart_vid_10", Resize_Id_v: "Resize_Img_v_10", Source_Id_v: "Source_10_Vid_v", Picture_Id_v: "Play_Img_10_v"})}/>
-                <img id="Exit_Img_v_10" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_10", Exit_Id_Exit_v: "Exit_Img_v_10", Heart_Id_Exit_v: "Heart_vid_10", Resize_Id_Exit_v: "Resize_Img_v_10", Source_Id_Exit_v: "Source_10_Vid_v", Picture_Id_Exit_v: "Play_Img_10_v"})}/>
-            </div> 
-
-            <div id="Video_Item_11" style={Video_Item_Style} >
-                <video id="Video_11_v" src={videoArray_v[10]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(10)} controls={controlsEnabled} muted></video>
-                <img style={Play_Img_Style} src={PlayImg} id="Play_Img_11_v" />
-                <p style={Source_Text_Style_v} id="Source_11_Vid_v">Source: <span id="Img_Source11_v" style={Actual_Source_Text_v}>{videoArrayurl_v[10]}</span></p>
-                <img onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_11"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_11"/>
-                <img id="Resize_Img_v_11" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_11", Exit_Id_v: "Exit_Img_v_11", Heart_Id_v: "Heart_vid_11", Resize_Id_v: "Resize_Img_v_11", Source_Id_v: "Source_11_Vid_v", Picture_Id_v: "Play_Img_11_v"})}/>
-                <img id="Exit_Img_v_11" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_11", Exit_Id_Exit_v: "Exit_Img_v_11", Heart_Id_Exit_v: "Heart_vid_11", Resize_Id_Exit_v: "Resize_Img_v_11", Source_Id_Exit_v: "Source_11_Vid_v", Picture_Id_Exit_v: "Play_Img_11_v"})}/>
-            </div>  
-
-            <div id="Video_Item_12" style={Video_Item_Style} >
-                <video id="Video_12_v" src={videoArray_v[11]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(11)} controls={controlsEnabled} muted></video>
-                <img style={Play_Img_Style} src={PlayImg} id="Play_Img_12_v" />
-                <p style={Source_Text_Style_v} id="Source_12_Vid_v">Source: <span id="Img_Source12_v" style={Actual_Source_Text_v}>{videoArrayurl_v[11]}</span></p>
-                <img onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_12"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_12"/>
-                <img id="Resize_Img_v_12" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_12", Exit_Id_v: "Exit_Img_v_12", Heart_Id_v: "Heart_vid_12", Resize_Id_v: "Resize_Img_v_12", Source_Id_v: "Source_12_Vid_v", Picture_Id_v: "Play_Img_12_v"})}/>
-                <img id="Exit_Img_v_12" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_12", Exit_Id_Exit_v: "Exit_Img_v_12", Heart_Id_Exit_v: "Heart_vid_12", Resize_Id_Exit_v: "Resize_Img_v_12", Source_Id_Exit_v: "Source_12_Vid_v", Picture_Id_Exit_v: "Play_Img_12_v"})}/>
-            </div> 
-
-            <div id="Video_Item_13" style={Video_Item_Style} >
-                <video id="Video_13_v" src={videoArray_v[12]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(12)} controls={controlsEnabled} muted></video>
-                <img style={Play_Img_Style} src={PlayImg} id="Play_Img_13_v" />
-                <p style={Source_Text_Style_v} id="Source_13_Vid_v">Source: <span id="Img_Source13_v" style={Actual_Source_Text_v}>{videoArrayurl_v[12]}</span></p>
-                <img onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_13"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_13"/>
-                <img id="Resize_Img_v_13" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_13", Exit_Id_v: "Exit_Img_v_13", Heart_Id_v: "Heart_vid_13", Resize_Id_v: "Resize_Img_v_13", Source_Id_v: "Source_13_Vid_v", Picture_Id_v: "Play_Img_13_v"})}/>
-                <img id="Exit_Img_v_13" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_13", Exit_Id_Exit_v: "Exit_Img_v_13", Heart_Id_Exit_v: "Heart_vid_13", Resize_Id_Exit_v: "Resize_Img_v_13", Source_Id_Exit_v: "Source_13_Vid_v", Picture_Id_Exit_v: "Play_Img_13_v"})}/>
-            </div>  
-
-            <div id="Video_Item_14" style={Video_Item_Style} >
-                <video id="Video_14_v" src={videoArray_v[13]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(13)} controls={controlsEnabled} muted></video>
-                <img style={Play_Img_Style} src={PlayImg} id="Play_Img_14_v" />
-                <p style={Source_Text_Style_v} id="Source_14_Vid_v">Source: <span id="Img_Source14_v" style={Actual_Source_Text_v}>{videoArrayurl_v[13]}</span></p>
-                <img onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_14"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_14"/>
-                <img id="Resize_Img_v_14" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_14", Exit_Id_v: "Exit_Img_v_14", Heart_Id_v: "Heart_vid_14", Resize_Id_v: "Resize_Img_v_14", Source_Id_v: "Source_14_Vid_v", Picture_Id_v: "Play_Img_14_v"})}/>
-                <img id="Exit_Img_v_14" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_14", Exit_Id_Exit_v: "Exit_Img_v_14", Heart_Id_Exit_v: "Heart_vid_14", Resize_Id_Exit_v: "Resize_Img_v_14", Source_Id_Exit_v: "Source_14_Vid_v", Picture_Id_Exit_v: "Play_Img_14_v"})}/>
-            </div>  
-
-            <div id="Video_Item_15" style={Video_Item_Style} >
-                <video id="Video_15_v" src={videoArray_v[14]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(14)} controls={controlsEnabled} muted></video>
-                <img style={Play_Img_Style} src={PlayImg} id="Play_Img_15_v" />
-                <p style={Source_Text_Style_v} id="Source_15_Vid_v">Source: <span id="Img_Source15_v" style={Actual_Source_Text_v}>{videoArrayurl_v[14]}</span></p>
-                <img onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_15"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_15"/>
-                <img id="Resize_Img_v_15" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_15", Exit_Id_v: "Exit_Img_v_15", Heart_Id_v: "Heart_vid_15", Resize_Id_v: "Resize_Img_v_15", Source_Id_v: "Source_15_Vid_v", Picture_Id_v: "Play_Img_15_v"})}/>
-                <img id="Exit_Img_v_15" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_15", Exit_Id_Exit_v: "Exit_Img_v_15", Heart_Id_Exit_v: "Heart_vid_15", Resize_Id_Exit_v: "Resize_Img_v_15", Source_Id_Exit_v: "Source_15_Vid_v", Picture_Id_Exit_v: "Play_Img_15_v"})}/>
-            </div>  
-
-            <div id="Video_Item_16" style={Video_Item_Style} >
-                <video id="Video_16_v" src={videoArray_v[15]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(15)} controls={controlsEnabled} muted></video>
-                <img style={Play_Img_Style} src={PlayImg} id="Play_Img_16_v" />
-                <p style={Source_Text_Style_v} id="Source_16_Vid_v">Source: <span id="Img_Source16_v" style={Actual_Source_Text_v}>{videoArrayurl_v[15]}</span></p>
-                <img onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_16"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_16"/>
-                <img id="Resize_Img_v_16" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_16", Exit_Id_v: "Exit_Img_v_16", Heart_Id_v: "Heart_vid_16", Resize_Id_v: "Resize_Img_v_16", Source_Id_v: "Source_16_Vid_v", Picture_Id_v: "Play_Img_16_v"})}/>
-                <img id="Exit_Img_v_16" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_16", Exit_Id_Exit_v: "Exit_Img_v_16", Heart_Id_Exit_v: "Heart_vid_16", Resize_Id_Exit_v: "Resize_Img_v_16", Source_Id_Exit_v: "Source_16_Vid_v", Picture_Id_Exit_v: "Play_Img_16_v"})}/>
-            </div> 
-
-            <div id="Video_Item_17" style={Video_Item_Style} >
-                <video id="Video_17_v" src={videoArray_v[16]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(16)} controls={controlsEnabled} muted></video>
-                <img style={Play_Img_Style} src={PlayImg} id="Play_Img_17_v" />
-                <p style={Source_Text_Style_v} id="Source_17_Vid_v">Source: <span id="Img_Source17_v" style={Actual_Source_Text_v}>{videoArrayurl_v[16]}</span></p>
-                <img onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_17"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_17"/>
-                <img id="Resize_Img_v_17" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_17", Exit_Id_v: "Exit_Img_v_17", Heart_Id_v: "Heart_vid_17", Resize_Id_v: "Resize_Img_v_17", Source_Id_v: "Source_17_Vid_v", Picture_Id_v: "Play_Img_17_v"})}/>
-                <img id="Exit_Img_v_17" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_17", Exit_Id_Exit_v: "Exit_Img_v_17", Heart_Id_Exit_v: "Heart_vid_17", Resize_Id_Exit_v: "Resize_Img_v_17", Source_Id_Exit_v: "Source_17_Vid_v", Picture_Id_Exit_v: "Play_Img_17_v"})}/>
-            </div> 
-            
-            <div id="Video_Item_18" style={Video_Item_Style} >
-                <video id="Video_18_v" src={videoArray_v[17]} style={Video_Style} typeof="video/mp4" onClick={() => TriggerLink_v(17)} controls={controlsEnabled} muted></video>
-                <img style={Play_Img_Style} src={PlayImg} id="Play_Img_18_v" />
-                <p style={Source_Text_Style_v} id="Source_18_Vid_v">Source: <span id="Img_Source18_v" style={Actual_Source_Text_v}>{videoArrayurl_v[17]}</span></p>
-                <img onClick={() => Save_Vid_Search({id_Heart_vid_Search: "Heart_vid_18"})} src={Heart_Img_vid} style={Heart_Style} id="Heart_vid_18"/>
-                <img id="Resize_Img_v_18" src={Resize_Img_v_Search} style={Resize_Img_style} onClick={() => Resize_Photo_Item_v({Container_Id_v: "Video_Item_18", Exit_Id_v: "Exit_Img_v_18", Heart_Id_v: "Heart_vid_18", Resize_Id_v: "Resize_Img_v_18", Source_Id_v: "Source_18_Vid_v", Picture_Id_v: "Play_Img_18_v"})}/>
-                <img id="Exit_Img_v_18" src={Exit_Img_p_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item_v({Container_Id_Exit_v: "Video_Item_18", Exit_Id_Exit_v: "Exit_Img_v_18", Heart_Id_Exit_v: "Heart_vid_18", Resize_Id_Exit_v: "Resize_Img_v_18", Source_Id_Exit_v: "Source_18_Vid_v", Picture_Id_Exit_v: "Play_Img_18_v"})}/>
-            </div>  
-
-            <div style={Space}></div>
-            <div>
-                <button onClick={ChangePrevPage_v} style={Bottom_Buttons_Style}>Prev Page</button>
-                <p style={Page_Counter_Style_v}>{PageQuery_v}</p>
-                <button onClick={ChangeNextPage_v} style={Bottom_Buttons_Style}>Next Page</button> 
-                <div id="Loading_Spinner_vid_Bottom" style={Loading_Spinner_vid_Bottom} className="loading-spinner"></div>
+                <div id="About">
+                  <p id="Abt_Title" className="Title_Class_Footer" style={titleStyle}>About</p>
+                  <p className="Footer_Link" id="Info_Link_p" style={linkStyle}>Information</p>
+                </div>
+                */}
+                <p id="CopyWright" style={copyrightStyle}>
+                  Copyright © 2024 Pixel Peak. All Rights Reserved. User Agreement, Privacy,
+                  Payments Terms of Use, Cookies and AdChoice. Made By Lukas Leins
+                </p>
             </div>
-
-        </div>
-        </div>
-    );
+      </div>
+      
+      </div>
+  );
 }
 
 

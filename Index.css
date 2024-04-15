@@ -5,11 +5,12 @@ Problems:
 */
 
 body {
-    background-color: rgb(10, 10, 10) !important;
+    background-color: rgb(15, 15, 15) !important;
     overflow-x: hidden;
     margin: 0 !important;
     padding: 0 !important;
     scroll-behavior: smooth !important;
+    overflow-y: hidden !important;
 }
 
 #Blur_Webpage {
@@ -34,11 +35,11 @@ body {
 /*Loading spinner*/
 .loading-spinner {
     border: 5px solid #f3f3f3;
-    border-top: 5px solid #2c9fec;
+    border-top: 5px solid rgb(24, 105, 226);
     border-radius: 50%;
     width: 40px;
     height: 40px;
-    animation: spin 1s linear infinite;
+    animation: spin .65s linear infinite;
     margin: auto;
     position: absolute;
     left: 50%;
@@ -76,16 +77,16 @@ body {
 }
 
 #Cookies_Title {
-    font-family: verdana;
+    font-family: Helvetica;
     font-size: 25px;
-    color: rgb(61, 100, 255);
+    color: rgb(15, 100, 255);
     position: relative;
     text-align: center;
     top: 5px;
 }
 
 #Cookies_Write_Up {
-    font-family: verdana;
+    font-family: Helvetica;
     font-size: 14px;
     position: relative;
     text-align: center;
@@ -102,8 +103,8 @@ body {
 
 #Accept_Cookies_Btn {
     border: none;
-    background-color: rgb(61, 100, 255);
-    font-family: verdana;
+    background-color: rgb(45, 101, 255);
+    font-family: Helvetica;
     font-size: 15px;
     color: white;
     width: 150px;
@@ -115,20 +116,16 @@ body {
 #View_Cookies_Btn {
     border: none;
     background-color: white;
-    font-family: verdana;
+    font-family: Helvetica;
     font-size: 15px;
-    color: rgb(61, 100, 255);
+    color: rgb(45, 101, 255);
     width: 150px;
     height: 40px;
     border-radius: 5px;
-    border: 2px solid rgb(61, 100, 255);
+    border: 2px solid rgb(45, 101, 255);
 }
 
 /*Cookies Container*/
-
-
-
-
 
 /*Page Notifications*/
 
@@ -139,18 +136,19 @@ body {
 
 .notif_Style {
     position: fixed;
-    top: 40px;
+    top: 60px;
     left: 20px;
-    z-index: 99999;
-    width: 70%;
+    z-index: 9999999;
+    width: 380px;
     height: 50px;
     padding-left: 10px;
     white-space: nowrap;
     padding-top: 9px;
     border-radius: 0px;
     opacity: 1;
-    font-family: Verdana;
+    font-family: Helvetica;
     font-size: 14px;
+    border-radius: 5px;
 }
 
 #Login_1 {
@@ -263,12 +261,13 @@ body {
 #Main_Nav {
     position: fixed;
     width: 100%;
-    height: 10px;
+    height: 60px;
     top: 0px;
     left: 0px;
     transition: .3s;
     display: flex;
-    z-index: 20;
+    z-index: 100000;
+    /*none*/
 }
 
 #Main_Nav.solid {
@@ -286,7 +285,8 @@ body {
     height: 40px;
     width: 80px;
     font-family: verdana;
-    color: white;
+    color: rgb(255, 255, 255);
+    /*white*/
     font-size: 16px;
     background-color: rgb(150, 150, 150, 0);
     cursor: pointer;
@@ -310,22 +310,31 @@ body {
 
 #Title {
     font-family: arial;
-    color: white;
+    color: rgb(255, 255, 255);
     font-weight: bold;
     position: absolute;
     letter-spacing: 1px;
     font-size: 20px;
-    left: 20px;
-    top: 10px;
-    cursor: pointer;
+    left: 50px;
+    top: 15px;
+    cursor: default;
     font-variant: small-caps;
 }
+
+#Title_Logo {
+    position: absolute;
+    left: 20px;
+    top: 18px;
+    width: 24px;
+    height: 24px;
+}
+
 
 #Nav_Main_Imgs {
     position: relative;
     left: 93%;
     transform: translate(-50%, 0%);
-    top: 13px;
+    top: 10px;
 }
 
 
@@ -336,6 +345,7 @@ body {
     border-radius: 5px;
     margin-left: 5px;
     margin-right: 5px;
+    filter: brightness(100%)
 }
 
 .Nav_Imgs:hover {
@@ -351,7 +361,13 @@ body {
 
 /*Navigation Bar*/
 
+#Photos_React {
+    display: none;
+}
 
+#Video_React {
+    display: none;
+}
 
 /*Account Dashboard*/
 
@@ -359,7 +375,7 @@ body {
     position: relative;
     color: "rgb(10, 10, 10)";
     text-align: center;
-    font-family: verdana;
+    font-family: Helvetica;
     font-size: 35px;
     top: -70px;
 }
@@ -367,9 +383,9 @@ body {
 .Account_btn_style {
     position: relative;
     border: none;
-    background-color: rgb(125, 151, 253);
+    background-color: rgb(45, 101, 255);
     color: rgb(255, 255, 255);
-    font-family: verdana;
+    font-family: Helvetica;
     font-size: 14px;
     height: 30px;
     width: 75%;
@@ -535,7 +551,7 @@ body.loaded #Photos {
 /*Mobile Menu*/
 
 #Mobile_Side_Buttons {
-    z-index: 9999;
+    z-index: 999999;
     position: fixed;
     top: 20px;
     right: 20px;
@@ -550,7 +566,7 @@ body.loaded #Photos {
     border-radius: 5px;
     cursor: pointer;
     color: white;
-    font-family: verdana;
+    font-family: Helvetica;
     font-size: 14px;
     display: none;
 
@@ -587,7 +603,7 @@ body.loaded #Photos {
     height: 50px;
     left: 20px;
     top: 50px;
-    font-family: verdana;
+    font-family: Helvetica;
     font-size: 16px;
     color: rgb(10, 10, 10);
     background-color: rgb(10, 10, 10, 0);
@@ -646,7 +662,7 @@ body.loaded #Photos {
 #Title_Videos {
     position: relative;
     color: rgb(60, 60, 60);
-    font-family: verdana;
+    font-family: Helvetica;
     font-size: 40px;
     font-variant: small-caps;
     font-weight: bold;
@@ -664,7 +680,7 @@ body.loaded #Photos {
     height: 40px;
     border: 0px solid rgb(255, 255, 255, .5);
     border-radius: 5px;
-    font-family: Verdana;
+    font-family: Helvetica;
     font-size: 14px;
     color: white;
     background-color: rgb(150, 150, 150, 0.3);
@@ -694,7 +710,7 @@ body.loaded #Photos {
     height: 50px;
     border: 0px solid rgb(255, 255, 255, .5);
     border-radius: 5px;
-    font-family: Verdana;
+    font-family: Helvetica;
     font-size: 14px;
     color: white;
     background-color: rgba(30, 30, 30, 0.7);
@@ -717,7 +733,7 @@ body.loaded #Photos {
     position: absolute;
     left: 80px;
     top: 147px;
-    font-family: verdana;
+    font-family: verdHelveticaana;
     font-size: 14px;
     color: white;
     background-color: rgba(30, 30, 30, 1);
@@ -753,7 +769,7 @@ body.loaded #Photos {
     position: absolute;
     left: 10px;
     top: 10px;
-    font-family: verdana;
+    font-family: Helvetica;
     font-size: 14px;
     color: white;
     background-color: rgba(30, 30, 30, 1);
@@ -769,7 +785,7 @@ body.loaded #Photos {
 
 .Vid_Photo_WriteUp {
     position: absolute;
-    font-family: verdana;
+    font-family: Helvetica;
     color: white;
     width: 300px;
     font-size: 18px;
@@ -786,20 +802,19 @@ body.loaded #Photos {
 
 /*Video Search*/
 #Video_Search_Result {
-    display: block;
     position: fixed;
-    overflow-y: auto;
+    overflow-y: hidden;
     width: 100%;
-    height: 100%;
+    height: calc(100%);
     z-index: 11;
-    background-color: white;
-    left: 200%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 5px;
+    left: 0px;
+    top: 0px;
+    border-radius: 0px;
     transform: .3s;
     transition: .3s;
-    overflow-y: hidden;
+    display: block;
+    background-color: rgb(40, 40, 40, 0);
+    overflow-x: hidden;
 }
 
 #Exit_Video_Search {
@@ -812,7 +827,7 @@ body.loaded #Photos {
 
 .Search_Title {
     color: rgb(40, 40, 40);
-    font-family: verdana;
+    font-family: Helvetica;
     font-size: 18px;
     position: fixed;
     top: 7px;
@@ -823,7 +838,7 @@ body.loaded #Photos {
 
 .Search_Title_Type {
     color: rgb(40, 40, 40);
-    font-family: verdana;
+    font-family: Helvetica;
     font-size: 25px;
     position: fixed;
     top: 5px;
@@ -833,6 +848,10 @@ body.loaded #Photos {
     font-variant: small-caps;
 }
 
+.video_user:hover {
+    transition: .2s;
+    text-decoration: underline;
+}
 
 /*Video Search*/
 
@@ -854,7 +873,7 @@ body.loaded #Photos {
 #Title_Photos {
     position: relative;
     color: rgb(60, 60, 60);
-    font-family: verdana;
+    font-family: Helvetica;
     font-size: 40px;
     font-variant: small-caps;
     font-weight: bold;
@@ -870,7 +889,7 @@ body.loaded #Photos {
     height: 50px;
     border: 0px solid rgb(255, 255, 255, .5);
     border-radius: 5px;
-    font-family: Verdana;
+    font-family: Helvetica;
     font-size: 14px;
     color: white;
     background-color: rgba(30, 30, 30, 0.7);
@@ -890,19 +909,17 @@ body.loaded #Photos {
 
 /*Photo Search*/
 #Photo_Search_Result {
-    display: block;
     position: fixed;
     overflow-y: hidden;
     width: 100%;
-    height: 100%;
+    height: calc(100%);
     z-index: 11;
-    background-color: white;
-    left: 200%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 5px;
+    left: 0px;
+    top: 0px;
+    border-radius: 0px;
     transform: .3s;
     transition: .3s;
+    display: none;
 }
 
 #Exit_Photos_Search {
@@ -926,10 +943,13 @@ body.loaded #Photos {
     left: 50%;
     transform: translate(-50%, 0%);
     background-color: rgb(255, 255, 255);
-    width: 400px;
-    height: 450px;
-    border-radius: 10px;
+    max-width: 400px;
+    width: 90%;
+    height: 90%;
+    max-height: 450px;
+    border-radius: 5px;
     visibility: visible;
+
 }
 
 #Exit_Login {
@@ -942,7 +962,7 @@ body.loaded #Photos {
 
 #SignIn_Title {
     color: rgb(10, 10, 10);
-    font-family: verdana;
+    font-family: Helvetica;
     font-size: 35px;
     text-align: left;
     margin-left: 20px;
@@ -955,6 +975,10 @@ body.loaded #Photos {
 /*Login Tab*/
 
 
+#view_video_user:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
 
 
 /*Account Tab*/
@@ -963,31 +987,26 @@ body.loaded #Photos {
     position: fixed;
     height: 100%;
     width: 100%;
-    background-color: white;
-    top: 50%;
-    left: 200%;
-    transform: translate(-50%, -50%);
+    background-color: rgb(15, 15, 15);
+    top: 0px;
+    left: 0px;
     z-index: 10000;
-    border-radius: 5px;
     transition: .3s;
     overflow-y: auto;
-
+    display: none;
 }
 
 #Saved_React {
     position: fixed;
     height: 100%;
     width: 100%;
-    background-color: white;
-    top: 50%;
-    left: 200%;
-    transform: translate(-50%, -50%);
+    top: 0px;
+    left: 0px;
     z-index: 10000;
-    border-radius: 5px;
-    transition: .3s;
     overflow-y: auto;
+    display: none;
+    background-color: rgb(15, 15, 15);
 }
-
 
 
 /*Account Tab*/
@@ -1005,7 +1024,7 @@ body.loaded #Photos {
     background-color: rgb(255, 255, 255);
     width: 400px;
     height: 450px;
-    border-radius: 10px;
+    border-radius: 5px;
 }
 
 #Exit_Help {
@@ -1019,7 +1038,7 @@ body.loaded #Photos {
 #Help_Title {
     position: relative;
     top: 50px;
-    font-family: verdana;
+    font-family: Helvetica;
     font-size: 25px;
     color: rgb(10, 10, 10);
     text-align: center;
@@ -1028,7 +1047,7 @@ body.loaded #Photos {
 #Help_Text {
     position: relative;
     top: 100px;
-    font-family: verdana;
+    font-family: Helvetica;
     font-size: 14px;
     color: rgb(10, 10, 10);
     text-align: center;
@@ -1040,7 +1059,7 @@ body.loaded #Photos {
 #Copy_Email_Button {
     position: relative;
     top: 130px;
-    font-family: verdana;
+    font-family: Helvetica;
     font-size: 14px;
     color: rgb(255, 255, 255);
     left: 50%;
@@ -1063,18 +1082,19 @@ body.loaded #Photos {
     background-color: rgb(30, 30, 30);
     width: 100%;
     height: 400px;
-    top: calc(100vh + 800px);
+    bottom: 0px;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     /* Define the number of columns */
     grid-template-rows: repeat(1, 1fr);
+    display: none;
 }
 
 .Title_Class_Footer {
     position: relative;
     top: 50px;
     color: white;
-    font-family: verdana;
+    font-family: Helvetica;
     font-size: 16px;
     font-weight: bold;
     text-align: center;
@@ -1084,7 +1104,7 @@ body.loaded #Photos {
     position: relative;
     top: 50px;
     color: rgb(220, 220, 220);
-    font-family: verdana;
+    font-family: Helvetica;
     font-size: 12px;
     cursor: pointer;
     transform: .1s;
@@ -1100,6 +1120,14 @@ body.loaded #Photos {
     top: 300px;
     left: 2%;
     text-align: left;
+    position: relative;
+    top: 50px;
+    color: rgb(220, 220, 220);
+    font-family: Helvetica;
+    font-size: 12px;
+    cursor: default;
+    transform: .1s;
+    text-align: center;
 }
 
 input:focus {
@@ -1131,8 +1159,6 @@ input:focus {
     #Mobile_Menu {
         display: block;
     }
-
-
 
 }
 

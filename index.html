@@ -4,10 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <link rel="stylesheet" href="index.css">
-  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-
-  <title>Home React</title>
+  <link rel="icon" href="Images/logo.ico" type="image/x-icon">
+  <title>Pixel Peak</title>
 </head>
 
 <body>
@@ -18,54 +17,51 @@
   <div id="Cookies_Confirmation_Container">
     <p id="Cookies_Title">Cookies Consent</p>
     <p id="Cookies_Write_Up">By clicking "Accept all cookies", you agree Pixel Peak can store cookies on your decive and
-      disclose information in accordance with our <span style="text-decoration: underline; cursor: pointer;">Cookie
-        Policy</span></p>
+      disclose information in accordance with ourCookie
+      Policy</p>
     <div id="Buttons_Container">
       <button id="Accept_Cookies_Btn" onclick="Accept_Cookies()">Accept all cookies</button>
-      <button id="View_Cookies_Btn">View cookie policy</button>
     </div>
   </div>
   <!--Cookies Consent-->
 
   <div id="Page_Notifs">
-    <p id="Login_1" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Login
+    <p id="Login_1" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Login
       successful</p>
-    <p id="Login_0" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Login
+    <p id="Login_0" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Login failed</p>
+
+    <p id="Logout_1" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Logout
+      successful</p>
+    <p id="Logout_0" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Logout
       failed</p>
 
-    <p id="Logout_1" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Logout
-      successful</p>
-    <p id="Logout_0" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Logout
+    <p id="Account_1" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Account created
+    </p>
+    <p id="Account_0" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Account creation
       failed</p>
-
-    <p id="Account_1" class="notif_Style"><img class="Alert_Image"
-        src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Account created</p>
-    <p id="Account_0" class="notif_Style"><img class="Alert_Image"
-        src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Account creation failed</p>
-    <p id="Account_01" class="notif_Style"><img class="Alert_Image"
-        src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Account creation failed - Account with that email already exists
+    <p id="Account_01" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;Account with that
+      email already exists
     </p>
 
-    <p id="Saved_1" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Saved
+    <p id="Saved_1" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Saved
     </p>
-    <p id="Saved_0" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Failed
+    <p id="Saved_0" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Failed
     </p>
-    <p id="Saved_10" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Removed
-    </p>
-
-    <p id="Deleted_Account_1" class="notif_Style"><img class="Alert_Image"
-        src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Account deleted
-    </p>
-    <p id="Deleted_Account_0" class="notif_Style"><img class="Alert_Image"
-        src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Account cannot be deleted at this time
+    <p id="Saved_10" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Removed
     </p>
 
-    <p id="Login_Request_0" class="notif_Style"><img class="Alert_Image"
-        src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Please log in
+    <p id="Deleted_Account_1" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Account
+      deleted
+    </p>
+    <p id="Deleted_Account_0" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;Account
+      cannot be deleted at this time
     </p>
 
-    <p id="Max_Saved_0" class="notif_Style"><img class="Alert_Image"
-        src="Images/Alert.png">&nbsp;&nbsp;&nbsp;&nbsp;Saved list full
+    <p id="Login_Request_0" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Please log
+      in
+    </p>
+
+    <p id="Max_Saved_0" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Saved list full
     </p>
 
 
@@ -83,7 +79,7 @@
     <div id="Account_Dashboard">
       <p id="Account_Title">Account</p>
       <button id="View_Acc_Btn" class="Account_btn_style" onclick="ViewAccount()">View Account</button>
-      <button id="Saved_Acc_Btn" class="Account_btn_style" onclick="ViewSaved()">Saved</button>
+      <button id="Saved_Acc_Btn" class="Account_btn_style">Saved</button>
       <button id="Logout_Acc_Btn" class="Account_btn_style">Logout</button>
     </div>
   </div>
@@ -102,21 +98,19 @@
     <img id="Exit_Help" src="Images/Exit.png" onclick="Exit_Help()">
     <p id="Help_Title">How can we help?</p>
     <p id="Help_Text">For questions or concerns please feel free to contact us with the email below.</p>
-    <p id="Help_Text">Example@temp.com</p>
+    <p id="Help_Text">example@email.com</p>
   </div>
   <!--Help Container-->
 
   <div id="Main_Nav" class="Load_Item">
-    <p id="Title" onclick="Go_Home()">Pixel Peak</p>
+    <p id="Title">Pixel Peak</p>
+    <img id="Title_Logo" src="Images/logo.png">
     <div id="Nav_Buttons_Main">
-      <button id="Account_Button" class="Nav_Style" onclick="Go_Home()">Home</button>
-      <button id="Videos_Button" class="Nav_Style"
-        onclick="Switch_to_Photo_Video('Videos_Tab', 'Photos_Tab')">Videos</button>
-      <button id="Photos_Button" class="Nav_Style"
-        onclick="Switch_to_Photo_Video('Photos_Tab', 'Videos_Tab')">Photos</button>
+      <button id="Videos_Button" class="Nav_Style" onclick="SearchVideos()">Videos</button>
+      <button id="Photos_Button" class="Nav_Style" onclick="SearchPhotos()">Photos</button>
     </div>
     <div id="Nav_Main_Imgs">
-      <img id="Account" class="Nav_Imgs" src="Images/Account.png">
+      <img id="Account" class="Nav_Imgs" onclick="Login_Blur()" src="Images/Account.png">
       <img id="Info" class="Nav_Imgs" onclick="Help_Blur()" src="Images/Info.png">
     </div>
   </div>
@@ -127,19 +121,15 @@
     <button id="Mobile_Menu" onclick="Open_Mobile_Menu()"><img src="Images/Menu.png" id="Menu_Img">Menu</button>
     <div id="Side_Buttons">
       <img id="Exit_Img" onclick="Close_Mobile_Menu()" src="Images/Exit.png">
-      <button id="Home_Mobile" class="Mobile_Menu_Buttons" onclick="Go_Home_Mobile()">Home<img
+      <button id="Videos_Mobile" class="Mobile_Menu_Buttons" onclick="SearchVideos()">Videos<img
           src="Images/Mobile_Arrow.png" class="Mobile_Arrow_Class"></button>
-      <button id="Videos_Mobile" class="Mobile_Menu_Buttons"
-        onclick="Switch_to_Photo_Video_Mobile('Videos_Tab', 'Photos_Tab', 'Side_Buttons')">Videos<img
-          src="Images/Mobile_Arrow.png" class="Mobile_Arrow_Class"></button>
-      <button id="Photos_Mobile" class="Mobile_Menu_Buttons"
-        onclick="Switch_to_Photo_Video_Mobile('Photos_Tab', 'Videos_Tab', 'Side_Buttons')">Photos<img
+      <button id="Photos_Mobile" class="Mobile_Menu_Buttons" onclick="SearchPhotos()">Photos<img
           src="Images/Mobile_Arrow.png" class="Mobile_Arrow_Class"></button>
 
       <button id="Information_Mobile" class="Mobile_Menu_Buttons" onclick="Help_Blur()"><img src="Images/Info.png"
           class="Mobile_Imgs" onclick="Help_Blur()">Information</button>
-      <button id="Account_Mobile" class="Mobile_Menu_Buttons" onclick="Login_Blur()"><img src="Images/Account.png"
-          class="Mobile_Imgs" onclick="Login_Blur()">Account</button>
+      <button id="Account_Mobile" class="Mobile_Menu_Buttons"><img id="account_mobile_img" src="Images/Account.png"
+          class="Mobile_Imgs">Account</button>
 
     </div>
 
@@ -148,102 +138,26 @@
   <!--Mobile Navigation Bar-->
 
 
-  <div id="Main_Title_Container" class="Load_Item">
-    <h1 id="Title_Main">Pixel Peak</h1>
-  </div>
-
-  <div id="Arrow_Container" class="Load_Item">
-    <div id="DownArrow_Img"></div>
-  </div>
-
-
-  <div id="Video_Container" class="Load_Item">
-    <video id="video1" class="video" src="Videos/Water_1_F.mp4" type="video/mp4" muted></video>
-    <video id="video2" class="video" src="Videos/City_2_F.mp4" type="video/mp4" muted></video>
-    <video id="video3" class="video" src="Videos/Car_3_F.mp4" type="video/mp4" muted></video>
-    <video id="video4" class="video" src="Videos/Bask_4_F.mp4" type="video/mp4" muted></video>
-    <video id="video5" class="video" src="Videos/Road_5_F.mp4" type="video/mp4" muted></video>
-  </div>
-
-
-  <div id="Button_Container" class="Load_Item">
-    <button id="Videos" class="Main_Buttons" onclick="Switch_to_Photo_Video('Videos_Tab', 'Photos_Tab')">View
-      Videos</button>
-    <button id="Photos" class="Main_Buttons" onclick="Switch_to_Photo_Video('Photos_Tab', 'Videos_Tab')">View
-      Photos</button>
-  </div>
 
   <!--Main Page-->
 
 
 
-
-  <!--Videos Tab-->
-  <div id="Videos_Tab" class="Scroll_Div">
-    <h1 id="Title_Videos">Videos</h1>
-    <button id="Search_Videos_Button" class="Main_Buttons" onclick="SearchVideos()">Search For Videos</button>
-    <p id="Hover_Video" class="Switch_Video_Photo_Style"><img src="Images/PlayImg2.png" class="Search_Img"
-        onclick="SearchVideos()"><span id="Switch_Video">Videos</span><img class="Arrow_img_Video_Photo"
-        src="Images/Arrow.png"></p>
-    <div id="Video_Dropdown_Change" class="VP_Dropdown_Change">
-      <p class="Switch_Video_Photo_Style_Drop" onclick="Switch_to_Photo_Video('Photos_Tab', 'Videos_Tab')"
-        id="Phot_DropDown"><img src="Images/PicImg.png" class="Search_Img"><span id="Switch_Photo">Photos</span><img
-          class="Arrow_img_Video_Photo" src="Images/Arrow.png"></p>
-
-      <p onclick="Switch_to_Photo_Video('Videos_Tab', 'Photos_Tab')" id="Vid_DropDown"
-        class="Switch_Video_Photo_Style_Drop">
-        <img src="Images/PlayImg2.png" class="Search_Img" onclick="SearchVideos()"><span
-          id="Switch_Video">Videos</span><img class="Arrow_img_Video_Photo" src="Images/Arrow.png">
-      </p>
-    </div>
-    <div id="Video_React">
-    </div>
-  </div>
-  <!--Videos Tab-->
   <div id="Video_Search_Result">
     <img id="Exit_Video_Search" src="Images/Exit.png" onclick="SearchVideos_Exit()">
-    <h1 class="Search_Title">Pixel Peak</h1>
-    <h1 class="Search_Title_Type">Videos</h1>
     <div id="Video_Search_React">
+
+
 
     </div>
   </div>
 
 
-
-  <!--Photos Tab-->
-  <div id="Photos_Tab" class="Scroll_Div">
-    <h1 id="Title_Photos">Photos</h1>
-
-    <!--
-    <input id="Search_Photos_Main" class="Input_Photo_Video" type="text" placeholder="Search for photos"
-      onkeydown="handleKeyPress_Photo(event)">
-       <img src="Images/Search.png" id="Photo_Search_Main" class="Search_Img" onclick="SearchPhotos()">
-    -->
-    <button id="Search_Photos_Button" class="Main_Buttons" onclick="SearchPhotos()">Search For Photos</button>
-    <p id="Hover_Photo" class="Switch_Video_Photo_Style"><img src="Images/PicImg.png" class="Search_Img"
-        onclick="SearchVideos()"><span id="Switch_Photo">Photos</span><img class="Arrow_img_Video_Photo"
-        src="Images/Arrow.png"></p>
-    <div id="Photo_Dropdown_Change" class="VP_Dropdown_Change">
-      <p class="Switch_Video_Photo_Style_Drop" onclick="Switch_to_Photo_Video('Photos_Tab', 'Videos_Tab')"
-        id="Phot_DropDown"><img src="Images/PicImg.png" class="Search_Img"><span id="Switch_Photo">Photos</span><img
-          class="Arrow_img_Video_Photo" src="Images/Arrow.png"></p>
-
-      <p onclick="Switch_to_Photo_Video('Videos_Tab', 'Photos_Tab')" id="Vid_DropDown"
-        class="Switch_Video_Photo_Style_Drop">
-        <img src="Images/PlayImg2.png" class="Search_Img" onclick="SearchVideos()"><span
-          id="Switch_Video">Videos</span><img class="Arrow_img_Video_Photo" src="Images/Arrow.png">
-      </p>
-    </div>
-
-    <div id="Photos_React">
-    </div>
+  <div id="Photos_React">
+  </div>
   </div>
   <!--Photos Tab-->
   <div id="Photo_Search_Result">
-    <img id="Exit_Photos_Search" src="Images/Exit.png" onclick="SearchPhotos_Exit()">
-    <h1 class="Search_Title">Pixel Peak</h1>
-    <h1 class="Search_Title_Type">Photos</h1>
     <div id="Photo_Search_React">
 
     </div>
@@ -261,7 +175,6 @@
 
     <div id="QuickLinks">
       <p id=Quic_Title class="Title_Class_Footer">Quick Links</p>
-      <p class="Footer_Link" id="Home_Link" onclick="Go_Home()">Home</p>
       <p class="Footer_Link" id="Videos_Link" onclick="Switch_to_Photo_Video('Videos_Tab', 'Photos_Tab')">Videos</p>
       <p class="Footer_Link" id="Photos_Link" onclick="Switch_to_Photo_Video('Photos_Tab', 'Videos_Tab')">Photos</p>
     </div>
@@ -276,37 +189,6 @@
       Payments Terms of Use, Cookies and AdChoice. Made By Lukas Leins</p>
   </div>
 
-
-
-
-
-  <script>
-
-    const videos = document.querySelectorAll('.video');
-    let currentIndex = 0;
-
-    function playNextVideo() {
-      videos[currentIndex].pause();
-      videos[currentIndex].style.display = 'none';
-
-      currentIndex = (currentIndex + 1) % videos.length;
-
-      videos[currentIndex].play();
-      videos[currentIndex].style.display = 'block';
-
-    }
-
-    // Set event listener for the "ended" event on each video
-    videos.forEach(video => {
-      video.addEventListener('ended', playNextVideo);
-    });
-
-    // Start the initial video playback
-    videos[currentIndex].play();
-
-
-
-  </script>
 
   <script type="text/javascript" src="Index.js"></script>
   <script type="module" src="/src/main.tsx"></script>

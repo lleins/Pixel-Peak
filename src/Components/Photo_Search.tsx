@@ -1,24 +1,50 @@
 import { CSSProperties } from "react";
-import React, { useRef, RefObject, useEffect, useState } from "react";
-import SearchImg from "C:\\Users\\Big_T\\OneDrive\\Desktop\\VsCode\\MERN\\react-app\\Images\\Search.png"
-import Pic_Img from "C:\\Users\\Big_T\\OneDrive\\Desktop\\VsCode\\MERN\\react-app\\src\\Components\\Images\\PicImg.png";
-import Heart_Img_pic from "C:\\Users\\Big_T\\OneDrive\\Desktop\\VsCode\\MERN\\react-app\\src\\Components\\Images\\Heart.png";
-import Resize_Img_p_Search from "C:\\Users\\Big_T\\OneDrive\\Desktop\\VsCode\\MERN\\react-app\\src\\Components\\Images\\ResizeImg.png";
-import Exit_Img_v_Search from "C:\\Users\\Big_T\\OneDrive\\Desktop\\VsCode\\MERN\\react-app\\src\\Components\\Images\\ExitImg.png";
-
-import { Page } from "puppeteer";
+import React, { useRef, RefObject, useEffect, useState} from "react";
+import SearchImg from "\\home\\ec2-user\\Pixel Peak\\react-app\\Images\\Search.png"
+import Heart_Img_pic from "\\home\\ec2-user\\Pixel Peak\\react-app\\src\\Components\\Images\\Heart.png";
+import download_Img from "\\home\\ec2-user\\Pixel Peak\\react-app\\src\\Components\\Images\\download.png";
+import Cookies from 'js-cookie';
+import axios from 'axios';
 
 
 function Photo_Search_Style(){
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup function to remove the event listener when component unmounts
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []); 
 
     {
         /*API Call, PEXELS-------------------------------------------------------------*/
     }
+    const getRandomString = (): string => {
+      const strings: string[] = ['dark', 'nature', 'forest', 'sky'];
+      const randomIndex: number = Math.floor(Math.random() * strings.length);
+      return strings[randomIndex];
+    };
+    const randomString: string = getRandomString();
+
 
       const apiKey_s = "GTKZGX1qr6cVxMS1Dl88v1xUVe2edF3qaozGZMucbID3XTPE3Z2fSdbh";
-      const [searchQuery_s, setSearchQuery_s] = useState('');
+      const [searchQuery_s, setSearchQuery_s] = useState("");
       const [PageQuery_s, setPageQuery_s] = useState(1);
       const apiUrl_s = `https://api.pexels.com/v1/search?query=${searchQuery_s}&per_page=18&page=${PageQuery_s}`;
+
     
       interface Photo_s {
         src: {
@@ -31,9 +57,18 @@ function Photo_Search_Style(){
           url: string;
         };
       }
-    
+      
+      
+      interface photo3_v {
+        photographer: {
+            name: string;
+        };
+      }
+
       const [photoArray_s, setPhotoArray_s] = useState([]);
       const [urlArray_s, seturlArray_s] = useState([]);
+      const [PhotoArrayuser_v, setphotoArrayuser_v] = useState<string[]>([]);
+      const [PhotoResults, setphotoResults] = useState<string[]>([]);
     
       useEffect(() => {
         const fetchPhotos_s = async () => {
@@ -45,10 +80,11 @@ function Photo_Search_Style(){
             });
     
             if (!response.ok) {
-              throw new Error("Network response was not ok");
+              //throw new Error("Network response was not ok");
             }
     
             const data_s = await response.json();
+           
             const urls_s = data_s.photos.map((photo: Photo_s) =>
               photo.src.large2x.toString()
             );
@@ -56,8 +92,17 @@ function Photo_Search_Style(){
     
             const urls_Link_s = data_s.photos.map((photo: URL_s) => photo.url.toString());
             seturlArray_s(urls_Link_s);
+
+
+            const photouser_v = data_s.photos.map((photo: photo3_v) => photo.photographer);
+            setphotoArrayuser_v(photouser_v);
+
+            const photoResult_v = data_s.total_results;
+            setphotoResults(photoResult_v);
+
+
           } catch (error) {
-            console.error("Error:", error);
+            
           }
         };
     
@@ -78,6 +123,8 @@ function Photo_Search_Style(){
         window.open(url, "_blank");
       }
 
+
+
       function ChangeNextPage(){
         handlePageChange_s(PageQuery_s + 1);
         
@@ -85,6 +132,7 @@ function Photo_Search_Style(){
         if(load_spinner_photo) load_spinner_photo.style.display = "block";
         
         setTimeout(() => {
+            increaseBrightness();
             const load_spinner_photo = document.getElementById("Loading_Spinner_Photo_Bot");
             if(load_spinner_photo) load_spinner_photo.style.display = "none";
 
@@ -92,8 +140,12 @@ function Photo_Search_Style(){
             if (element) {
                 element.scrollIntoView({ behavior: 'smooth' });
             }
-           
+          
         }, 1500);
+      }
+
+      function calculateTotalPages(totalResults: number, resultsPerPage: number): number {
+        return Math.ceil(totalResults / resultsPerPage);
       }
 
       function ChangePrevPage(){
@@ -106,6 +158,7 @@ function Photo_Search_Style(){
             if(load_spinner_photo) load_spinner_photo.style.display = "block";
             
             setTimeout(() => {
+                increaseBrightness();
                 const load_spinner_photo = document.getElementById("Loading_Spinner_Photo_Bot");
                 if(load_spinner_photo) load_spinner_photo.style.display = "none";
 
@@ -113,21 +166,58 @@ function Photo_Search_Style(){
                 if (element) {
                     element.scrollIntoView({ behavior: 'smooth' });
                 }
-               
-            }, 1500); 
-
-            
+            }, 1500);  
         };
-        
-        
       }
-
+      
     {
         /*API Call, PEXELS-------------------------------------------------------------*/
     }
+    
+    const increaseBrightness = () => {
+      const elements = document.querySelectorAll('.Heart_Style_Class');
+      
+      for (let i = 0; i < elements.length; i++){
+        const element = elements[i] as HTMLElement; 
+        const element_style = getComputedStyle(element);
+        
+        if (element_style.filter === "brightness(1)"){
+          element.style.filter = "brightness(500%)";
+        } else {
+         
+        }
+      }
+    };
+    
+    
+    
+    
+    interface query_interface{
+      query: string;
+    }
 
+    function ChangeSearch_Trending({query}:query_interface){
 
+      const load_spinner_vid = document.getElementById("Loading_Spinner_photo");
+      if(load_spinner_vid) load_spinner_vid.style.display = "block";
+      
+      setTimeout(() => {
+          const load_spinner_vid = document.getElementById("Loading_Spinner_photo");
+          if(load_spinner_vid) load_spinner_vid.style.display = "none";
+          
+          const ActualInput =  document.getElementById('Search_Photos') as HTMLInputElement
+          const ActualResult =  document.getElementById('Search_Result');
 
+          setSearchValue(query);
+          ChangeSearch();
+          
+      }, 1500); 
+  }  
+
+    
+    
+
+    
     interface HoverImgProps {
         containerId: string;
         sourceTextId: string;
@@ -143,29 +233,6 @@ function Photo_Search_Style(){
           const ImageActual = document.getElementById(ImgId); 
           const ResizeActual = document.getElementById(ResizeId);  
 
-          const handleMouseOver = () => {
-            if (sourceTextActual) sourceTextActual.style.opacity = "0";
-            if (ImageActual) ImageActual.style.opacity = "0";
-            if (ResizeActual) ResizeActual.style.opacity = "1";
-          };
-    
-          const handleMouseOut = () => {
-            if (sourceTextActual) sourceTextActual.style.opacity = "1";
-            if (ImageActual) ImageActual.style.opacity = "1";
-            if (ResizeActual) ResizeActual.style.opacity = "0";
-          };
-    
-          if (containerActual) {
-            containerActual.addEventListener("mouseover", handleMouseOver);
-            containerActual.addEventListener("mouseout", handleMouseOut);
-          }
-    
-          return () => {
-            if (containerActual) {
-              containerActual.removeEventListener("mouseover", handleMouseOver);
-              containerActual.removeEventListener("mouseout", handleMouseOut);
-            }
-          };
         }, [containerId, sourceTextId, ImgId, ResizeId]);
     
         return null;
@@ -175,36 +242,155 @@ function Photo_Search_Style(){
 
       interface Save_Photo_Ids_Search{
         id_Heart_Photo_Search: string;
+        src: string;
+        url: string;
+        load: string;
+        user: string;
       }
 
-      function Save_Photo_Search({ id_Heart_Photo_Search }: Save_Photo_Ids_Search) : void {
+      function Save_Photo_Search({ id_Heart_Photo_Search, src, url, user, load, }: Save_Photo_Ids_Search) : void {
         const HeartImg = document.getElementById(id_Heart_Photo_Search);
-        if (HeartImg) {
-          const HeartStyle = getComputedStyle(HeartImg);
-          if (HeartStyle.filter === "brightness(5)") {
-            HeartImg.style.filter = "brightness(100%)";
-            const Fail_Notif = document.getElementById("Saved_1");
-            if(Fail_Notif) Fail_Notif.style.display = "block";
-            setTimeout(() => {
-              if(Fail_Notif) Fail_Notif.style.display = "none";
+        const Loader = document.getElementById(load);
+        if(Loader) Loader.style.display = "block";
+        const Check_Login = Cookies.get("Login_Token"); //Checks Login Token
+    if(Check_Login !== undefined){
+
+      if (HeartImg) {
+        const HeartStyle = getComputedStyle(HeartImg);
+        if (HeartStyle.filter === "brightness(5)") { //checks Heart color
+          
+          fetch('http://50.18.247.63:5000/api/save', { //fetch to /save endpoint in Server.js
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email_data: Check_Login, src_data : src.toString(), url_data: url.toString(), type_data: "P", user: user  }),
+            })
+            .then(response => {
+                if (response.ok) { //request sent
+                  
+                    //console.log("From Sign React: Request sent"); //Sent to express server
+                    return response.json(); 
+                } else {
+                  const Success_Notif = document.getElementById("Saved_0"); //request did not send
+                  if(Loader) Loader.style.display = "none";
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+                    //console.log("From Sign React: Request failed"); //Failed to send
+                    return response.json(); 
+                }
+            })
+            .then(data => {
+                if (data.message === 1) { //successfully saved
+                  HeartImg.style.filter = "brightness(100%)";
+                  //console.log("Saved in Photos_Format");
+                  if(Loader) Loader.style.display = "none";
+                  const Success_Notif = document.getElementById("Saved_1"); //changes heart color and display notif
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+                    
+                } else if (data.message === 0) { //failed to save
+                  //console.log("Didnt Save in Photos_Format 0");
+                  if(Loader) Loader.style.display = "none";
+                  const Success_Notif = document.getElementById("Saved_0"); //displays notif
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+                }else if (data.message === 3) { //fail in server
+                  //console.log("Didnt Save in Photos_Format 3");
+                  if(Loader) Loader.style.display = "none";
+                  const Success_Notif = document.getElementById("Max_Saved_0");
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+                }
+            })
+            .catch(error => { //catch error with response
               
-            }, 2000);
-          } else if (HeartStyle.filter === "brightness(1)") {
-            HeartImg.style.filter = "brightness(500%)";
-            const Save_Notif = document.getElementById("Saved_10");
-            if(Save_Notif) Save_Notif.style.display = "block";
-            setTimeout(() => {
-              if(Save_Notif) Save_Notif.style.display = "none";
-              
-            }, 2000);
-    
-          }
+            });
+
+        } else if (HeartStyle.filter === "brightness(1)") { //checks heart color
+          const Check_Cookie = Cookies.get("Login_Token");
+          fetch('http://50.18.247.63:5000/api/delete_saved', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email_data: Check_Cookie, url_data: url }), //sends login token and url to server.js delete save endpoint
+          })
+            .then((response) => {
+              if (response.ok) {
+                return response.json(); //request is sent
+              } else {
+                
+                return { success: 0 }; //request is not sent
+              }
+            })
+            .then((data) => {
+              if (data.success === 1) { // saved is deleted
+                HeartImg.style.filter = "brightness(500%)";
+                //console.log("Removed in Photos_Format 1");
+                  if(Loader) Loader.style.display = "none";
+                  const Success_Notif = document.getElementById("Saved_10"); //changes heart color and displays notif
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+
+              } else if (data.success === 0) { //did not delete save
+                //console.log("Didnt Remove in Photos_Format 0");
+                if(Loader) Loader.style.display = "none";
+                const Success_Notif = document.getElementById("Saved_0"); //displays notif
+                if(Success_Notif) Success_Notif.style.display = "block";
+                setTimeout(() => {
+                  if(Success_Notif) Success_Notif.style.display = "none";
+                  
+                }, 2000);
+              } else {
+                //console.log("Didnt Remove in Photos_Format 4");
+                  if(Loader) Loader.style.display = "none";
+                  const Success_Notif = document.getElementById("Saved_0");
+                  if(Success_Notif) Success_Notif.style.display = "block";
+                  setTimeout(() => {
+                    if(Success_Notif) Success_Notif.style.display = "none";
+                    
+                  }, 2000);
+              }
+            })
+            .catch((error) => {
+              // Handle any error that occurred during the fetch.
+              //console.error('Fetch error:', error);
+            });
+
+          
         }
+      }
+    } else if(Check_Login === undefined){
+      if(Loader) Loader.style.display = "none";
+      const Login_Notif = document.getElementById("Login_Request_0");
+      if(Login_Notif) Login_Notif.style.display = "block";
+      setTimeout(function () {
+        if (Login_Notif) Login_Notif.style.display = 'none';
+      }, 4000);
+    }
+
+       
       }
 
       
     function ChangeSearch(){
-
+        
         const ActualInput =  document.getElementById('Search_Photos') as HTMLInputElement
         const ActualResult =  document.getElementById('Search_Result');
 
@@ -220,6 +406,7 @@ function Photo_Search_Style(){
             setIsDisplayBlock(true);
             handlePageChange_s(PageQuery_s / PageQuery_s);
         }, 1500);  
+        
     }  
    
     const inputRef = useRef<HTMLInputElement>(null);
@@ -233,135 +420,43 @@ function Photo_Search_Style(){
       }
     };
     
-    interface Resize_ids{
-      Container_Id: string;
-      Exit_Id: string;
-      Heart_Id: string;
-      Resize_Id: string;
-      Source_Id: string;
-      Picture_Id: string;
-      Main_id: string;
+    interface download_ids{
+      Download_Btn_Id: string;
+      url: string;
     }
 
 
-    function Resize_Photo_Item({Container_Id, Exit_Id, Heart_Id, Resize_Id, Source_Id, Picture_Id, Main_id }: Resize_ids){
-      const element = document.getElementById("Item_1_Photo_s");
-      if (element) {
-          element.scrollIntoView({ behavior: 'instant' });
-      }
-      toggleOverflow();
-      const actual_container = document.getElementById(Container_Id);
-      const actual_exit = document.getElementById(Exit_Id);
-      const actual_heart = document.getElementById(Heart_Id);
-      const actual_resize = document.getElementById(Resize_Id);
-      const actual_source = document.getElementById(Source_Id);
-      const actual_picture = document.getElementById(Picture_Id);
-      const actual_main = document.getElementById(Main_id);
+    async function Download_Image({Download_Btn_Id, url, }: download_ids){
+      const download_btn = document.getElementById(Download_Btn_Id);
 
-      if(actual_container){
-        actual_container.style.width = "70%";
-        actual_container.style.height = "80%";
-        actual_container.style.position = "absolute";
-        actual_container.style.left = "50%";
-        actual_container.style.top = "50%";
-        actual_container.style.transform = "translate(-50%, -50%)";
-        actual_container.style.zIndex = "12";
-        actual_container.style.boxShadow = '0px 0px 0px 100vw rgba(0, 0, 0, .9)';
-        
+      if(download_btn){
+        download_btn.textContent = "Downloading";
       }
+      try {
+        const response = await axios.get(url, { responseType: 'blob' });
+        const blob = new Blob([response.data]);
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        let result = '';
+        for (let i = 0; i < 8; i++) {
+            result += Math.floor(Math.random() * 10); // Generate a random digit (0-9)
+        }
+        link.download = 'photo' + result + '.jpg';
+        link.click();
+        if(download_btn){
+          download_btn.textContent = "Download";
+        }
+    } catch (error) {
+        //console.error('An error occurred while downloading the image:', error);
+        if(download_btn){
+          download_btn.textContent = "Download";
+        }
+    }
       
-      if(actual_exit){
-        actual_exit.style.display = "block";
-      }
-
-      if(actual_heart){
-        actual_heart.style.position = "absolute";
-        actual_heart.style.top = "5px";
-        actual_heart.style.left = "5px";
-      }
-
-      if(actual_resize){
-        actual_resize.style.display = "none";
-      }
-
-      if(actual_source){
-        actual_source.style.display = "none";
-      }
-      
-      if(actual_picture){
-        actual_picture.style.display = "none";
-      }
-
-
-
     }
 
-    interface Exit_Resize_ids{
-      Container_Id_Exit: string;
-      Exit_Id_Exit: string;
-      Heart_Id_Exit: string;
-      Resize_Id_Exit: string;
-      Source_Id_Exit: string;
-      Picture_Id_Exit: string;
-      Main_Id_Exit: string;
-    }
 
-    function Exit_Photo_Item({Container_Id_Exit, Exit_Id_Exit, Heart_Id_Exit, Resize_Id_Exit, Source_Id_Exit, Picture_Id_Exit, Main_Id_Exit }: Exit_Resize_ids){
-      toggleOverflow();
-      
-      const actual_container = document.getElementById(Container_Id_Exit);
-      const actual_exit = document.getElementById(Exit_Id_Exit);
-      const actual_heart = document.getElementById(Heart_Id_Exit);
-      const actual_resize = document.getElementById(Resize_Id_Exit);
-      const actual_source = document.getElementById(Source_Id_Exit);
-      const actual_picture = document.getElementById(Picture_Id_Exit);
-      const actual_main = document.getElementById(Main_Id_Exit);
-      if(actual_container){
-        actual_container.style.width = "300px";
-        actual_container.style.height = "200px";
-        actual_container.style.position = "relative";
-        actual_container.style.left = "50%";
-        actual_container.style.top = "0%";
-        actual_container.style.transform = "translate(-50%)";
-        actual_container.style.zIndex = "10";
-        actual_container.style.backdropFilter = "blur(-10px)"
-        actual_container.style.boxShadow = '2px 2px 5px rgba(0, 0, 0, 0)'
-      }
-      
-      if(actual_exit){
-        actual_exit.style.display = "none";
-      }
-  
-      if(actual_heart){
-        actual_heart.style.position = "relative";
-        actual_heart.style.top = "-195px";
-        actual_heart.style.left = "260px";
-      }
-
-      if(actual_resize){
-        actual_resize.style.display = "flex";
-        actual_resize.style.position = "relative";
-        actual_resize.style.left = "265px";
-        actual_resize.style.top = "-70px";
-      }
-
-      if(actual_source){
-        actual_source.style.display = "flex";
-      }
-      
-      if(actual_picture){
-        actual_picture.style.display = "flex";
-        actual_picture.style.position = "absolute";
-        actual_picture.style.left = "300px";
-        actual_picture.style.top = "5px";
-      }
-      
-      const element = document.getElementById(Container_Id_Exit);
-      if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
-      }
-
-    }
+    
 
     const [isOverflowVisible, setIsOverflowVisible] = useState(true);
 
@@ -371,107 +466,205 @@ function Photo_Search_Style(){
 
     const Main_Style: CSSProperties={
         position: "absolute",
-        border: "2px solid rgb(200, 200, 200)",
-        height: "93%",
+        border: "0px solid rgb(200, 200, 200)",
+        height: "100%",
         width: "100%",
-        left: "50%",
-        top: "50%",
-        marginTop: "19px",
-        transform: "translate(-50%, -50%)",
+        left: "0px",
+        marginTop: "0px",
         borderRadius: "0px",
         overflowY: isOverflowVisible ? 'auto' : 'hidden',
-        backgroundColor: "rgb(40, 40, 40)",
+        backgroundColor: "rgb(15, 15, 15)",
     }
 
+    
     const Input_Style: CSSProperties={
-        position: "absolute",
-        border: "0px solid rgb(200, 200, 200)",
-        left: "50%",
-        transform: "translate(-50%, 0%)",
-        width: "50%",
-        height: "30px",
-        fontFamily: "verdana",
-        fontSize: "14px",
-        color: "rgb(255, 255, 255)",
-        marginTop: "10px",
-        borderRadius: "5px",
-        backgroundColor: "rgb(150, 150, 150, 0.3)",
-        paddingLeft: "35px",
-        transition: ".5s",
+      position: "absolute",
+      border: "0px solid rgb(200, 200, 200)",
+      left: "50%",
+      transform: "translate(-50%, -55%)",
+      width: "50%",
+      height: "50px",
+      fontFamily: "helvetica",
+      fontSize: "18px",
+      color: "rgb(255, 255, 255)",
+      top: "55%",
+      borderRadius: "12px",
+      backgroundColor: "rgb(15, 15, 15, 1)",
+      paddingRight: "55px",
+      paddingLeft: "20px",
     }
 
 
     const Search_Img_Style: CSSProperties={
-        position: "absolute",
-        top: "10px",
-        transform: "scale(.8)",
-        left: "25%",       
-        cursor: "pointer",
+      position: "absolute",
+      top: "55%",
+      transform: "scale(1) translate(0%, -54%)",
+      left: "72%",       
+      cursor: "pointer",
+      filter: "brightness(50%)",
     }
 
+    const [searchChanged, setSearchChanged] = useState(false);
 
+    const Trending_Title_Style: CSSProperties={
+      display: searchChanged ? 'block' : 'none',
+      position: "absolute",
+      border: "0px solid rgb(200, 200, 200)",
+      left: "50%",
+      transform: "translate(-50%, 0%)",
+      fontFamily: "helvetica",
+      fontSize: "20px",
+      color: "rgb(255, 255, 255)",
+      top: "540px",
+    };
     
     const Search_Title_Style: CSSProperties={
-        position: "absolute",
-        border: "0px solid rgb(200, 200, 200)",
-        left: "50%",
-        transform: "translate(-50%, 0%)",
-        fontFamily: "verdana",
-        fontSize: "20px",
-        color: "rgb(255, 255, 255)",
-        top: "65px",
-    }
+      position: "absolute",
+      border: "0px solid rgb(200, 200, 200)",
+      left: "50%",
+      transform: "translate(-50%, 0%)",
+      fontFamily: "helvetica",
+      fontSize: "20px",
+      color: "rgb(255, 255, 255)",
+      top: "575px",
+      fontWeight: "bold",
+      paddingBottom: "100px",
+  };
+
+
+    const Bottom_Buttons_Style_Left: CSSProperties={
+      position: "absolute",
+      width: "100px",
+      height: "40px",
+      borderRadius: "5px",
+      backgroundColor: "rgb(255, 255, 255)",
+      color: "rgb(10, 10, 10)",
+      fontFamily: "helvetica",
+      fontSize: "14px",
+      cursor: "pointer",
+      border: "none",
+      marginRight: "200px",
+      left: "calc(50% - 75px)",
+      transform: "translate(-50%, 0%)",
+    };
+
     
+    const Bottom_Buttons_Style_Right: CSSProperties={
+      position: "absolute",
+      width: "100px",
+      height: "40px",
+      borderRadius: "5px",
+      backgroundColor: "rgb(255, 255, 255)",
+      color: "rgb(10, 10, 10)",
+      fontFamily: "helvetica",
+      fontSize: "14px",
+      cursor: "pointer",
+      border: "none",
+      left: "calc(50% + 75px)",
+      transform: "translate(-50%, 0%)",
+    };
+
+    const Video_top_text_p: CSSProperties = {
+      position: "absolute",
+      border: "0px solid rgb(200, 200, 200)",
+      left: "50%",
+      transform: "translate(-50%, -30%)",
+      width: "50%",
+      fontFamily: "helvetica",
+      fontSize: "30px",
+      color: "rgb(255, 255, 255)",
+      top: "30%",
+      fontWeight: "bold",
+      
+    };
+
+    const Video_featured_text_container_p: CSSProperties = {
+      position: "absolute",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      width: "50%",
+      fontFamily: "helvetica",
+      fontSize: "18px",
+      top: "66%",
+      display: "flex",
+      flexDirection: "row",
+    };
+
+          
+    const Space_2: CSSProperties={
+      position: "relative",
+      height: "150px",
+      width: "300px",
+      borderRadius: "5px",
+      backgroundColor: "rgb(200, 200, 200, 0)",
+      left: "50%",
+      transform: "translate(-50%, 0%)",
+      zIndex: "-1",
+    };
+
+    const Video_featured_text_p: CSSProperties = {
+      marginLeft: "2px",
+      marginRight: "2px",
+      color: "rgb(255, 255, 255)",
+      cursor: "pointer",
+    };
+
+
     const Photo_Container_Style: CSSProperties={
-        position: "absolute",
-        border: "0px solid rgb(200, 200, 200)",
-        height: "100%",
-        width: "1000px",
-        left: "50%",
-        top: "50%",
-        marginTop: "130px",
-        transform: "translate(-50%, -50%)",
-        borderRadius: "0px",
-        display: "grid",
-        gridTemplateColumns: "repeat(3, 1fr)",
-        gridTemplateRows: "repeat(6, 1fr)",
-        gridGap: "20px",
-        paddingBottom: "30px",
-        
-    }
+      position: "absolute",
+      border: "0px solid rgb(200, 200, 200)",
+      height: "100%",
+      width: "1200px",
+      left: "50%",
+      top: "50%",
+      marginTop: "650px",
+      transform: "translate(-50%, -50%)",
+      borderRadius: "0px",
+      display: "grid",
+      gridTemplateColumns: "repeat(1, 1fr)",
+      gridTemplateRows: "repeat(18, 1fr)",
+      gridGap: "100px",
+      paddingBottom: "10px",
+     
+    };
     const [isDisplayBlock, setIsDisplayBlock] = useState(false);
 
     const Photo_Item_Style: CSSProperties={
-        position: "relative",
-        height: "200px",
-        width: "300px",
-        borderRadius: "5px",
+      position: "relative",
+        height: "500px",
+        width: "80%",
+        minWidth: "250px",
+        minHeight: "125px",
+        maxWidth: "1000px",
+        maxHeight: "500px",
+        borderRadius: "0px",
         backgroundColor: "rgb(150, 150, 150, 0.3)",
         left: "50%",
         transform: "translate(-50%, 0%)",
-        cursor: "pointer",
+    
         display: isDisplayBlock? "block" : "none",
-        top: "0%",
-        transition: ".3s",
+        
     }
 
     const Space: CSSProperties={
-        position: "relative",
-        height: "200px",
-        width: "300px",
-        borderRadius: "5px",
-        backgroundColor: "rgb(200, 200, 200, 0)",
-        left: "50%",
-        transform: "translate(-50%, 0%)"
+      position: "relative",
+      height: "0px",
+      width: "300px",
+      borderRadius: "5px",
+      backgroundColor: "rgb(200, 200, 200, 0)",
+      left: "50%",
+      transform: "translate(-50%, 0%)",
+      zIndex: "-1",
     }
 
     const Image_Style: CSSProperties={
-        width: "100%",
+      position: "relative",
         height: "100%",
-        borderRadius: "5px",
+        width: "100%",
+        borderRadius: "0px",
+        backgroundColor: "rgb(150, 150, 150, 0.3)",
         objectFit: "cover",
         backgroundRepeat: "no-repeat",
-        backgroundColor: "rgb(150, 150, 150, 0.3)",
     }
 
     const Bottom_Buttons_Style: CSSProperties={
@@ -481,7 +674,7 @@ function Photo_Search_Style(){
         borderRadius: "5px",
         backgroundColor: "rgb(255, 255, 255)",
         color: "rgb(10, 10, 10)",
-        fontFamily: "verdana",
+        fontFamily: "helvetica",
         fontSize: "14px",
         cursor: "pointer",
         border: "none",
@@ -492,33 +685,6 @@ function Photo_Search_Style(){
         left: "20px", 
     }
 
-    const Source_Text_Style: CSSProperties = {
-        position: "absolute",
-        color: "rgb(240, 240, 240)",
-        fontFamily: "verdana",
-        fontSize: "12px",
-        top: "151px",
-        marginLeft: "0px",
-        background:
-          "linear-gradient(to top, rgb(10, 10, 10, 1), rgb(10, 10, 10, 0))",
-        width: "300px",
-        height: "50px",
-        display: "flex",
-        alignItems: "flex-end",
-        opacity: "1",
-        transition: ".3s",
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        zIndex: "50px",
-        borderRadius: "5px",
-      };
-
-      const Actual_Source_Text: CSSProperties = {
-        color: "rgb(82, 156, 253)",
-        cursor: "pointer",
-        textDecoration: "underline",
-      };
 
       const Pic_Img_Style: CSSProperties = {
         position: "absolute",
@@ -531,115 +697,447 @@ function Photo_Search_Style(){
 
       const Page_Counter_Style: CSSProperties = {
         position: "absolute",
-        fontFamily: "verdana",
+        fontFamily: "helvetica",
         fontSize: "16px",
         color: "rgb(255, 255, 255)",
-        left: "495px",
-        marginTop: "-40px",
+        marginTop: "10px",
+        left: "50%",
+        transform: "translate(-50%, 0%)",
       
       };
+
+      const Result_Style: CSSProperties={
+        position: "absolute",
+        left: "20px",
+        fontFamily: "helvetica",
+        fontSize: "14px",
+        color: "rgb(255, 255, 255)",
+        top: "525px",
+      };
+
+      const pageOf_Style: CSSProperties={
+        position: "absolute",
+        right: "20px",
+        fontFamily: "helvetica",
+        fontSize: "14px",
+        color: "rgb(255, 255, 255)",
+        top: "525px",
+      };
+
+
+      const Loading_Spinner_photo: CSSProperties = {
+        position: "absolute",
+        top: "90%",
+        zIndex: "30",
+        display: "block",
+        transform: "translate(-50%, -45%)",
+        left: "45%",
+      };
+  
+      const Loading_Spinner_photo_Bottom: CSSProperties = {
+        zIndex: "30",
+        display: "none",
+        left: "48%",
+      };
+  
+    
+  
+      const Heart_Style: CSSProperties = {
+        bottom: "-40px",
+        position: "absolute",
+        width: "32px",
+        height: "32px",
+        right: "0px",
+        filter: "brightness(500%)",
+        opacity: "1",
+        transition: ".2s",
+        cursor: "pointer"
+      }
+      
+  
+      const Resize_Img_style: CSSProperties = {
+        top: "-40px",
+        position: "relative",
+        transform: "scale(.7)",
+        left: "230px",
+        filter: "brightness(500%)",
+        opacity: "1",
+        transition: ".3s",
+      }
+  
+      const Exit_Img_Resize: CSSProperties = {
+        position: "absolute",
+        right: "5px",
+        top: "5px",
+        transform: "scale(1)",
+        opacity: "1",
+        transition: ".3s",
+        display: "none",
+      }
+      
+      const Loading_Spinner_P: CSSProperties = {
+        top: "90px",
+        left: "140px",
+        zIndex: "9",
+        display: "none",
+      };
+      
+      function getRandomNumber() {
+        return Math.floor(Math.random() * 20); 
+      }
+      const randomNumber = getRandomNumber();
+      const search_bar_img_container_p: CSSProperties = {
+        position: "absolute",
+        top: "0px",
+        height: "500px",
+        width: "100%",
+        left: "0px",
+        backgroundImage: `url(${photoArray_s[randomNumber]})`, 
+        backgroundSize: 'cover',
+        backgroundColor: "rgb(0, 0, 0, .5)",
+        backgroundBlendMode: 'multiply',
+      };
+  
+  
+      const Video_featured_text_title_p: CSSProperties = {
+        color: "rgb(200, 200, 200)",
+      };
+  
+  
+      const user_text_style_container: CSSProperties = {
+        bottom: "0px",
+        position: "absolute",
+        left: "0px",
+        height: "50px",
+        transition: ".1s",
+        color: "rgb(255, 255, 255)",
+        fontFamily: "helvetica",
+        fontSize: "14px",
+        opacity: "1",
+        width: "100%",
+
+      };
+  
+      const user_text_style: CSSProperties = {
+        color: "rgb(255, 255, 255)",
+        fontFamily: "helvetica",
+        fontSize: "15px",
+        position: "absolute",
+        bottom: "-50px",
+        left: "0px",
+        transition: ".2s",
+        cursor: "pointer",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        width: "40%",
+      };
+      
+    const footerStyle: CSSProperties = {
+      borderTop: '1px solid rgba(255, 255, 255, 1)',
+      position: 'relative',
+      backgroundColor: 'rgb(15, 15, 15)',
+      width: '100%',
+      left: "0px",
+      height: '180px',
+      display: 'grid',
+      gridTemplateColumns: 'repeat(3, 1fr)',
+      gridTemplateRows: 'repeat(1, 1fr)',
+  
+    };
+  
+    const titleStyle: CSSProperties = {
+      position: 'relative',
+      top: '50px',
+      color: 'white',
+      fontFamily: 'Helvetica',
+      fontSize: '16px',
+      fontWeight: 'bold',
+      textAlign: 'center',
+    };
+  
+    const linkStyle: CSSProperties = {
+      position: 'relative',
+      top: '50px',
+      color: 'rgb(220, 220, 220)',
+      fontFamily: 'Helvetica',
+      fontSize: '12px',
+      cursor: 'pointer',
+      transition: 'transform 0.1s',
+      textAlign: 'center',
+    };
+  
+    const copyrightStyle: CSSProperties = {
+      position: 'absolute',
+      top: '65px',
+      left: '15px',
+      textAlign: 'left',
+      color: "rgb(200, 200, 200)",
+    };
+
+    const Download_Btn_Style: CSSProperties = {
+        color: "rgb(255, 255, 255)",
+        fontFamily: "helvetica",
+        fontSize: "15px",
+        position: "absolute",
+        bottom: "-43px",
+        right: "60px",
+        transition: ".2s",
+        cursor: "pointer",
+        border: "0px",
+        backgroundColor: "rgb(45, 101, 255)",
+        borderRadius: "5px",
+        paddingLeft: "15px",
+        paddingRight: "15px",
+        paddingTop: "5px",
+        paddingBottom: "5px",
+    };
+
+    const Download_Image_Style: CSSProperties = {
+      width: "15px",
+      height: "15px",
+      verticalAlign: "center",
+      marginTop: "-2px",
+      marginRight: "6px",
+    };
+    
+    const Footer_Title: CSSProperties = {
+      position: "absolute",
+      color: "rgb(255, 255, 255)",
+      fontFamily: "arial",
+      letterSpacing: "1px",
+      fontSize: "25px",
+      fontVariant: "small-caps",
+      fontWeight: "bold",
+      left: "15px",
+      top: "15px",
+    };
+
+    
+    const open_in_browser_style: CSSProperties = {
+      position: "absolute",
+      color: "rgb(255, 255, 255)",
+      fontFamily: "arial",
+      fontSize: "12px",
+      right: "5px",
+      bottom: "-15px",
+      textDecoration: "underline",
+      cursor: "pointer",
+      textShadow: '2px 2px 4px rgba(0, 0, 0, 1)'
+    };
+    const openinbrowser = (imageUrl: string) => {
+      window.open(imageUrl, '_blank');
+    };
     function updateStyles(){
         const screenWidth = window.innerWidth;
         const Small_ScreenSize: CSSProperties = {
-            width: "650px",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            gridTemplateRows: "repeat(6, 1fr)",
+            width: "100%",
+            gridTemplateColumns: "repeat(1, 1fr)",
+            gridTemplateRows: "repeat(18, 1fr)",
+            
         };
 
         const Smaller_ScreenSize: CSSProperties = {
-            width: "400px",
+            width: "100%",
             gridTemplateColumns: "repeat(1, 1fr)",
-            gridTemplateRows: "repeat(6, 1fr)",
+            gridTemplateRows: "repeat(18, 1fr)",
     
         };
-
-        const Small_ScreenSize_Button: CSSProperties = {
-            left: "-150px",
+        
+        const Smaller_ScreenSize_smallets: CSSProperties = {
+          width: "100%",
         };
 
-        const Smaller_ScreenSize_Button: CSSProperties = {
-            top: "-200px",
-            left: "60px",
+
+        const Heart_Style_smallest: CSSProperties = {
+          bottom: "-35px",
+          width: "24px",
+          height: "24px",
         };
 
-        const Small_ScreenSize_Counter: CSSProperties = {
-            left: "320px",
-        };
-        const Smaller_ScreenSize_Counter: CSSProperties = {
-            marginTop: "-240px",
-            left: "195px",
+
+        const Smaller_SearchTitle_v: CSSProperties = {
+          fontSize: "17px",
+   
         };
 
-        if (screenWidth > 790 && screenWidth < 1165) {
+        const Smaller_SeachBar_v: CSSProperties = {
+            width: "75%",
+        };
+        
+        const Smaller_SeachIcon_v: CSSProperties = {
+            left: "80%",
+        };
+
+        const Smaller_SeachIcon_v_2: CSSProperties = {
+          left: "77%",
+      };
+
+        const Smaller_SeachIcon_1_v: CSSProperties = {
+          left: "70%",
+        };
+
+        const Video_Item_Style_smallest: CSSProperties={
+          height: "250px",
+          width: "90%",
+        };
+
+        const Video_Item_Style_small: CSSProperties={
+          height: "275px",
+         width: "500px",
+        };
+
+    
+
+        const Smaller_ScreenSize_Title: CSSProperties = {
+          fontSize: "22px",
+          width: "70%",
+        };
+        const Smaller_ScreenSize_Title_2: CSSProperties = {
+          fontSize: "25px",
+          width: "70%",
+        };
+        
+        const Smaller_ScreenSize_Trending: CSSProperties = {
+          width: "70%",
+        };
+
+        const Smaller_ScreenSize_VidLoader: CSSProperties = {
+          top: "90%",
+        };
+
+        const Smaller_ScreenSize_bottomLoader: CSSProperties = {
+          marginTop: "-150px",
+          display: "none",
+          left: "47%",
+          transform: "translate(-50, 0%)",
+        };
+        const Smaller_ScreenSize_bottomLoader_2: CSSProperties = {
+          marginTop: "-150px",
+          display: "none",
+          left: "47%",
+          transform: "translate(-50, 0%)",
+        };
+
+        const Smaller_ScreenSize_bottomLoader_3: CSSProperties = {
+          marginTop: "20px",
+          display: "none",
+          left: "48%",
+          transform: "translate(-50, 0%)",
+        };
+
+        const Smaller_ScreenSize_Space: CSSProperties = {
+          height: "0px",
+        };
+
+        const Smaller_ScreenSize_download_img: CSSProperties = {
+          width: "13px",
+          height: "13px",
+        };
+      
+        const Smaller_ScreenSize_download_btn: CSSProperties = {
+          fontSize: "12px",
+          bottom: "-37px",
+          paddingLeft: "10px",
+          paddingRight: "10px",
+          right: "40px",
+        };
+        
+        if (screenWidth > 890 && screenWidth < 1250) {
             Object.assign(Photo_Container_Style, Small_ScreenSize);
-            Object.assign(Bottom_Buttons_Style, Small_ScreenSize_Button);
-            Object.assign(Page_Counter_Style, Small_ScreenSize_Counter);
-            
+            Object.assign(Search_Img_Style, Smaller_SeachIcon_1_v);
+            Object.assign(Loading_Spinner_photo_Bottom, Smaller_ScreenSize_bottomLoader_3);
         }
-        if(screenWidth <= 790){
+        if(screenWidth <= 890){
+            Object.assign(Photo_Item_Style, Video_Item_Style_small);
             Object.assign(Photo_Container_Style, Smaller_ScreenSize);
-            Object.assign(Bottom_Buttons_Style, Smaller_ScreenSize_Button);
-            Object.assign(Page_Counter_Style, Smaller_ScreenSize_Counter);
+            Object.assign(Search_Title_Style, Smaller_SearchTitle_v);
+            Object.assign(Input_Style, Smaller_SeachBar_v);
+            Object.assign(Search_Img_Style, Smaller_SeachIcon_v);
+            Object.assign(Video_top_text_p, Smaller_ScreenSize_Title_2);
+            Object.assign(Loading_Spinner_photo_Bottom, Smaller_ScreenSize_bottomLoader_2);
+            Object.assign(Space, Smaller_ScreenSize_Space);
         }
+
+        
+      if(screenWidth <= 600){
+        Object.assign(Video_top_text_p, Smaller_ScreenSize_Title);
+      }
+        
+        if(screenWidth <= 560){
+          Object.assign(Photo_Item_Style, Video_Item_Style_smallest);
+          Object.assign(Photo_Container_Style, Smaller_ScreenSize_smallets);
+          Object.assign(Heart_Style, Heart_Style_smallest);
+          Object.assign(Search_Img_Style, Smaller_SeachIcon_v_2);
+          Object.assign(Video_featured_text_container_p, Smaller_ScreenSize_Trending);
+          Object.assign(Loading_Spinner_photo, Smaller_ScreenSize_VidLoader);
+          Object.assign(Loading_Spinner_photo_Bottom, Smaller_ScreenSize_bottomLoader);
+          Object.assign(Download_Btn_Style, Smaller_ScreenSize_download_btn);
+          Object.assign(Download_Image_Style, Smaller_ScreenSize_download_img);
+      }
+    }
+  
+   
+    const [searchValue, setSearchValue] = useState(randomString);
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchValue(event.target.value);
+  
+    };
+
+
+    ChangeSearch();
+    //setSearchChanged(true);
+    
+    const Photo_Items = [];
+
+    if(photoArray_s.length === 0){
+      const photo_container = document.getElementById("Photo_Container");
+      const search_title = document.getElementById("actual_Title_p");
+      const none_title = document.getElementById("none_title_p");
+      const button_title = document.getElementById("button_container_p");
+      const footer = document.getElementById("Footer");
+      if(photo_container) photo_container.style.display = "block";
+      if(footer) footer.style.display = "grid";
+      if(search_title) search_title.style.display = "none";
+      if(none_title) none_title.style.display = "block";
+      if(button_title) button_title.style.display = "none";
+      
+    }else{
+      Photo_Items.length = 0;
+      const photo_container = document.getElementById("Photo_Container");
+      const search_title = document.getElementById("actual_Title_p");
+      const none_title = document.getElementById("none_title_p");
+      const button_title = document.getElementById("button_container_p");
+      if(photo_container) photo_container.style.display = "grid";
+      if(search_title) search_title.style.display = "block";
+      if(none_title) none_title.style.display = "none";
+      if(button_title) button_title.style.display = "block";
+      for (let i = 0; i < photoArray_s.length ; i++) {
+        if(photoArray_s[i] === ""){
+          
+        }else{
+          Photo_Items.push(
+            <div id={`Item_${i+1}_Photo_s`} key={i} style={Photo_Item_Style}>
+                <img id="" style={Image_Style} src={photoArray_s[i]}/>
+                <div id={`Loading_Spinner_P_${i+1}`} style={Loading_Spinner_P} className="loading-spinner"></div>
+                <img className="Heart_Style_Class" onClick={() => Save_Photo_Search({id_Heart_Photo_Search: `Heart_Photo_${i+1}`, src: photoArray_s[i], url: urlArray_s[i], load: `Loading_Spinner_P_${i+1}`, user: PhotoArrayuser_v[i]})} src={Heart_Img_pic} style={Heart_Style} id={`Heart_Photo_${i+1}`}/>
+                <div id={`user_text_${i+1}`} style={user_text_style_container}>
+                  <p onClick={() => TriggerLink_s(i)} className="video_user" style={user_text_style}>By: {PhotoArrayuser_v[i]}</p>
+                </div>
+                <button onClick={() => Download_Image({Download_Btn_Id: `Download_Button${i+1}`, url: photoArray_s[i]})} style={Download_Btn_Style}> <img style={Download_Image_Style} src={download_Img}/><span id={`Download_Button${i+1}`}>Download</span></button>
+                <p style={open_in_browser_style} onClick={() => openinbrowser(photoArray_s[i])}>Open in browser</p>
+            </div>
+          );
+        }
+      }
     }
     updateStyles();
-    window.addEventListener('resize', updateStyles);
-
-    const Loading_Spinner_photo: CSSProperties = {
-      top: "130px",
-      zIndex: "30",
-      display: "none",
-      left: "48%",
-    };
-
-    const Loading_Spinner_photo_Bottom: CSSProperties = {
-      zIndex: "30",
-      display: "none",
-      left: "48%",
-    };
-
-    const Heart_Style: CSSProperties = {
-      top: "-195px",
-      position: "relative",
-      transform: "scale(.8)",
-      left: "260px",
-      filter: "brightness(500%)",
-      opacity: "1",
-      transition: ".3s",
-    }
-    
-
-    const Resize_Img_style: CSSProperties = {
-      top: "-40px",
-      position: "relative",
-      transform: "scale(.7)",
-      left: "230px",
-      filter: "brightness(500%)",
-      opacity: "0",
-      transition: ".3s",
-    }
-
-    const Exit_Img_Resize: CSSProperties = {
-      position: "absolute",
-      right: "5px",
-      top: "5px",
-      transform: "scale(1)",
-      opacity: "1",
-      transition: ".3s",
-      display: "none",
-    }
-    
-
+   
     return(
 
 
         <div id="Main_Container" style={Main_Style}>
-
-        <input id="Search_Photos" type="text" placeholder="Search for photos" style={Input_Style} onKeyDown={handleKeyPress} />
-        <img id="Search_Button" onClick={ChangeSearch} style={Search_Img_Style} src={SearchImg}/>
-        <h1 style={Search_Title_Style}>Search results for "<span id="Search_Result"></span>"</h1>
-        <div id="Photo_Container" style={Photo_Container_Style}>
-
 
 
             <HoverImg containerId="Item_1_Photo_s" sourceTextId="Source_1_Photo_s" ImgId="Play_Img_1_s" ResizeId="Resize_Photo_1"/>
@@ -661,179 +1159,62 @@ function Photo_Search_Style(){
             <HoverImg containerId="Item_17_Photo_s" sourceTextId="Source_17_Photo_s" ImgId="Play_Img_17_s" ResizeId="Resize_Photo_17"/>
             <HoverImg containerId="Item_18_Photo_s" sourceTextId="Source_18_Photo_s" ImgId="Play_Img_18_s" ResizeId="Resize_Photo_18"/>
 
-            <div id="Loading_Spinner_photo" style={Loading_Spinner_photo} className="loading-spinner"></div>
-      
-            <div id="Item_1_Photo_s" style={Photo_Item_Style}>
-                <img id="" style={Image_Style} src={photoArray_s[0]} onClick={() => TriggerLink_s(0)}/>
-                <p style={Source_Text_Style} id="Source_1_Photo_s">Source:{" "}<span id="Img_Source1" style={Actual_Source_Text}>{urlArray_s[0]}</span></p>
-                <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_1_s" />
-                <img onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_1"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_1"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_1" onClick={() => Resize_Photo_Item({Container_Id: "Item_1_Photo_s", Exit_Id: "Exit_Resize_1", Heart_Id: "Heart_Photo_1", Resize_Id: "Resize_Photo_1", Source_Id: "Source_1_Photo_s", Picture_Id: "Play_Img_1_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_1" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_1_Photo_s", Exit_Id_Exit: "Exit_Resize_1", Heart_Id_Exit: "Heart_Photo_1", Resize_Id_Exit: "Resize_Photo_1", Source_Id_Exit: "Source_1_Photo_s", Picture_Id_Exit: "Play_Img_1_s", Main_Id_Exit: "Main_Container"})}/>
-            </div>  
-        
-            <div id="Item_2_Photo_s" style={Photo_Item_Style} >
-                <img style={Image_Style} src={photoArray_s[1]} onClick={() => TriggerLink_s(1)}/>
-                <p style={Source_Text_Style} id="Source_2_Photo_s">Source:{" "}<span id="Img_Source2" style={Actual_Source_Text}>{urlArray_s[1]}</span></p>
-                <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_2_s" />
-                <img onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_2"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_2"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_2" onClick={() => Resize_Photo_Item({Container_Id: "Item_2_Photo_s", Exit_Id: "Exit_Resize_2", Heart_Id: "Heart_Photo_2", Resize_Id: "Resize_Photo_2", Source_Id: "Source_2_Photo_s", Picture_Id: "Play_Img_2_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_2" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_2_Photo_s", Exit_Id_Exit: "Exit_Resize_2", Heart_Id_Exit: "Heart_Photo_2", Resize_Id_Exit: "Resize_Photo_2", Source_Id_Exit: "Source_2_Photo_s", Picture_Id_Exit: "Play_Img_2_s", Main_Id_Exit: "Main_Container"})}/>
-            </div>  
 
-            <div id="Item_3_Photo_s" style={Photo_Item_Style} >
-                <img style={Image_Style} src={photoArray_s[2]} onClick={() => TriggerLink_s(2)}/>
-                <p style={Source_Text_Style} id="Source_3_Photo_s">Source:{" "}<span id="Img_Source3" style={Actual_Source_Text}>{urlArray_s[2]}</span></p>
-                <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_3_s" />
-                <img onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_3"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_3"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_3" onClick={() => Resize_Photo_Item({Container_Id: "Item_3_Photo_s", Exit_Id: "Exit_Resize_3", Heart_Id: "Heart_Photo_3", Resize_Id: "Resize_Photo_3", Source_Id: "Source_3_Photo_s", Picture_Id: "Play_Img_3_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_3" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_3_Photo_s", Exit_Id_Exit: "Exit_Resize_3", Heart_Id_Exit: "Heart_Photo_3", Resize_Id_Exit: "Resize_Photo_3", Source_Id_Exit: "Source_3_Photo_s", Picture_Id_Exit: "Play_Img_3_s", Main_Id_Exit: "Main_Container"})}/>
-            </div>  
-
-            <div id="Item_4_Photo_s" style={Photo_Item_Style} >
-                <img style={Image_Style} src={photoArray_s[3]} onClick={() => TriggerLink_s(3)}/>
-                <p style={Source_Text_Style} id="Source_4_Photo_s">Source:{" "}<span id="Img_Source4" style={Actual_Source_Text}>{urlArray_s[3]}</span></p>
-                <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_4_s" />
-                <img onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_4"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_4"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_4" onClick={() => Resize_Photo_Item({Container_Id: "Item_4_Photo_s", Exit_Id: "Exit_Resize_4", Heart_Id: "Heart_Photo_4", Resize_Id: "Resize_Photo_4", Source_Id: "Source_4_Photo_s", Picture_Id: "Play_Img_4_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_4" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_4_Photo_s", Exit_Id_Exit: "Exit_Resize_4", Heart_Id_Exit: "Heart_Photo_4", Resize_Id_Exit: "Resize_Photo_4", Source_Id_Exit: "Source_4_Photo_s", Picture_Id_Exit: "Play_Img_4_s", Main_Id_Exit: "Main_Container"})}/>
-            </div>  
-
-            <div id="Item_5_Photo_s" style={Photo_Item_Style} >
-                <img style={Image_Style} src={photoArray_s[4]} onClick={() => TriggerLink_s(4)}/>
-                <p style={Source_Text_Style} id="Source_5_Photo_s">Source:{" "}<span id="Img_Source5" style={Actual_Source_Text}>{urlArray_s[4]}</span></p>
-                <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_5_s" />
-                <img onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_5"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_5"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_5" onClick={() => Resize_Photo_Item({Container_Id: "Item_5_Photo_s", Exit_Id: "Exit_Resize_5", Heart_Id: "Heart_Photo_5", Resize_Id: "Resize_Photo_5", Source_Id: "Source_5_Photo_s", Picture_Id: "Play_Img_5_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_5" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_5_Photo_s", Exit_Id_Exit: "Exit_Resize_5", Heart_Id_Exit: "Heart_Photo_5", Resize_Id_Exit: "Resize_Photo_5", Source_Id_Exit: "Source_5_Photo_s", Picture_Id_Exit: "Play_Img_5_s", Main_Id_Exit: "Main_Container"})}/>
-            </div>  
-
-            <div id="Item_6_Photo_s" style={Photo_Item_Style} >
-                <img style={Image_Style} src={photoArray_s[5]} onClick={() => TriggerLink_s(5)}/>
-                <p style={Source_Text_Style} id="Source_6_Photo_s">Source:{" "}<span id="Img_Source6" style={Actual_Source_Text}>{urlArray_s[5]}</span></p>
-                <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_6_s" />
-                <img onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_6"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_6"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_6" onClick={() => Resize_Photo_Item({Container_Id: "Item_6_Photo_s", Exit_Id: "Exit_Resize_6", Heart_Id: "Heart_Photo_6", Resize_Id: "Resize_Photo_6", Source_Id: "Source_6_Photo_s", Picture_Id: "Play_Img_6_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_6" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_6_Photo_s", Exit_Id_Exit: "Exit_Resize_6", Heart_Id_Exit: "Heart_Photo_6", Resize_Id_Exit: "Resize_Photo_6", Source_Id_Exit: "Source_6_Photo_s", Picture_Id_Exit: "Play_Img_6_s", Main_Id_Exit: "Main_Container"})}/>
-            </div>  
-
-            <div id="Item_7_Photo_s" style={Photo_Item_Style} >
-                <img style={Image_Style} src={photoArray_s[6]} onClick={() => TriggerLink_s(6)}/>
-                <p style={Source_Text_Style} id="Source_7_Photo_s">Source:{" "}<span id="Img_Source7" style={Actual_Source_Text}>{urlArray_s[6]}</span></p>
-                <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_7_s" />
-                <img onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_7"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_7"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_7" onClick={() => Resize_Photo_Item({Container_Id: "Item_7_Photo_s", Exit_Id: "Exit_Resize_7", Heart_Id: "Heart_Photo_7", Resize_Id: "Resize_Photo_7", Source_Id: "Source_7_Photo_s", Picture_Id: "Play_Img_7_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_7" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_7_Photo_s", Exit_Id_Exit: "Exit_Resize_7", Heart_Id_Exit: "Heart_Photo_7", Resize_Id_Exit: "Resize_Photo_7", Source_Id_Exit: "Source_7_Photo_s", Picture_Id_Exit: "Play_Img_7_s", Main_Id_Exit: "Main_Container"})}/>
-            </div>  
-
-            <div id="Item_8_Photo_s" style={Photo_Item_Style} >
-                <img style={Image_Style} src={photoArray_s[7]} onClick={() => TriggerLink_s(7)}/>
-                <p style={Source_Text_Style} id="Source_8_Photo_s">Source:{" "}<span id="Img_Source8" style={Actual_Source_Text}>{urlArray_s[7]}</span></p>
-                <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_8_s" />
-                <img onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_8"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_8"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_8" onClick={() => Resize_Photo_Item({Container_Id: "Item_8_Photo_s", Exit_Id: "Exit_Resize_8", Heart_Id: "Heart_Photo_8", Resize_Id: "Resize_Photo_8", Source_Id: "Source_8_Photo_s", Picture_Id: "Play_Img_8_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_8" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_8_Photo_s", Exit_Id_Exit: "Exit_Resize_8", Heart_Id_Exit: "Heart_Photo_8", Resize_Id_Exit: "Resize_Photo_8", Source_Id_Exit: "Source_8_Photo_s", Picture_Id_Exit: "Play_Img_8_s", Main_Id_Exit: "Main_Container"})}/>
-            </div>  
-
-            <div id="Item_9_Photo_s" style={Photo_Item_Style}>
-                <img style={Image_Style} src={photoArray_s[8]}  onClick={() => TriggerLink_s(8)}/>
-                <p style={Source_Text_Style} id="Source_9_Photo_s">Source:{" "}<span id="Img_Source9" style={Actual_Source_Text}>{urlArray_s[8]}</span></p>
-                <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_9_s" />
-                <img onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_9"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_9"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_9" onClick={() => Resize_Photo_Item({Container_Id: "Item_9_Photo_s", Exit_Id: "Exit_Resize_9", Heart_Id: "Heart_Photo_9", Resize_Id: "Resize_Photo_9", Source_Id: "Source_9_Photo_s", Picture_Id: "Play_Img_9_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_9" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_9_Photo_s", Exit_Id_Exit: "Exit_Resize_9", Heart_Id_Exit: "Heart_Photo_9", Resize_Id_Exit: "Resize_Photo_9", Source_Id_Exit: "Source_9_Photo_s", Picture_Id_Exit: "Play_Img_9_s", Main_Id_Exit: "Main_Container"})}/>
-            </div>  
-
-            <div id="Item_10_Photo_s" style={Photo_Item_Style} >
-                <img style={Image_Style} src={photoArray_s[9]} onClick={() => TriggerLink_s(9)}/>
-                <p style={Source_Text_Style} id="Source_10_Photo_s">Source:{" "}<span id="Img_Source10" style={Actual_Source_Text}>{urlArray_s[9]}</span></p>
-                <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_10_s" />
-                <img onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_10"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_10"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_10" onClick={() => Resize_Photo_Item({Container_Id: "Item_10_Photo_s", Exit_Id: "Exit_Resize_10", Heart_Id: "Heart_Photo_10", Resize_Id: "Resize_Photo_10", Source_Id: "Source_10_Photo_s", Picture_Id: "Play_Img_10_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_10" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_10_Photo_s", Exit_Id_Exit: "Exit_Resize_10", Heart_Id_Exit: "Heart_Photo_10", Resize_Id_Exit: "Resize_Photo_10", Source_Id_Exit: "Source_10_Photo_s", Picture_Id_Exit: "Play_Img_10_s", Main_Id_Exit: "Main_Container"})}/>
-            </div> 
-
-            <div id="Item_11_Photo_s" style={Photo_Item_Style} >
-                <img style={Image_Style} src={photoArray_s[10]} onClick={() => TriggerLink_s(10)}/>
-                <p style={Source_Text_Style} id="Source_11_Photo_s">Source:{" "}<span id="Img_Source11" style={Actual_Source_Text}>{urlArray_s[10]}</span></p>
-                <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_11_s" />
-                <img onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_11"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_11"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_11" onClick={() => Resize_Photo_Item({Container_Id: "Item_11_Photo_s", Exit_Id: "Exit_Resize_11", Heart_Id: "Heart_Photo_11", Resize_Id: "Resize_Photo_11", Source_Id: "Source_11_Photo_s", Picture_Id: "Play_Img_11_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_11" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_11_Photo_s", Exit_Id_Exit: "Exit_Resize_11", Heart_Id_Exit: "Heart_Photo_11", Resize_Id_Exit: "Resize_Photo_11", Source_Id_Exit: "Source_11_Photo_s", Picture_Id_Exit: "Play_Img_11_s", Main_Id_Exit: "Main_Container"})}/>
-            </div>  
-
-            <div id="Item_12_Photo_s" style={Photo_Item_Style} >
-                <img style={Image_Style} src={photoArray_s[11]} onClick={() => TriggerLink_s(11)}/>
-                <p style={Source_Text_Style} id="Source_12_Photo_s">Source:{" "}<span id="Img_Source12" style={Actual_Source_Text}>{urlArray_s[11]}</span></p>
-                <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_12_s" />
-                <img onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_12"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_12"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_12" onClick={() => Resize_Photo_Item({Container_Id: "Item_12_Photo_s", Exit_Id: "Exit_Resize_12", Heart_Id: "Heart_Photo_12", Resize_Id: "Resize_Photo_12", Source_Id: "Source_12_Photo_s", Picture_Id: "Play_Img_12_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_12" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_12_Photo_s", Exit_Id_Exit: "Exit_Resize_12", Heart_Id_Exit: "Heart_Photo_12", Resize_Id_Exit: "Resize_Photo_12", Source_Id_Exit: "Source_12_Photo_s", Picture_Id_Exit: "Play_Img_12_s", Main_Id_Exit: "Main_Container"})}/>
-            </div> 
-
-            <div id="Item_13_Photo_s" style={Photo_Item_Style} >
-                <img style={Image_Style} src={photoArray_s[12]} onClick={() => TriggerLink_s(12)}/>
-                <p style={Source_Text_Style} id="Source_13_Photo_s">Source:{" "}<span id="Img_Source13" style={Actual_Source_Text}>{urlArray_s[12]}</span></p>
-                <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_13_s" />
-                <img onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_13"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_13"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_13" onClick={() => Resize_Photo_Item({Container_Id: "Item_13_Photo_s", Exit_Id: "Exit_Resize_13", Heart_Id: "Heart_Photo_13", Resize_Id: "Resize_Photo_13", Source_Id: "Source_13_Photo_s", Picture_Id: "Play_Img_13_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_13" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_13_Photo_s", Exit_Id_Exit: "Exit_Resize_13", Heart_Id_Exit: "Heart_Photo_13", Resize_Id_Exit: "Resize_Photo_13", Source_Id_Exit: "Source_13_Photo_s", Picture_Id_Exit: "Play_Img_13_s", Main_Id_Exit: "Main_Container"})}/>
-            </div>  
-
-            <div id="Item_14_Photo_s" style={Photo_Item_Style} >
-                <img style={Image_Style} src={photoArray_s[13]} onClick={() => TriggerLink_s(13)}/>
-                <p style={Source_Text_Style} id="Source_14_Photo_s">Source:{" "}<span id="Img_Source14" style={Actual_Source_Text}>{urlArray_s[13]}</span></p>
-                <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_14_s" />
-                <img onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_14"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_14"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_14" onClick={() => Resize_Photo_Item({Container_Id: "Item_14_Photo_s", Exit_Id: "Exit_Resize_14", Heart_Id: "Heart_Photo_14", Resize_Id: "Resize_Photo_14", Source_Id: "Source_14_Photo_s", Picture_Id: "Play_Img_14_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_14" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_14_Photo_s", Exit_Id_Exit: "Exit_Resize_14", Heart_Id_Exit: "Heart_Photo_14", Resize_Id_Exit: "Resize_Photo_14", Source_Id_Exit: "Source_14_Photo_s", Picture_Id_Exit: "Play_Img_14_s", Main_Id_Exit: "Main_Container"})}/>
-            </div>  
-
-            <div id="Item_15_Photo_s" style={Photo_Item_Style} >
-                <img style={Image_Style} src={photoArray_s[14]} onClick={() => TriggerLink_s(14)}/>
-                <p style={Source_Text_Style} id="Source_15_Photo_s">Source:{" "}<span id="Img_Source15" style={Actual_Source_Text}>{urlArray_s[14]}</span></p>
-                <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_15_s" />
-                <img onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_15"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_15"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_15" onClick={() => Resize_Photo_Item({Container_Id: "Item_15_Photo_s", Exit_Id: "Exit_Resize_15", Heart_Id: "Heart_Photo_15", Resize_Id: "Resize_Photo_15", Source_Id: "Source_15_Photo_s", Picture_Id: "Play_Img_15_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_15" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_15_Photo_s", Exit_Id_Exit: "Exit_Resize_15", Heart_Id_Exit: "Heart_Photo_15", Resize_Id_Exit: "Resize_Photo_15", Source_Id_Exit: "Source_15_Photo_s", Picture_Id_Exit: "Play_Img_15_s", Main_Id_Exit: "Main_Container"})}/>
-            </div>  
-
-            <div id="Item_16_Photo_s" style={Photo_Item_Style} >
-                <img style={Image_Style} src={photoArray_s[15]} onClick={() => TriggerLink_s(15)}/>
-                <p style={Source_Text_Style} id="Source_16_Photo_s">Source:{" "}<span id="Img_Source16" style={Actual_Source_Text}>{urlArray_s[15]}</span></p>
-                <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_16_s" />
-                <img onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_16"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_16"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_16" onClick={() => Resize_Photo_Item({Container_Id: "Item_16_Photo_s", Exit_Id: "Exit_Resize_16", Heart_Id: "Heart_Photo_16", Resize_Id: "Resize_Photo_16", Source_Id: "Source_16_Photo_s", Picture_Id: "Play_Img_16_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_16" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_16_Photo_s", Exit_Id_Exit: "Exit_Resize_16", Heart_Id_Exit: "Heart_Photo_16", Resize_Id_Exit: "Resize_Photo_16", Source_Id_Exit: "Source_16_Photo_s", Picture_Id_Exit: "Play_Img_16_s", Main_Id_Exit: "Main_Container"})}/>
-            </div> 
-
-            <div id="Item_17_Photo_s" style={Photo_Item_Style} >
-                <img style={Image_Style} src={photoArray_s[16]} onClick={() => TriggerLink_s(16)}/>
-                <p style={Source_Text_Style} id="Source_17_Photo_s">Source:{" "}<span id="Img_Source17" style={Actual_Source_Text}>{urlArray_s[16]}</span></p>
-                <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_17_s" />
-                <img onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_17"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_17"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_17" onClick={() => Resize_Photo_Item({Container_Id: "Item_17_Photo_s", Exit_Id: "Exit_Resize_17", Heart_Id: "Heart_Photo_17", Resize_Id: "Resize_Photo_17", Source_Id: "Source_17_Photo_s", Picture_Id: "Play_Img_17_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_17" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_17_Photo_s", Exit_Id_Exit: "Exit_Resize_17", Heart_Id_Exit: "Heart_Photo_17", Resize_Id_Exit: "Resize_Photo_17", Source_Id_Exit: "Source_17_Photo_s", Picture_Id_Exit: "Play_Img_17_s", Main_Id_Exit: "Main_Container"})}/>
-            </div> 
-            
-            <div id="Item_18_Photo_s" style={Photo_Item_Style} >
-                <img style={Image_Style} src={photoArray_s[17]} onClick={() => TriggerLink_s(17)}/>
-                <p style={Source_Text_Style} id="Source_18_Photo_s">Source:{" "}<span id="Img_Source18" style={Actual_Source_Text}>{urlArray_s[17]}</span></p>
-                <img style={Pic_Img_Style} src={Pic_Img} id="Play_Img_18_s" />
-                <img onClick={() => Save_Photo_Search({id_Heart_Photo_Search: "Heart_Photo_18"})} src={Heart_Img_pic} style={Heart_Style} id="Heart_Photo_18"/>
-                <img src={Resize_Img_p_Search} style={Resize_Img_style} id="Resize_Photo_18" onClick={() => Resize_Photo_Item({Container_Id: "Item_18_Photo_s", Exit_Id: "Exit_Resize_18", Heart_Id: "Heart_Photo_18", Resize_Id: "Resize_Photo_18", Source_Id: "Source_18_Photo_s", Picture_Id: "Play_Img_18_s", Main_id: "Main_Container"})}/>
-                <img id="Exit_Resize_18" src={Exit_Img_v_Search} style={Exit_Img_Resize} onClick={() => Exit_Photo_Item({Container_Id_Exit: "Item_18_Photo_s", Exit_Id_Exit: "Exit_Resize_18", Heart_Id_Exit: "Heart_Photo_18", Resize_Id_Exit: "Resize_Photo_18", Source_Id_Exit: "Source_18_Photo_s", Picture_Id_Exit: "Play_Img_18_s", Main_Id_Exit: "Main_Container"})}/>
-            </div>  
-
-            <div style={Space}></div>
-            <div>
-                <button onClick={ChangePrevPage} style={Bottom_Buttons_Style}>Prev Page</button>
-                <p style={Page_Counter_Style}>{PageQuery_s}</p>
-                <button onClick={ChangeNextPage} style={Bottom_Buttons_Style}>Next Page</button>
-                <div id="Loading_Spinner_Photo_Bot" style={Loading_Spinner_photo_Bottom} className="loading-spinner"></div> 
-            </div>
-            
+        <div style={search_bar_img_container_p}>
+        <p style={Video_top_text_p}>Search thousands of free photos endlessly with no royalties.</p>
+          <input id="Search_Photos" onChange={handleInputChange} value={searchValue} type="text" placeholder="Search for photos" style={Input_Style} onKeyDown={handleKeyPress} />
+          <img id="Search_Button" onClick={ChangeSearch} style={Search_Img_Style} src={SearchImg}/>
+          <div style={Video_featured_text_container_p}>
+              <p style={Video_featured_text_title_p}>Trending: </p>
+              <p style={Video_featured_text_p} onClick={() => ChangeSearch_Trending({query: "dark"})}>dark,</p>
+              <p style={Video_featured_text_p} onClick={() => ChangeSearch_Trending({query: "nature"})}>nature,</p>
+              <p style={Video_featured_text_p} onClick={() => ChangeSearch_Trending({query: "forest"})}>forest,</p>
+              <p style={Video_featured_text_p} onClick={() => ChangeSearch_Trending({query: "sky"})}>sky</p>
+              <div id="Loading_Spinner_photo" style={Loading_Spinner_photo} className="loading-spinner"></div>
+          </div>
         </div>
+        <h1 id="actual_Title_p" style={Search_Title_Style}>Search results for "<span id="Search_Result"></span>"</h1>
+        <h1 id="none_title_p" style={Search_Title_Style}>No results were found...</h1>
+        <p style={Result_Style}>Total results: {PhotoResults}</p>
+        <p style={pageOf_Style}>Page {PageQuery_s} of {calculateTotalPages(Number(PhotoResults), 18)}</p>
+        <h1 id="trending_today" style={Trending_Title_Style}>Trending recently "<span>Ocean</span>"</h1>
+        
+        <div id="Photo_Container" style={Photo_Container_Style}>
+            {Photo_Items}
+            <div style={Space}></div>
+            <div id="button_container_p">
+                <button onClick={ChangePrevPage} style={Bottom_Buttons_Style_Left}>Prev Page</button>
+                <p style={Page_Counter_Style}>{PageQuery_s}</p>
+                <button onClick={ChangeNextPage} style={Bottom_Buttons_Style_Right}>Next Page</button> 
+                <div id="Loading_Spinner_vid_Bottom" style={Loading_Spinner_photo_Bottom} className="loading-spinner"></div>
+            </div>
+            <div style={Space_2}></div>
+            <div id="Footer" className="Scroll_Div" style={footerStyle}>
+              <p style={Footer_Title}>Pixel Peak</p>
+              {/*
+                <div id="Account">
+                  <p id="Acc_Title" className="Title_Class_Footer" style={titleStyle}>Account</p>
+                  <p className="Footer_Link" id="Login_Link_p" style={linkStyle}>Login</p>
+                </div>
+
+                <div id="QuickLinks">
+                  <p id="Quic_Title" className="Title_Class_Footer" style={titleStyle}>Quick Links</p>
+                  <p className="Footer_Link" id="Videos_Link_p" style={linkStyle}>Videos</p>
+                  <p className="Footer_Link" id="Photos_Link_p" style={linkStyle}>Photos</p>
+                </div>
+
+                <div id="About">
+                  <p id="Abt_Title" className="Title_Class_Footer" style={titleStyle}>About</p>
+                  <p className="Footer_Link" id="Info_Link_p" style={linkStyle}>Information</p>
+                </div>
+                */}
+                <p id="CopyWright" style={copyrightStyle}>
+                  Copyright © 2024 Pixel Peak. All Rights Reserved. User Agreement, Privacy,
+                  Payments Terms of Use, Cookies and AdChoice. Made By Lukas Leins
+                </p>
+            </div>
+        </div>
+      
             
         </div>
     );

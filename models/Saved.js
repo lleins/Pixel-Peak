@@ -4,7 +4,9 @@ const savedSchema = new mongoose.Schema({
     email: String,
     src: String,
     url: String,
-    type: String
+    type: String,
+    user: String
+
 }, {
     collection: 'Saved-Pics-Vids' // Specify the collection name
 });
