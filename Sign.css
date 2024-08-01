@@ -1,0 +1,64 @@
+body{
+    background-color: rgb(255, 255, 255) !important;
+    overflow-x:  hidden;
+    margin: 0 !important;
+    padding: 0 !important;
+    scroll-behavior: smooth !important;
+}
+
+/*Navigation Bar*/
+#Main_Nav{
+    position: fixed;
+    width: 100%;
+    height: 100px;
+    top: 0px;
+    left: 0px;
+    transition: .3s;
+    display: flex;
+    z-index: 2;
+}
+
+
+
+#Title{
+    font-family: arial;
+    color: rgb(10, 10, 10); 
+    font-weight: bold;
+    position: absolute;
+    letter-spacing: 1px;
+    font-size: 20px;
+    left: 40px;
+    top: 10px;
+    cursor: pointer;
+    font-variant: small-caps;
+}
+
+/*Navigation Bar*/
+
+.Load_Item{
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+
+/*Login Container*/
+
+#Login_Container{
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    background-color: rgb(228, 228, 228);
+    width: 400px;
+    height: 400px;
+
+}
+#SignIn_Title{
+    color: rgb(10, 10, 10);
+    font-family: verdana;
+    font-size: 35px;
+    text-align: left;
+
+}
+
+/*Login Container*/

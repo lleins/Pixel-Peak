@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="index.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <link rel="icon" href="Images/logo.ico" type="image/x-icon">
+  <title>Pixel Peak</title>
+</head>
+
+<body>
+  <div id="homeMarker"></div>
+  <!--Main Page-->
+
+  <!--Cookies Consent-->
+  <div id="Cookies_Confirmation_Container">
+    <p id="Cookies_Title">Cookies Consent</p>
+    <p id="Cookies_Write_Up">By clicking "Accept all cookies", you agree Pixel Peak can store cookies on your decive and
+      disclose information in accordance with ourCookie
+      Policy</p>
+    <div id="Buttons_Container">
+      <button id="Accept_Cookies_Btn" onclick="Accept_Cookies()">Accept all cookies</button>
+    </div>
+  </div>
+  <!--Cookies Consent-->
+
+  <div id="Page_Notifs">
+    <p id="Login_1" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Login
+      successful</p>
+    <p id="Login_0" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Login failed</p>
+
+    <p id="Logout_1" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Logout
+      successful</p>
+    <p id="Logout_0" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Logout
+      failed</p>
+
+    <p id="Account_1" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Account created
+    </p>
+    <p id="Account_0" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Account creation
+      failed</p>
+    <p id="Account_01" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;Account with that
+      email already exists
+    </p>
+
+    <p id="Saved_1" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Saved
+    </p>
+    <p id="Saved_0" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Failed
+    </p>
+    <p id="Saved_10" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Removed
+    </p>
+
+    <p id="Deleted_Account_1" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Account
+      deleted
+    </p>
+    <p id="Deleted_Account_0" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;Account
+      cannot be deleted at this time
+    </p>
+
+    <p id="Login_Request_0" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Please log
+      in
+    </p>
+
+    <p id="Max_Saved_0" class="notif_Style"><img class="Alert_Image" src="Images/Alert.png">&nbsp;&nbsp;Saved list full
+    </p>
+
+
+  </div>
+
+
+  <div id="Page_Loading_Animation">
+    <img id="Page_Loader_Logo" src="Images/logo.png">
+    <p id="Page_Loader_Spinner" class="loader"></p>
+  </div>
+
+
+  <div id="Home_Container">
+    <div id="Home_React">
+ 
+    </div>
+  </div>
+
+
+
+
+  <!--Navigation Bar-->
+  <div id="Blur_Webpage"></div>
+  <!--Login Container-->
+  <div id="Login_Container">
+    <img id="Exit_Login" src="Images/Exit.png" onclick="Exit_Login()">
+    <p id="SignIn_Title">Sign In</p>
+    <div id="SignIn_React">
+
+    </div>
+    <div id="Account_Dashboard">
+      <p id="Account_Title">Account</p>
+      <button id="View_Acc_Btn" class="Account_btn_style" onclick="ViewAccount()">View Account</button>
+      <button id="Saved_Acc_Btn" class="Account_btn_style">Saved</button>
+      <button id="Logout_Acc_Btn" class="Account_btn_style">Logout</button>
+    </div>
+  </div>
+
+  <div id="Account_React">
+
+  </div>
+
+  <div id="Saved_React">
+
+  </div>
+  <!--Login Container-->
+
+  <!--Help Container-->
+  <div id="Help_Container">
+    <img id="Exit_Help" src="Images/Exit.png" onclick="Exit_Help()">
+    <p id="Help_Title">How can we help?</p>
+    <p id="Help_Text">For questions or concerns please feel free to contact us with the email below.</p>
+    <p id="Help_Text">example@email.com</p>
+  </div>
+  <!--Help Container-->
+
+  <div id="Main_Nav" class="Load_Item">
+    <p id="Title" onclick="Home_Page()">Pixel Peak</p>
+    <img id="Title_Logo" onclick="Home_Page()" src="Images/logo.png">
+    <div id="Nav_Buttons_Main">
+      <button id="Videos_Button" class="Nav_Style" onclick="SearchVideos()">Videos</button>
+      <button id="Photos_Button" class="Nav_Style" onclick="SearchPhotos()">Photos</button>
+    </div>
+    <div id="Nav_Main_Imgs">
+      <img id="Account" class="Nav_Imgs" onclick="Login_Blur()" src="Images/Account.png">
+      <img id="Info" class="Nav_Imgs" onclick="Help_Blur()" src="Images/Info.png">
+    </div>
+  </div>
+  <!--Navigation Bar-->
+
+  <!--Mobile Navigation Bar-->
+  <div id="Mobile_Side_Buttons" class="Load_Item">
+    <button id="Mobile_Menu" onclick="Open_Mobile_Menu()"><img src="Images/Menu.png" id="Menu_Img">Menu</button>
+    <div id="Side_Buttons">
+      <img id="Exit_Img" onclick="Close_Mobile_Menu()" src="Images/Exit.png">
+      <button id="Videos_Mobile" class="Mobile_Menu_Buttons" onclick="SearchVideos()">Videos<img
+          src="Images/Mobile_Arrow.png" class="Mobile_Arrow_Class"></button>
+      <button id="Photos_Mobile" class="Mobile_Menu_Buttons" onclick="SearchPhotos()">Photos<img
+          src="Images/Mobile_Arrow.png" class="Mobile_Arrow_Class"></button>
+
+      <button id="Information_Mobile" class="Mobile_Menu_Buttons" onclick="Help_Blur()"><img src="Images/Info.png"
+          class="Mobile_Imgs" onclick="Help_Blur()">Information</button>
+      <button id="Account_Mobile" class="Mobile_Menu_Buttons"><img id="account_mobile_img" src="Images/Account.png"
+          class="Mobile_Imgs">Account</button>
+
+    </div>
+
+  </div>
+
+  <!--Mobile Navigation Bar-->
+
+
+
+  <!--Main Page-->
+
+
+
+  <div id="Video_Search_Result">
+    <img id="Exit_Video_Search" src="Images/Exit.png" onclick="SearchVideos_Exit()">
+    <div id="Video_Search_React">
+
+
+
+    </div>
+  </div>
+
+
+  <div id="Photos_React">
+  </div>
+  </div>
+  <!--Photos Tab-->
+  <div id="Photo_Search_Result">
+    <div id="Photo_Search_React">
+
+    </div>
+  </div>
+
+
+  <!--Footer-->
+  <div id="Footer" class="Scroll_Div">
+
+    <div id="Account">
+      <p id=Acc_Title class="Title_Class_Footer">Account</p>
+      <p class="Footer_Link" id="Login_Link" onclick="Login_Blur()">Login</p>
+    </div>
+
+
+    <div id="QuickLinks">
+      <p id=Quic_Title class="Title_Class_Footer">Quick Links</p>
+      <p class="Footer_Link" id="Videos_Link" onclick="Switch_to_Photo_Video('Videos_Tab', 'Photos_Tab')">Videos</p>
+      <p class="Footer_Link" id="Photos_Link" onclick="Switch_to_Photo_Video('Photos_Tab', 'Videos_Tab')">Photos</p>
+    </div>
+
+
+    <div id="About">
+      <p id=Abt_Title class="Title_Class_Footer">About</p>
+      <p class="Footer_Link" id="Info_Link" onclick="Help_Blur()">Information</p>
+    </div>
+
+    <p id="CopyWright" class="Footer_Link">Copyright © 2023 Pixel Peaks. All Rights Reserved. User Agreement, Privacy,
+      Payments Terms of Use, Cookies and AdChoice. Made By Lukas Leins</p>
+  </div>
+
+
+  <script type="text/javascript" src="Index.js"></script>
+  <script type="module" src="/src/main.tsx"></script>
+  <script type="module" src="CheckLogin.tsx"></script>
+  <script type="module" src="AcceptCookies.tsx"></script>
+</body>
+
+</html>

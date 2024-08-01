@@ -1,0 +1,1323 @@
+/*
+Problems:
+1. Saved.Format is being called serveral times per second.
+
+*/
+
+body {
+    background-color: rgb(15, 15, 15) !important;
+    overflow-x: hidden;
+    margin: 0 !important;
+    padding: 0 !important;
+    scroll-behavior: smooth !important;
+    overflow-y: hidden !important;
+}
+
+#Blur_Webpage {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    backdrop-filter: blur(0px) brightness(100%);
+    z-index: 0;
+
+}
+
+#homeMarker {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    visibility: hidden;
+}
+
+
+/*Loading spinner*/
+.loading-spinner {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid rgb(24, 105, 226);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin .65s linear infinite;
+    margin: auto;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0%);
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/*Loading spinner*/
+
+
+
+
+/*Cookies Container*/
+
+#Cookies_Confirmation_Container {
+    width: 100%;
+    height: 200px;
+    background-color: white;
+    position: fixed;
+    bottom: -80px;
+    z-index: 100;
+    box-shadow: 0px -5px 10px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: 1.7s;
+    transform: 1.7s;
+}
+
+#Cookies_Title {
+    font-family: Helvetica;
+    font-size: 25px;
+    color: rgb(15, 100, 255);
+    position: relative;
+    text-align: center;
+    top: 5px;
+}
+
+#Cookies_Write_Up {
+    font-family: Helvetica;
+    font-size: 14px;
+    position: relative;
+    text-align: center;
+    top: 10px;
+}
+
+#Buttons_Container {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -0%);
+    top: 130px;
+    white-space: nowrap;
+}
+
+#Accept_Cookies_Btn {
+    border: none;
+    background-color: rgb(45, 101, 255);
+    font-family: Helvetica;
+    font-size: 15px;
+    color: white;
+    width: 150px;
+    height: 40px;
+    border-radius: 5px;
+
+}
+
+#View_Cookies_Btn {
+    border: none;
+    background-color: white;
+    font-family: Helvetica;
+    font-size: 15px;
+    color: rgb(45, 101, 255);
+    width: 150px;
+    height: 40px;
+    border-radius: 5px;
+    border: 2px solid rgb(45, 101, 255);
+}
+
+/*Cookies Container*/
+
+/*Page Notifications*/
+
+.Alert_Image {
+    transform: scale(.6);
+    padding-right: 10px;
+}
+
+.notif_Style {
+    position: fixed;
+    top: 60px;
+    left: 20px;
+    z-index: 9999999;
+    width: 380px;
+    height: 50px;
+    padding-left: 10px;
+    white-space: nowrap;
+    padding-top: 9px;
+    border-radius: 0px;
+    opacity: 1;
+    font-family: Helvetica;
+    font-size: 14px;
+    border-radius: 5px;
+}
+
+#Login_1 {
+    display: none;
+    background-color: rgb(240, 240, 240);
+    color: rgb(100, 100, 100);
+    border-left: 40px solid rgb(71, 255, 47);
+}
+
+#Login_0 {
+    display: none;
+    background-color: rgb(240, 240, 240);
+    color: rgb(100, 100, 100);
+    border-left: 40px solid rgb(255, 61, 27);
+}
+
+
+#Logout_1 {
+    display: none;
+    background-color: rgb(240, 240, 240);
+    color: rgb(100, 100, 100);
+    border-left: 40px solid rgb(71, 255, 47);
+}
+
+#Logout_0 {
+    display: none;
+    background-color: rgb(240, 240, 240);
+    color: rgb(100, 100, 100);
+    border-left: 40px solid rgb(255, 61, 27);
+}
+
+
+#Account_1 {
+    display: none;
+    background-color: rgb(240, 240, 240);
+    color: rgb(100, 100, 100);
+    border-left: 40px solid rgb(71, 255, 47);
+}
+
+#Account_0 {
+    display: none;
+    background-color: rgb(240, 240, 240);
+    color: rgb(100, 100, 100);
+    border-left: 40px solid rgb(255, 61, 27);
+}
+
+#Account_01 {
+    display: none;
+    background-color: rgb(240, 240, 240);
+    color: rgb(100, 100, 100);
+    border-left: 40px solid rgb(255, 61, 27);
+}
+
+#Saved_1 {
+    display: none;
+    background-color: rgb(240, 240, 240);
+    color: rgb(100, 100, 100);
+    border-left: 40px solid rgb(71, 255, 47);
+}
+
+#Saved_0 {
+    display: none;
+    background-color: rgb(240, 240, 240);
+    color: rgb(100, 100, 100);
+    border-left: 40px solid rgb(255, 61, 27);
+}
+
+#Saved_10 {
+    display: none;
+    background-color: rgb(240, 240, 240);
+    color: rgb(100, 100, 100);
+    border-left: 40px solid rgb(71, 255, 47);
+}
+
+#Deleted_Account_0 {
+    display: none;
+    background-color: rgb(240, 240, 240);
+    color: rgb(100, 100, 100);
+    border-left: 40px solid rgb(255, 61, 27);
+}
+
+#Deleted_Account_1 {
+    display: none;
+    background-color: rgb(240, 240, 240);
+    color: rgb(100, 100, 100);
+    border-left: 40px solid rgb(71, 255, 47);
+}
+
+#Login_Request_0 {
+    /**/
+    display: none;
+    background-color: rgb(240, 240, 240);
+    color: rgb(100, 100, 100);
+    border-left: 40px solid rgb(255, 61, 27);
+}
+
+#Max_Saved_0 {
+    /**/
+    display: none;
+    background-color: rgb(240, 240, 240);
+    color: rgb(100, 100, 100);
+    border-left: 40px solid rgb(255, 61, 27);
+}
+
+/*Page Notifications*/
+.All_featured_divs:hover{
+    box-shadow: 0 2px 10px rgba(100, 100, 100, 0.2);
+}
+
+.All_featured_Numbers:hover{
+    text-decoration: underline;
+    filter: brightness(200%);
+}
+
+
+
+
+/*Page Loader*/
+
+#Page_Loading_Animation{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 9999999;
+    background-color: rgb(15, 15, 15);
+    transition: .2s;
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+    height: 4px;
+    width: 130px;
+    --c:no-repeat linear-gradient(rgb(45, 101, 255) 0 0);
+    background: var(--c),var(--c),rgb(255, 255, 255);
+    background-size: 60% 100%;
+    animation: l16 3s infinite;
+  }
+  @keyframes l16 {
+    0%   {background-position:-150% 0,-150% 0}
+    66%  {background-position: 250% 0,-150% 0}
+    100% {background-position: 250% 0, 250% 0}
+}
+
+#Page_Loader_Container{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#Page_Loader_Logo{
+    width: 115px;
+    height: 115px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin-top: -10px;
+}
+
+#Page_Loader_Title{
+    font-family: arial;
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    letter-spacing: 1px;
+    font-size: 30px;
+    cursor: pointer;
+    font-variant: small-caps;
+}
+
+#Page_Loader_Spinner{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin-top: 75px;
+}
+
+/*Page Loader*/
+
+
+
+/*Navigation Bar*/
+
+#Main_Nav {
+    position: fixed;
+    width: 100%;
+    height: 60px;
+    top: 0px;
+    left: 0px;
+    transition: .3s;
+    display: flex;
+    z-index: 100000;
+    /*none*/
+}
+
+#Main_Nav.solid {
+    background-color: rgb(235, 235, 235);
+}
+
+
+#Nav_Buttons_Main {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0%);
+}
+
+.Nav_Style {
+    height: 40px;
+    width: 80px;
+    font-family: verdana;
+    color: rgb(255, 255, 255);
+    /*white*/
+    font-size: 16px;
+    background-color: rgb(150, 150, 150, 0);
+    cursor: pointer;
+    border-radius: 5px;
+    border: 0px solid white;
+    position: relative;
+    left: 18%;
+    transform: translate(-50%, 0%);
+    top: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.Nav_Style:hover {
+    background-color: rgb(150, 150, 150, .3);
+    backdrop-filter: blur(2px);
+
+}
+
+
+
+#Title {
+    font-family: arial;
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    position: absolute;
+    letter-spacing: 1px;
+    font-size: 20px;
+    left: 50px;
+    top: 15px;
+    cursor: pointer;
+    font-variant: small-caps;
+}
+
+#Title_Logo {
+    position: absolute;
+    left: 20px;
+    top: 18px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+
+#Nav_Main_Imgs {
+    position: relative;
+    left: 93%;
+    transform: translate(-50%, 0%);
+    top: 10px;
+}
+
+
+.Nav_Imgs {
+    transform: scale(.9);
+    cursor: pointer;
+    padding: 7px;
+    border-radius: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    filter: brightness(100%)
+}
+
+.Nav_Imgs:hover {
+    background-color: rgb(150, 150, 150, 0.3);
+    backdrop-filter: blur(2px);
+
+}
+
+.Load_Item {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+/*Navigation Bar*/
+
+
+
+#Photos_React {
+    display: none;
+}
+
+#Video_React {
+    display: none;
+}
+
+
+
+/*Home React*/
+#Home_Container {
+    position: fixed;
+    overflow-y: hidden;
+    width: 100%;
+    height: calc(100%);
+    z-index: 11;
+    left: 0px;
+    top: 0px;
+    border-radius: 0px;
+    transform: .3s;
+    transition: .3s;
+    display: block;
+    background-color: rgb(15, 15, 15, 1);
+    overflow-x: hidden;
+}
+/*Home React*/
+
+
+/*Account Dashboard*/
+
+#Account_Title {
+    position: relative;
+    color: "rgb(10, 10, 10)";
+    text-align: center;
+    font-family: Helvetica;
+    font-size: 35px;
+    top: -70px;
+}
+
+.Account_btn_style {
+    position: relative;
+    border: none;
+    background-color: rgb(45, 101, 255);
+    color: rgb(255, 255, 255);
+    font-family: Helvetica;
+    font-size: 14px;
+    height: 30px;
+    width: 75%;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    top: -30px;
+    border-radius: 5px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#Logout_Acc_Btn {
+    background-color: rgb(230, 230, 230);
+    color: rgb(100, 100, 100);
+}
+
+/*Account Dashboard*/
+
+
+
+/*Video Container*/
+#Video_Container {
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    top: 0px;
+    left: 0px;
+    filter: brightness(100%);
+
+}
+
+.video {
+    position: absolute;
+    object-fit: cover;
+    width: 100%;
+    height: 100vh;
+    top: 0px;
+    left: 0px;
+}
+
+.video:not(:first-child) {
+    display: none;
+}
+
+/*Video Container*/
+
+
+
+/*Title Container*/
+
+#Main_Title_Container {
+    position: relative;
+    z-index: 5;
+    text-align: center;
+    top: 150px;
+}
+
+#Title_Main {
+    color: white;
+    font-family: verdana;
+    font-size: 60px;
+    font-variant: small-caps;
+    font-weight: bold;
+}
+
+#DownArrow_Img {
+
+    position: absolute;
+    top: 100%;
+
+    width: 20px;
+    height: 20px;
+    border: 3px solid #ffffff;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
+
+#Arrow_Container {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: bounce 2s infinite;
+    z-index: 4;
+}
+
+
+
+@keyframes bounce {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-20px);
+    }
+
+    60% {
+        transform: translateY(-10px);
+    }
+}
+
+
+.Main_Buttons {
+
+    font-family: verdana;
+    width: 250px;
+    height: 40px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    position: relative;
+    top: 50px;
+    font-size: 16px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+}
+
+
+#Videos {
+    color: rgb(10, 10, 10);
+    opacity: .8;
+    background-color: white;
+    right: 30px;
+    transition: .3s;
+}
+
+#Photos {
+    color: white;
+    background-color: rgb(10, 10, 10);
+    opacity: .8;
+    left: 30px;
+    transition: .3s;
+}
+
+body.loaded #Videos {
+    right: 0px;
+}
+
+body.loaded #Photos {
+    left: 0px;
+}
+
+#Button_Container {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    top: 300px;
+}
+
+/*Title Container*/
+
+
+
+
+/*Mobile Menu*/
+
+#Mobile_Side_Buttons {
+    z-index: 999999;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+}
+
+#Mobile_Menu {
+    backdrop-filter: blur(4px);
+    height: 30px;
+    width: 80px;
+    background-color: rgb(10, 10, 10, .4);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    font-family: Helvetica;
+    font-size: 14px;
+    display: none;
+
+}
+
+
+#Side_Buttons {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: white;
+    height: 100%;
+    width: 100%;
+    z-index: 9999;
+    display: none;
+    opacity: 0;
+    transform: .1s;
+}
+
+#Exit_Img {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    cursor: pointer;
+    transform: scale(.9);
+}
+
+
+.Mobile_Menu_Buttons {
+    position: relative;
+    display: block;
+    text-align: left;
+    width: 90%;
+    height: 50px;
+    left: 20px;
+    top: 50px;
+    font-family: Helvetica;
+    font-size: 16px;
+    color: rgb(10, 10, 10);
+    background-color: rgb(10, 10, 10, 0);
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    padding-left: 20px;
+}
+
+.Mobile_Menu_Buttons:hover {
+    background-color: rgb(10, 10, 10, .1);
+}
+
+
+.Mobile_Imgs {
+    vertical-align: middle;
+    filter: invert(95%);
+    transform: scale(.9);
+    padding-right: 30px;
+}
+
+.Mobile_Arrow_Class {
+    float: right;
+    vertical-align: middle;
+    transform: scale(.9);
+}
+
+#Menu_Img {
+    vertical-align: middle;
+    transform: scale(.5);
+    margin-top: -2px;
+    margin-left: -5px;
+}
+
+/*Mobile Menu*/
+
+
+/*Video Tab*/
+
+#Videos_Tab {
+    position: absolute;
+    height: 800px;
+    width: 100%;
+    top: 100vh;
+    background-size: cover;
+    /* Adjust to your needs (e.g., cover, contain) */
+    background-repeat: no-repeat;
+    background-image: url('Images/Photos_Back_4.jpg');
+    display: none;
+
+
+}
+
+#Title_Videos {
+    position: relative;
+    color: rgb(60, 60, 60);
+    font-family: Helvetica;
+    font-size: 40px;
+    font-variant: small-caps;
+    font-weight: bold;
+    text-align: center;
+
+}
+
+
+
+.Input_Photo_Video {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    width: 70%;
+    height: 40px;
+    border: 0px solid rgb(255, 255, 255, .5);
+    border-radius: 5px;
+    font-family: Helvetica;
+    font-size: 14px;
+    color: white;
+    background-color: rgb(150, 150, 150, 0.3);
+    backdrop-filter: blur(4px);
+    padding-left: 60px;
+    top: 125px;
+
+}
+
+.Input_Photo_Video:focus {
+    border: 0px solid white;
+    outline: none;
+}
+
+.Input_Photo_Video::placeholder {
+    color: rgb(255, 255, 255, .8);
+}
+
+.Search_Img {
+    transform: scale(.6);
+}
+
+#Search_Videos_Button {
+    position: absolute;
+    left: 50px;
+    width: 60%;
+    height: 50px;
+    border: 0px solid rgb(255, 255, 255, .5);
+    border-radius: 5px;
+    font-family: Helvetica;
+    font-size: 14px;
+    color: white;
+    background-color: rgba(30, 30, 30, 0.7);
+    backdrop-filter: blur(4px);
+    text-align: left;
+    padding-left: 150px;
+    top: 140px;
+    transform: .3s;
+    transition: .3s;
+    vertical-align: middle;
+
+}
+
+#Hover_Video {
+    transform: .5s;
+    transition: .5s;
+}
+
+.Switch_Video_Photo_Style {
+    position: absolute;
+    left: 80px;
+    top: 147px;
+    font-family: verdHelveticaana;
+    font-size: 14px;
+    color: white;
+    background-color: rgba(30, 30, 30, 1);
+    width: 110px;
+    height: 35px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.Arrow_img_Video_Photo {
+    position: relative;
+    transform: scale(.8);
+    left: 3px;
+}
+
+
+
+
+.VP_Dropdown_Change {
+    position: absolute;
+    background-color: rgba(30, 30, 30, .7);
+    width: 130px;
+    height: 100px;
+    left: 70px;
+    top: 190px;
+    backdrop-filter: blur(4px);
+    border-radius: 5px;
+    opacity: 0;
+
+}
+
+.Switch_Video_Photo_Style_Drop {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    font-family: Helvetica;
+    font-size: 14px;
+    color: white;
+    background-color: rgba(30, 30, 30, 1);
+    width: 110px;
+    height: 35px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#Phot_DropDown {
+    top: 50px;
+}
+
+.Vid_Photo_WriteUp {
+    position: absolute;
+    font-family: Helvetica;
+    color: white;
+    width: 300px;
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    left: 70%;
+    top: 100px;
+    border-radius: 5px;
+    backdrop-filter: blur(8px);
+    background-color: rgb(30, 30, 30, .7);
+}
+
+/*Video Tab*/
+
+/*Video Search*/
+#Video_Search_Result {
+    position: fixed;
+    overflow-y: hidden;
+    width: 100%;
+    height: calc(100%);
+    z-index: 0;
+    left: 0px;
+    top: 0px;
+    border-radius: 0px;
+    transform: .3s;
+    transition: .3s;
+    display: none;
+    background-color: rgb(40, 40, 40, 0);
+    overflow-x: hidden;
+}
+
+#Exit_Video_Search {
+    position: fixed;
+    top: 4px;
+    right: 5px;
+    cursor: pointer;
+    transform: scale(.9);
+}
+
+.Search_Title {
+    color: rgb(40, 40, 40);
+    font-family: Helvetica;
+    font-size: 18px;
+    position: fixed;
+    top: 7px;
+    left: 10px;
+    font-weight: bold;
+    font-variant: small-caps;
+}
+
+.Search_Title_Type {
+    color: rgb(40, 40, 40);
+    font-family: Helvetica;
+    font-size: 25px;
+    position: fixed;
+    top: 5px;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    font-weight: bold;
+    font-variant: small-caps;
+}
+
+.video_user:hover {
+    transition: .2s;
+    text-decoration: underline;
+}
+
+/*Video Search*/
+
+/*Photos Tab*/
+
+#Photos_Tab {
+    position: absolute;
+    height: 800px;
+    width: 100%;
+    top: 100vh;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-image: url('Images/Photos_Back_5_2.jpg');
+    display: block;
+
+
+}
+
+#Title_Photos {
+    position: relative;
+    color: rgb(60, 60, 60);
+    font-family: Helvetica;
+    font-size: 40px;
+    font-variant: small-caps;
+    font-weight: bold;
+    text-align: center;
+
+}
+
+#Search_Photos_Button {
+    position: absolute;
+    left: 50px;
+
+    width: 60%;
+    height: 50px;
+    border: 0px solid rgb(255, 255, 255, .5);
+    border-radius: 5px;
+    font-family: Helvetica;
+    font-size: 14px;
+    color: white;
+    background-color: rgba(30, 30, 30, 0.7);
+    backdrop-filter: blur(4px);
+    text-align: left;
+    padding-left: 150px;
+    top: 140px;
+    transform: .3s;
+    transition: .3s;
+    vertical-align: middle;
+
+}
+
+
+/*Photos Tab*/
+
+
+/*Photo Search*/
+#Photo_Search_Result {
+    position: fixed;
+    overflow-y: hidden;
+    width: 100%;
+    height: calc(100%);
+    z-index: 11;
+    left: 0px;
+    top: 0px;
+    border-radius: 0px;
+    transform: .3s;
+    transition: .3s;
+    display: none;
+}
+
+#Exit_Photos_Search {
+    position: fixed;
+    top: 4px;
+    right: 5px;
+    cursor: pointer;
+    transform: scale(.9);
+}
+
+/*Photo Search*/
+
+
+
+/*Login Tab*/
+#Login_Container {
+    position: fixed;
+    z-index: 0;
+    display: none;
+    top: 100px;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    background-color: rgb(255, 255, 255);
+    max-width: 400px;
+    width: 90%;
+    height: 90%;
+    max-height: 450px;
+    border-radius: 5px;
+    visibility: visible;
+
+}
+
+#Exit_Login {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    z-index: 15;
+}
+
+#SignIn_Title {
+    color: rgb(10, 10, 10);
+    font-family: Helvetica;
+    font-size: 35px;
+    text-align: left;
+    margin-left: 20px;
+    margin-top: 10px;
+    width: 200px;
+    visibility: hidden;
+
+}
+
+/*Login Tab*/
+
+
+#view_video_user:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+
+/*Account Tab*/
+
+#Account_React {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    background-color: rgb(15, 15, 15);
+    top: 0px;
+    left: 0px;
+    z-index: 10000;
+    transition: .3s;
+    overflow-y: auto;
+    display: none;
+}
+
+#Saved_React {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    top: 0px;
+    left: 0px;
+    z-index: 10000;
+    overflow-y: auto;
+    display: none;
+    background-color: rgb(15, 15, 15);
+}
+
+
+/*Account Tab*/
+
+
+
+/*Help Tab*/
+#Help_Container {
+    position: fixed;
+    z-index: 0;
+    display: none;
+    top: 100px;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    background-color: rgb(255, 255, 255);
+    width: 400px;
+    height: 450px;
+    border-radius: 5px;
+}
+
+#Exit_Help {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    z-index: 15;
+}
+
+#Help_Title {
+    position: relative;
+    top: 50px;
+    font-family: Helvetica;
+    font-size: 25px;
+    color: rgb(10, 10, 10);
+    text-align: center;
+}
+
+#Help_Text {
+    position: relative;
+    top: 100px;
+    font-family: Helvetica;
+    font-size: 14px;
+    color: rgb(10, 10, 10);
+    text-align: center;
+    width: 90%;
+    left: 50%;
+    transform: translate(-50%, 0%);
+}
+
+#Copy_Email_Button {
+    position: relative;
+    top: 130px;
+    font-family: Helvetica;
+    font-size: 14px;
+    color: rgb(255, 255, 255);
+    left: 50%;
+    transform: translate(-50%, 0%);
+    background-color: rgb(125, 151, 253);
+    width: 75%;
+    border-radius: 5px;
+    border: none;
+}
+
+/*Help Tab*/
+
+
+
+/*Footer*/
+
+#Footer {
+    border-top: 2px solid rgba(0, 0, 0, .1);
+    position: absolute;
+    background-color: rgb(30, 30, 30);
+    width: 100%;
+    height: 400px;
+    bottom: 0px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /* Define the number of columns */
+    grid-template-rows: repeat(1, 1fr);
+    display: none;
+}
+
+.Title_Class_Footer {
+    position: relative;
+    top: 50px;
+    color: white;
+    font-family: Helvetica;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.Footer_Link {
+    position: relative;
+    top: 50px;
+    color: rgb(220, 220, 220);
+    font-family: Helvetica;
+    font-size: 12px;
+    cursor: pointer;
+    transform: .1s;
+    text-align: center;
+}
+
+.Footer_Link:hover {
+    text-decoration: underline;
+}
+
+#CopyWright {
+    position: absolute;
+    top: 300px;
+    left: 2%;
+    text-align: left;
+    position: relative;
+    top: 50px;
+    color: rgb(220, 220, 220);
+    font-family: Helvetica;
+    font-size: 12px;
+    cursor: default;
+    transform: .1s;
+    text-align: center;
+}
+
+input:focus {
+    outline: none;
+}
+
+/*Video/Photo Component*/
+
+/*Video/Photo Component*/
+
+
+/*Sign in React*/
+
+
+/*Sign in React*/
+
+
+
+/*Footer*/
+@media (max-width: 1000px) {
+    .Nav_Style {
+        display: none;
+    }
+
+    #Nav_Main_Imgs {
+        display: none;
+    }
+
+    #Mobile_Menu {
+        display: block;
+    }
+
+}
+
+
+@media (max-width: 550px) {
+
+    #Title_Photos {
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%, 0%);
+    }
+
+    #Title_Videos {
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%, 0%);
+    }
+
+    #Search_Videos_Button {
+        width: 89%;
+        left: 5px;
+    }
+
+    #Search_Photos_Button {
+        width: 89%;
+        left: 5px;
+    }
+
+    .Switch_Video_Photo_Style {
+        left: 35px;
+    }
+
+    .VP_Dropdown_Change {
+        left: 25px;
+    }
+}
+
+@media (max-width: 400px) {
+    #Login_Container {
+        top: 70px;
+        width: 95%;
+        height: 85%;
+
+    }
+
+    #Help_Container {
+        top: 70px;
+        width: 95%;
+        height: 85%;
+
+    }
+}
+
+
+#root {
+    position: relative;
+    top: 100px;
+    height: 500px;
+    width: 100%;
+
+}
