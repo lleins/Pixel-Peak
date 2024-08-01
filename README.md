@@ -16,9 +16,12 @@ Once you're on the Pixel Peak platform, you can:
 
 Pixel Peak is built using the following technologies:
 
+
+**MERN Stack**
 - **MongoDB**: A NoSQL database used for storing user data.
 - **Express**: A web application framework for Node.js.
 - **React**:  A JavaScript library for building user interfaces, used to create dynamic and responsive components in the application.
+- **Node.js**: A JavaScript runtime for building scalable network applications.
 - **Typescript**: A powerful, open-source relational database system that manages and stores complex data efficiently for the application.
 
 
